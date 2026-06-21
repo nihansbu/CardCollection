@@ -1,32 +1,71 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import {
   averageSkillLevel,
   flatSkills,
+  formatSkillXp,
+  getSkillXpForLevel,
   totalSkillLevel,
 } from "./skillData.js";
 
-function SkillCard({ onSelect, skill }) {
+const LONG_PRESS_MS = 520;
+
+function SkillCard({ onPreview, onSelect, skill }) {
+  const longPressTimer = useRef(null);
+  const suppressClick = useRef(false);
+
+  const clearLongPress = () => {
+    window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = null;
+  };
+
+  const startLongPress = () => {
+    clearLongPress();
+    suppressClick.current = false;
+    longPressTimer.current = window.setTimeout(() => {
+      suppressClick.current = true;
+      onPreview(skill);
+    }, LONG_PRESS_MS);
+  };
+
+  const handleClick = () => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      return;
+    }
+
+    onSelect(skill);
+  };
+
+  useEffect(() => () => window.clearTimeout(longPressTimer.current), []);
+
   return (
     <button
       className="skill-card"
-      onClick={() => onSelect(skill)}
+      onClick={handleClick}
+      onContextMenu={(event) => event.preventDefault()}
+      onPointerCancel={clearLongPress}
+      onPointerDown={startLongPress}
+      onPointerLeave={clearLongPress}
+      onPointerUp={clearLongPress}
       style={{ "--skill-color": skill.color }}
       type="button"
+      aria-label={`${skill.name}. Level ${skill.level} of ${skill.maxLevel}. Long press for details.`}
     >
       <div className="skill-sprite" aria-hidden="true">
         <span>{skill.short}</span>
       </div>
-      <div className="skill-card-copy">
-        <span>{skill.group}</span>
-        <strong>{skill.name}</strong>
-        <small>Level {skill.level}/{skill.maxLevel}</small>
+      <div className="skill-level-stack" aria-hidden="true">
+        <strong>{skill.level}</strong>
+        <span>{skill.maxLevel}</span>
       </div>
     </button>
   );
 }
 
 export function SkillsPanel({ onSelectSkill }) {
+  const [previewSkill, setPreviewSkill] = useState(null);
+
   return (
     <ContentPanel
       className="skills-panel"
@@ -37,10 +76,44 @@ export function SkillsPanel({ onSelectSkill }) {
       ]}
       title="Skills"
     >
-      <div className="skill-board">
+      <div className="skill-board" onPointerDown={() => setPreviewSkill(null)}>
         {flatSkills.map((skill) => (
-          <SkillCard key={skill.name} onSelect={onSelectSkill} skill={skill} />
+          <SkillCard
+            key={skill.name}
+            onPreview={setPreviewSkill}
+            onSelect={onSelectSkill}
+            skill={skill}
+          />
         ))}
+        {previewSkill && (
+          <div className="skill-quicklook" role="status" onPointerDown={(event) => event.stopPropagation()}>
+            <div className="skill-quicklook-head">
+              <span style={{ "--skill-color": previewSkill.color }}>{previewSkill.short}</span>
+              <div>
+                <strong>{previewSkill.name}</strong>
+                <small>{previewSkill.group} Skill</small>
+              </div>
+              <button aria-label="Close skill preview" onClick={() => setPreviewSkill(null)} type="button">
+                x
+              </button>
+            </div>
+            <dl>
+              <div>
+                <dt>Level</dt>
+                <dd>{previewSkill.level}/{previewSkill.maxLevel}</dd>
+              </div>
+              <div>
+                <dt>XP</dt>
+                <dd>{formatSkillXp(previewSkill.currentXp)}</dd>
+              </div>
+              <div>
+                <dt>Next</dt>
+                <dd>{formatSkillXp(getSkillXpForLevel(previewSkill.level + 1))}</dd>
+              </div>
+            </dl>
+            <p>{previewSkill.description}</p>
+          </div>
+        )}
       </div>
     </ContentPanel>
   );

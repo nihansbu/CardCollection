@@ -29,14 +29,14 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
 - Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, festem Titelcontainer, optionaler horizontaler Action-Button-Zone und eigenen Stats.
 - Hauptseiten ohne Back-Button zeigen zuerst den Titel, dann Actions und Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
-- Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als mobile Listenkarten. Es gibt keine Desktop-Grid-Variante mehr.
+- Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als kompaktes mobile-only 3-Spalten-Skillpanel nach RuneScape-Anmutung. Die ehemalige untere RuneScape-Leiste mit Total Level/Combat/Quest Points wird nicht kopiert, weil diese Informationen in der vorhandenen Header-Stats-Bar leben.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
 - Die Skills-Header-Stats zeigen `Total Skills`, die addierten `Skill Level` und das gerundete `Average Level`.
 - Sailing ist als eigener Skill enthalten.
-- Skills sind anklickbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
+- Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Topbar bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
-- Hover-Tooltips sind abgeschafft. Mobile braucht sichtbare, tappbare Informationen oder Detailseiten.
+- Long-Press auf einem Skill zeigt eine kompakte Quicklook-Info im Skills-Panel. Normaler Tap oeffnet weiterhin die Detailseite.
 - Die Skill-XP-Werte nutzen aktuell eine RuneScape-artige XP-Kurve. Level 1 startet bei 0 XP, Level 2 liegt bei 83 XP.
 - Codex beschreibt die neue Grundidee: Train, Collect, Upgrade, Unlock.
 - Beastiary ist als geplantes Monster-/Creature-Modul angelegt.
@@ -134,7 +134,7 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
 - Der Back-Slot wird nur auf ContentPanel-Seiten mit echtem Back-Button genutzt; Hauptseiten ohne Back-Button lassen den Titel nach links ruecken.
 - Codex nutzt die Header-Bar mit Projekt-/Loop-/Status-Informationen.
 - Beastiary nutzt die Header-Bar mit Entries, Kills und Mastery als geplante Felder.
-- Informationen muessen sichtbar, tappbar oder ueber Detailseiten erreichbar sein. Hover-only Informationen sind nicht erlaubt.
+- Informationen muessen sichtbar, tappbar, per Long-Press-Quicklook oder ueber Detailseiten erreichbar sein. Hover-only Informationen sind nicht erlaubt.
 
 ## Pack-Design
 

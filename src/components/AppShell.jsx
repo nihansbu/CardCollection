@@ -23,7 +23,7 @@ const navItems = [
 ];
 
 export function AppShell({ activeView, children, onChangeView }) {
-  const [isNavOpen, setIsNavOpen] = useState(true);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const touchStartY = useRef(null);
 
   const handleNavItemClick = (itemId) => {
