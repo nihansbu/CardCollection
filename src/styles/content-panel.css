@@ -188,9 +188,9 @@
   margin: 4px 0 0;
   color: #24f2ff;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 1rem;
+  font-size: clamp(0.84rem, 3.8vw, 1rem);
   font-weight: 900;
   line-height: 1.05;
   text-shadow: 0 0 14px rgba(36, 242, 255, 0.28);
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
