@@ -55,22 +55,20 @@
 }
 
 .content-header-with-back {
-  grid-template-columns: 48px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
 }
 
-.content-back-slot {
-  display: grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-}
-
 .content-back-button {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  z-index: 2;
   display: grid;
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   place-items: center;
+  transform: translateY(-50%);
   color: #fff2d3;
   border: 2px solid #5c4d3f;
   background:
@@ -89,12 +87,13 @@
 }
 
 .content-title-box {
+  position: relative;
   display: grid;
   min-width: 0;
   min-height: 54px;
   align-items: center;
-  justify-items: start;
-  padding: 8px 12px;
+  justify-items: center;
+  padding: 8px 50px;
   border: 1px solid rgba(213, 184, 130, 0.2);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 42%),
@@ -111,7 +110,7 @@
   font-weight: 900;
   letter-spacing: 0.02em;
   line-height: 0.95;
-  text-align: left;
+  text-align: center;
   text-shadow:
     3px 3px 0 #080605,
     0 0 20px rgba(255, 237, 187, 0.14);

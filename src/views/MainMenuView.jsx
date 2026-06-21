@@ -20,7 +20,7 @@ import {
 } from "../features/skills/skillData.js";
 import { loadLocalGameSave, writeJson } from "../storage/localSave.js";
 
-export function MainMenuView({ activeView }) {
+export function MainMenuView({ activeView, onAccountChange }) {
   const initialTrainingState = useRef(null);
 
   if (!initialTrainingState.current) {
@@ -167,7 +167,7 @@ export function MainMenuView({ activeView }) {
   }
 
   if (activeView === "account") {
-    return <AccountPanel />;
+    return <AccountPanel onAuthenticated={onAccountChange} />;
   }
 
   if (activeView === "skills") {

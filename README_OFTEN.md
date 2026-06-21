@@ -19,13 +19,13 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Die App-Shell nutzt eine dauerhaft sichtbare Bottom-Navigation statt einer Topbar.
 - Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Inventory, Skills, Activities, Beastiary, Codex, Slot 7 und More.
 - Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Account, Codex, Gear und Stats als vorbereiteten Sub-Buttons.
-- Account ist der Startpunkt fuer lokale Demo-Session und spaeter Cloud Login.
+- Account ist der Startpunkt fuer verpflichtende lokale Account-Erstellung und spaeter Cloud Login.
 - Die Bottom-Navigation bleibt fixiert sichtbar. Flyouts duerfen die Content Section leicht ueberlappen.
 - Der globale Screen selbst soll nicht vertikal scrollen. Nur die jeweilige Content-Body-Flaeche innerhalb des ContentPanel darf scrollen.
 - Der aktive Bottom-Navigation-Button wird rot markiert.
 - Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
-- Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, linksbuendigem Titelcontainer, rechtsbuendiger Action-Button-Zone in derselben Zeile und eigenen Stats.
-- Hauptseiten ohne Back-Button zeigen links den Titel, rechts modulbezogene Actions und darunter kompakte Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
+- Jedes Modul nutzt eine gemeinsame Header-Bar: zentrierter Titelcontainer, optionaler Back-Button links innerhalb dieses Titelcontainers, rechtsbuendige Action-Button-Zone in derselben Zeile und eigene Stats darunter.
+- Hauptseiten ohne Back-Button zeigen den zentrierten Titel, rechts modulbezogene Actions und darunter kompakte Stats. Subpages mit Back-Button nutzen dieselbe Struktur; der Back-Button lebt links im Titelcontainer statt in einer separaten Spalte.
 - Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als kompaktes mobile-only 3-Spalten-Skillpanel nach RuneScape-Anmutung. Die ehemalige untere RuneScape-Leiste mit Total Level/Combat/Quest Points wird nicht kopiert, weil diese Informationen in der vorhandenen Header-Stats-Bar leben.
 - Das Skills-Panel muss auch im normalen mobilen Browser mit sichtbarer Chrome-/Android-Leiste kompakt bleiben. Aktuell sollen 30 Skills in die Hauptansicht passen; bei mehr Inhalt scrollt nur die interne Content-Body-Flaeche.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
@@ -33,7 +33,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Alle 30 Skills nutzen fantasy/MMO-inspirierte Icons im kompakten RuneScape-artigen Skillpanel.
 - Die Skills-Header-Stats zeigen als Icon-Kacheln `Total Level`, `Average Level` und `Total XP`.
 - Skills hat rechts neben dem Titel einen `Training`-Action-Button mit Icon. Tap oeffnet die eigene `Skills Training`-Ansicht im gleichen ContentPanel-System.
-- `Skills Training` nutzt dieselbe mobile Layout-Struktur wie Skills: linksbuendiger Titel, rechts ein `Skills`-Action-Button zurueck zur Uebersicht, darunter vier Header-Stats und im Content-Body dasselbe 3-Spalten-Skillgrid.
+- `Skills Training` nutzt dieselbe mobile Layout-Struktur wie Skills: zentrierter Titel, rechts ein `Skills`-Action-Button zurueck zur Uebersicht, darunter vier Header-Stats und im Content-Body dasselbe 3-Spalten-Skillgrid.
 - Die vier Header-Stats im Training sind `RAP`, `Slot 1`, `Slot 2` und `Slot 3`. Die Slots sind tappbar; der aktive Slot wird gelb markiert.
 - In `Skills Training` weist ein Tap auf einen Skill den Skill dem aktiven Slot zu. Wenn derselbe Skill im aktiven Slot erneut getappt wird, wird er entfernt. Wenn der Skill in einem anderen Slot liegt, wandert er in den aktiven Slot.
 - Aktuell trainierte Skills werden im Grid gelb umrahmt und zeigen einen kleinen Slot-Badge.
@@ -89,8 +89,8 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/App.jsx`: Aktive Codex-View und Routing zwischen Codex-Modulen.
 - `src/components/AppShell.jsx`: Fixierte Mobile-Bottom-Navigation mit 8 Slots und Character-Flyout.
 - `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Uebersicht/-Training/-Detail-State, RAP-Ausgabe durch Training und Activity-Subpage-State.
-- `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Slot, festem Seitentitel, Action-Button-Zone und Stats-Bar.
-- `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Demo-Session, Cloud-Auth-Formular und lokalem Save-Status.
+- `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Button im Titelcontainer, festem Seitentitel, Action-Button-Zone und Stats-Bar.
+- `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Account-Erstellung/Login, Cloud-Auth-Formular und lokalem Save-Status.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
 - `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
 - `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.
@@ -147,9 +147,9 @@ Healthcheck 2026-06-21:
 - Die Modulnavigation bleibt eine kompakte Bottom-Bar mit 8 Touch-Slots. Keine horizontale Scrollbar in der Hauptnavigation.
 - Das Content Window besteht aus:
   - gemeinsamer Panel-Rahmen.
-  - Header-Bar mit optionalem Back-Slot ganz links.
-  - festem Titelcontainer, der auf Mobile die volle Breite nutzt und mit Back-Button rechts vom Back-Slot sitzt.
-  - linksbuendigem Titeltext, dessen Schriftgroesse je nach Titel laengenabhaengig angepasst wird.
+  - Header-Bar mit optionalem Back-Button links im Titelcontainer.
+  - festem Titelcontainer, der auf Mobile den verfuegbaren Titelbereich nutzt und optional den Back-Button links integriert.
+  - zentriertem Titeltext, dessen Schriftgroesse je nach Titel laengenabhaengig angepasst wird.
   - horizontaler Action-Button-Zone fuer modulspezifische Aktionen.
   - statspezifischen Boxen, die auf Mobile als kompakte Karten in der benoetigten Anzahl passen.
   - modulabhaengigem Body darunter.
@@ -160,9 +160,9 @@ Healthcheck 2026-06-21:
 - Activities hat Subscreens fuer `Create Activity`, `Activity Log` und `Activity Stats`, jeweils mit Back-Button.
 - Die Buttons `Sorts`, `Activity Log` und `Stats` leben in der Header-Action-Zone von Activities, nicht im Activity-Kartenraster.
 - `Sorts` oeffnet ein kleines Popover direkt am Button und sortiert die Activity-Karten ohne Seitenwechsel.
-- Der Back-Slot wird nur auf ContentPanel-Seiten mit echtem Back-Button genutzt; Hauptseiten ohne Back-Button lassen den Titel nach links ruecken.
+- Der Back-Button wird nur auf ContentPanel-Seiten mit echter Ruecknavigation genutzt und lebt links innerhalb des Titelcontainers. Hauptseiten ohne Back-Button behalten den Titel zentriert.
 - Codex nutzt die Header-Bar mit Projekt-/Loop-/Status-Informationen.
-- Account nutzt die Header-Bar mit `User`, `Cloud` und `Mode`. Der lokale Demo-Login ist `Admin` / `Admin` und dient nur als UI-/Flow-Test, nicht als echte Sicherheit.
+- Account nutzt die Header-Bar mit `User`, `Cloud` und `Mode`. Beim ersten App-Start wird ein lokaler Account mit frei gewaehltem Username/Passwort erzwungen. Das lokale Passwort wird mit PBKDF2 und Salt gehasht gespeichert. Das ist fuer den privaten Prototyp ausreichend als lokaler Zugriffsschutz, ersetzt aber keine Cloud-Sicherheit.
 - Beastiary nutzt die Header-Bar mit Entries, Kills und Mastery als geplante Felder.
 - Informationen muessen sichtbar, tappbar, per Long-Press-Quicklook im gemeinsamen unteren Info-Panel oder ueber Detailseiten erreichbar sein. Hover-only Informationen sind nicht erlaubt.
 - Zahlen, die durch laufende Systeme veraendert werden koennen, sollen live aus dem aktuellen State gelesen werden. Fuer aktuelle Training-/RAP-Anzeigen ist ein etwa sekundenweiser Refresh ausreichend.
@@ -279,7 +279,7 @@ Empfohlene Richtung fuer den naechsten Architektur-Schritt: Supabase. Die erste 
 - `src/storage/supabaseClient.js`: optionaler Supabase-Client ueber `VITE_SUPABASE_URL` und `VITE_SUPABASE_ANON_KEY`.
 - `src/storage/cloudSave.js`: erste Cloud-Save-Funktionen fuer User-Erkennung, Laden und Upsert von `game_saves`.
 - `src/storage/authService.js`: Supabase Auth Wrapper fuer E-Mail/Passwort Login, Signup und Logout.
-- `src/storage/accountSession.js`: lokale Demo-Session fuer `Admin` / `Admin`, ausschliesslich fuer privates Testen im aktuellen Browser.
+- `src/storage/accountSession.js`: lokale Account-Credentials und Session fuer den aktuellen Browser, inklusive PBKDF2-Passwort-Hash.
 - `supabase/migrations/20260621235000_initial_cloud_save.sql`: erstes Postgres-Schema mit `profiles`, `game_saves`, `activity_events`, `save_events`, `client_sync_state` und RLS-Policies.
 
 Begruendung:

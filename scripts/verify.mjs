@@ -27,18 +27,23 @@ let result = {};
 try {
   await page.addInitScript(() => {
     localStorage.setItem("codex-collector-v1-rap", "10000");
+    localStorage.removeItem("codex-collector-v1-local-account-credentials");
+    localStorage.removeItem("codex-collector-v1-local-account-session");
     localStorage.removeItem("codex-collector-v1-skills");
     localStorage.setItem("codex-collector-v1-skill-training-slots", JSON.stringify(["Woodcutting", null, null]));
     localStorage.setItem("codex-collector-v1-skill-training-last-tick", String(Date.now() - 60000));
   });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page.getByRole("heading", { name: /^Account$/i }).waitFor({ timeout: 5000 });
+  await page.getByLabel("Username").fill("Niklas");
+  await page.getByLabel("Password").first().fill("secure-test-password");
+  await page.getByLabel("Repeat Password").fill("secure-test-password");
+  await page.getByRole("button", { name: /Create Account/i }).click();
+  await page.locator(".bottom-nav-item[aria-label='Skills']").waitFor({ timeout: 5000 });
   await page.locator('.bottom-nav-item[aria-label="Character"]').click();
   await page.getByRole("menuitem", { name: /Account/i }).click();
   await page.getByRole("heading", { name: /^Account$/i }).waitFor({ timeout: 5000 });
-  await page.getByLabel("Password").first().fill("Admin");
-  await page.getByRole("button", { name: /Login Demo/i }).click();
-  await page.locator(".account-message", { hasText: "Local demo account active." }).waitFor({ timeout: 5000 });
   const accountStatsText = await page.locator(".content-stats").innerText();
 
   await page.locator('.bottom-nav-item[aria-label="Skills"]').click();
@@ -97,7 +102,8 @@ try {
 
   ok = (
     trainingCards === 1 &&
-    accountStatsText.includes("Admin") &&
+    accountStatsText.includes("Niklas") &&
+    accountStatsText.includes("Account") &&
     woodcuttingClass?.includes("is-training-skill") &&
     !attackClass?.includes("is-training-skill") &&
     woodcuttingCardText.includes("WOODCUTTING") &&

@@ -36,7 +36,7 @@ export async function signUpCloudAccount(email, password) {
     password,
     options: {
       data: {
-        display_name: "Admin",
+        display_name: email.split("@")[0],
       },
     },
   });

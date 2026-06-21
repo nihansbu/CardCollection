@@ -66,14 +66,12 @@ export function ContentPanel({
   return (
     <section className={`codex-content-panel ${className}`} aria-labelledby={headingId}>
       <div className={headerClassName}>
-        {onBack ? (
-          <div className="content-back-slot">
-            <button className="content-back-button" onClick={onBack} type="button" aria-label="Back">
-              <ArrowLeft size={26} strokeWidth={3} />
-            </button>
-          </div>
-        ) : null}
         <div className="content-title-box" style={{ "--title-size": getTitleSize(title) }}>
+          {onBack ? (
+            <button className="content-back-button" onClick={onBack} type="button" aria-label="Back">
+              <ArrowLeft size={24} strokeWidth={3} />
+            </button>
+          ) : null}
           <h1 id={headingId}>{title}</h1>
         </div>
         <div className="content-actions" aria-label={`${title} actions`}>

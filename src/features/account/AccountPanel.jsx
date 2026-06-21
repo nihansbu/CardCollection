@@ -1,12 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Cloud, Download, KeyRound, LogOut, ShieldCheck, UserRound } from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import { exportLocalGameSave } from "../../storage/localSave.js";
 import {
-  getDemoCredentials,
+  createLocalAccount,
+  getLocalAccountUsername,
   getLocalAccountSession,
-  signInLocalDemoAccount,
-  signOutLocalDemoAccount,
+  hasLocalAccount,
+  signInLocalAccount,
+  signOutLocalAccount,
 } from "../../storage/accountSession.js";
 import {
   getAuthConfigStatus,
@@ -27,15 +29,17 @@ function getSaveSummary() {
   };
 }
 
-export function AccountPanel() {
-  const demoCredentials = useMemo(() => getDemoCredentials(), []);
+export function AccountPanel({ isGate = false, onAuthenticated }) {
+  const [accountExists, setAccountExists] = useState(() => hasLocalAccount());
+  const [cloudPassword, setCloudPassword] = useState("");
   const [cloudUser, setCloudUser] = useState(null);
   const [email, setEmail] = useState("");
+  const [localMode, setLocalMode] = useState(() => hasLocalAccount() ? "signin" : "create");
   const [localPassword, setLocalPassword] = useState("");
+  const [localPasswordConfirm, setLocalPasswordConfirm] = useState("");
   const [localSession, setLocalSession] = useState(() => getLocalAccountSession());
-  const [localUsername, setLocalUsername] = useState(demoCredentials.username);
+  const [localUsername, setLocalUsername] = useState(() => getLocalAccountUsername());
   const [message, setMessage] = useState("");
-  const [password, setPassword] = useState("");
   const [saveSummary, setSaveSummary] = useState(() => getSaveSummary());
   const [status, setStatus] = useState("idle");
   const { cloudConfigured } = getAuthConfigStatus();
@@ -66,24 +70,39 @@ export function AccountPanel() {
     setSaveSummary(getSaveSummary());
   };
 
-  const handleLocalLogin = (event) => {
+  const handleLocalSubmit = async (event) => {
     event.preventDefault();
+    setStatus(localMode);
+    setMessage("");
 
     try {
-      const session = signInLocalDemoAccount(localUsername, localPassword);
+      if (localMode === "create" && localPassword !== localPasswordConfirm) {
+        throw new Error("Passwords do not match.");
+      }
+
+      const session = localMode === "create"
+        ? await createLocalAccount(localUsername, localPassword)
+        : await signInLocalAccount(localUsername, localPassword);
       setLocalSession(session);
+      setAccountExists(true);
+      setLocalMode("signin");
       setLocalPassword("");
-      setMessage("Local demo account active.");
+      setLocalPasswordConfirm("");
+      setMessage(localMode === "create" ? "Account created." : "Signed in.");
       refreshSaveSummary();
+      onAuthenticated?.(session);
     } catch (error) {
       setMessage(error.message);
+    } finally {
+      setStatus("idle");
     }
   };
 
   const handleLocalLogout = () => {
-    signOutLocalDemoAccount();
+    signOutLocalAccount();
     setLocalSession(null);
-    setMessage("Local demo account signed out.");
+    setMessage("Signed out.");
+    onAuthenticated?.(null);
   };
 
   const handleCloudAuth = async (event, action) => {
@@ -93,10 +112,10 @@ export function AccountPanel() {
 
     try {
       const user = action === "signup"
-        ? await signUpCloudAccount(email, password)
-        : await signInCloudAccount(email, password);
+        ? await signUpCloudAccount(email, cloudPassword)
+        : await signInCloudAccount(email, cloudPassword);
       setCloudUser(user);
-      setPassword("");
+      setCloudPassword("");
       setMessage(action === "signup" ? "Cloud account created. Confirm email if Supabase requires it." : "Cloud account signed in.");
       refreshSaveSummary();
     } catch (error) {
@@ -127,7 +146,7 @@ export function AccountPanel() {
       stats={[
         { Icon: UserRound, label: "User", value: activeName },
         { Icon: Cloud, label: "Cloud", value: cloudConfigured ? "Ready" : "Off" },
-        { Icon: ShieldCheck, label: "Mode", value: cloudUser ? "Cloud" : localSession ? "Demo" : "Local" },
+        { Icon: ShieldCheck, label: "Mode", value: cloudUser ? "Cloud" : localSession ? "Account" : accountExists ? "Locked" : "Setup" },
       ]}
       title="Account"
     >
@@ -138,23 +157,23 @@ export function AccountPanel() {
             <strong>{activeName}</strong>
           </div>
           <p>
-            Local progress remains on this device until Cloud Save is configured and a cloud account is signed in.
+            Create a local account to unlock this device. Cloud Save can be connected after Supabase is configured.
           </p>
           {message ? <p className="account-message" role="status">{message}</p> : null}
         </section>
 
         <section className="account-section">
           <div className="account-section-head">
-            <span>Local Demo</span>
-            <strong>Admin</strong>
+            <span>Local Account</span>
+            <strong>{localSession ? localSession.displayName : accountExists ? "Sign In" : "Create"}</strong>
           </div>
           {localSession ? (
             <button className="account-button" onClick={handleLocalLogout} type="button">
               <LogOut size={17} strokeWidth={2.8} />
-              <span>Logout Demo</span>
+              <span>Logout</span>
             </button>
           ) : (
-            <form className="account-form" onSubmit={handleLocalLogin}>
+            <form className="account-form" onSubmit={handleLocalSubmit}>
               <label>
                 <span>Username</span>
                 <input
@@ -168,20 +187,42 @@ export function AccountPanel() {
                 <input
                   autoComplete="current-password"
                   onChange={(event) => setLocalPassword(event.target.value)}
-                  placeholder={demoCredentials.password}
                   type="password"
                   value={localPassword}
                 />
               </label>
-              <button className="account-button" type="submit">
+              {localMode === "create" ? (
+                <label>
+                  <span>Repeat Password</span>
+                  <input
+                    autoComplete="new-password"
+                    onChange={(event) => setLocalPasswordConfirm(event.target.value)}
+                    type="password"
+                    value={localPasswordConfirm}
+                  />
+                </label>
+              ) : null}
+              <button className="account-button" disabled={status !== "idle"} type="submit">
                 <KeyRound size={17} strokeWidth={2.8} />
-                <span>Login Demo</span>
+                <span>{localMode === "create" ? "Create Account" : "Sign In"}</span>
               </button>
+              {!isGate && accountExists ? (
+                <button
+                  className="account-button account-button-secondary"
+                  onClick={() => {
+                    setLocalMode((current) => current === "create" ? "signin" : "create");
+                    setMessage("");
+                  }}
+                  type="button"
+                >
+                  <span>{localMode === "create" ? "Use Existing" : "New Account"}</span>
+                </button>
+              ) : null}
             </form>
           )}
         </section>
 
-        <section className="account-section">
+        {!isGate ? <section className="account-section">
           <div className="account-section-head">
             <span>Cloud Account</span>
             <strong>{cloudConfigured ? "Supabase" : "Not Configured"}</strong>
@@ -203,9 +244,9 @@ export function AccountPanel() {
               <input
                 autoComplete="current-password"
                 disabled={!cloudConfigured}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) => setCloudPassword(event.target.value)}
                 type="password"
-                value={password}
+                value={cloudPassword}
               />
             </label>
             <div className="account-button-row">
@@ -230,9 +271,9 @@ export function AccountPanel() {
               <span>Cloud Logout</span>
             </button>
           ) : null}
-        </section>
+        </section> : null}
 
-        <section className="account-section">
+        {!isGate ? <section className="account-section">
           <div className="account-section-head">
             <span>Local Save</span>
             <strong>{saveSummary.skills} Skills</strong>
@@ -255,9 +296,8 @@ export function AccountPanel() {
             <Download size={17} strokeWidth={2.8} />
             <span>Refresh Save</span>
           </button>
-        </section>
+        </section> : null}
       </div>
     </ContentPanel>
   );
 }
-

@@ -30,12 +30,7 @@ Run `npm run verify` in a second terminal while the dev server is running. The v
 
 The app currently runs local-first. Save data is still cached in the existing `localStorage` keys, but the code now has a central save layer under `src/storage/`.
 
-The Account screen is available through `Character -> Account`. Without Supabase environment values, use the local demo account for testing:
-
-- Username: `Admin`
-- Password: `Admin`
-
-This demo account is local-only and does not protect cloud data.
+On first launch, the app requires a local account before the main UI opens. Choose a username and password in the Account screen. This local account is stored only on the current device and is not a replacement for Cloud Save.
 
 To prepare Supabase:
 

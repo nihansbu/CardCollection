@@ -28,6 +28,10 @@
   isolation: isolate;
 }
 
+.account-gate-shell {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
 .background-aura {
   position: fixed;
   inset: 0;
