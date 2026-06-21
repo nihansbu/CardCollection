@@ -1,0 +1,309 @@
+.shop-view {
+  display: grid;
+  gap: 22px;
+  max-width: 1580px;
+  margin: 0 auto;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(230px, 1fr));
+  gap: 24px;
+}
+
+.pack-card {
+  min-height: 540px;
+  color: #fff8e6;
+  filter: drop-shadow(0 22px 24px rgba(0, 0, 0, 0.36));
+}
+
+.pack-frame {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(392px, 1fr) auto;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent), white 26%);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent), transparent 78%), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.2)),
+    #07101a;
+  box-shadow:
+    inset 0 0 0 4px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 5px color-mix(in srgb, var(--accent), transparent 62%);
+}
+
+.pack-frame::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--accent), transparent 36%);
+}
+
+.pack-corners {
+  position: absolute;
+  inset: 15px auto auto 15px;
+  width: 58px;
+  height: 58px;
+  border-top: 2px solid var(--accent);
+  border-left: 2px solid var(--accent);
+  pointer-events: none;
+}
+
+.pack-art {
+  position: relative;
+  display: grid;
+  min-height: 392px;
+  place-items: center;
+  overflow: hidden;
+}
+
+.pack-art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent), white 12%), transparent 12%),
+    radial-gradient(circle at 42% 36%, color-mix(in srgb, var(--accent), transparent 10%), transparent 30%),
+    radial-gradient(circle at 62% 72%, rgba(255, 255, 255, 0.12), transparent 18%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 50%);
+  opacity: 0.92;
+}
+
+.pack-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(2, 6, 10, 0.72), transparent 24%),
+    linear-gradient(to top, rgba(2, 6, 10, 0.9), transparent 34%);
+}
+
+.pack-art.has-image::before,
+.pack-card .pack-art.has-image::before {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 50%),
+    var(--pack-image) center / cover no-repeat;
+  opacity: 1;
+  transform: scale(1.01);
+}
+
+.art-orbit {
+  position: absolute;
+  width: 62%;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--accent), white 20%);
+  border-radius: 50%;
+  box-shadow: 0 0 46px color-mix(in srgb, var(--accent), transparent 52%);
+  transform: rotate(-16deg) scaleY(0.72);
+}
+
+.art-sigil {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 122px;
+  height: 122px;
+  place-items: center;
+  color: #07101a;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 26%, #fff6d2, var(--accent) 58%, #111 59%);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 4.8rem;
+  font-weight: 900;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 28px 58px rgba(0, 0, 0, 0.5);
+}
+
+.pack-top-label {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  right: 24px;
+  z-index: 2;
+  color: #f7d985;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+.pack-footer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
+  padding: 20px 28px 28px;
+  background: linear-gradient(180deg, rgba(4, 9, 15, 0.92), rgba(2, 5, 9, 0.98));
+  border-top: 1px solid color-mix(in srgb, var(--accent), transparent 48%);
+}
+
+.compact-pack-footer h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #fff7df;
+  font-size: clamp(1.55rem, 2.1vw, 2.45rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.78);
+}
+
+.pack-actions {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 10px;
+}
+
+.buy-button,
+.details-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  width: 100%;
+  color: #231705;
+  border: 1px solid rgba(255, 237, 154, 0.58);
+  background: linear-gradient(180deg, #ffe28d, #ca8519);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: 0 14px 24px rgba(214, 139, 19, 0.22);
+}
+
+.details-button {
+  color: #ffe7a0;
+  border-color: rgba(255, 211, 111, 0.22);
+  background: rgba(255, 211, 111, 0.08);
+  box-shadow: none;
+}
+
+.details-button.icon-only {
+  min-width: 58px;
+  padding: 0;
+}
+
+.price-button {
+  font-size: 1.25rem;
+}
+
+.price-button strong {
+  line-height: 1;
+}
+
+.buy-button:disabled {
+  color: #8c8579;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #272b31, #15181d);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pack-halo .pack-art::before {
+  background:
+    radial-gradient(circle at 54% 34%, #9fd5ff, transparent 10%),
+    linear-gradient(135deg, rgba(32, 126, 255, 0.85), transparent 38%),
+    linear-gradient(40deg, rgba(144, 229, 255, 0.2), transparent 48%),
+    #071322;
+}
+
+.pack-runescape .pack-art::before {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(221, 255, 143, 0.62), transparent 13%),
+    linear-gradient(145deg, rgba(59, 130, 53, 0.94), transparent 46%),
+    linear-gradient(330deg, rgba(131, 82, 24, 0.52), transparent 56%),
+    #10190d;
+}
+
+.pack-warcraft .pack-art::before {
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255, 241, 176, 0.8), transparent 14%),
+    linear-gradient(145deg, rgba(232, 175, 62, 0.7), transparent 44%),
+    linear-gradient(330deg, rgba(44, 106, 183, 0.42), transparent 48%),
+    #14100a;
+}
+
+.pack-poe .pack-art::before {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 108, 71, 0.74), transparent 12%),
+    linear-gradient(145deg, rgba(145, 24, 24, 0.92), transparent 46%),
+    linear-gradient(330deg, rgba(18, 8, 6, 0.75), transparent 52%),
+    #120706;
+}
+
+.roll-odds-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(4, 10, 16, 0.72);
+  backdrop-filter: blur(18px);
+}
+
+.roll-heading,
+.roll-odds-list,
+.odds-chip,
+.pity-line {
+  display: flex;
+  align-items: center;
+}
+
+.roll-heading {
+  gap: 9px;
+  color: #f7d47f;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.roll-odds-list {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.odds-chip {
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.odds-chip span {
+  color: #b9c3cf;
+  font-size: 0.82rem;
+}
+
+.odds-chip strong {
+  color: #fff0ad;
+  font-size: 0.84rem;
+}
+
+.pity-line {
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #aeb6c0;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1320px) {
+  .shop-grid {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pack-card {
+    min-height: 500px;
+  }
+}
