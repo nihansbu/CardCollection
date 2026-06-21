@@ -90,6 +90,10 @@ try {
   const skillDetailActionText = await page.locator(".content-actions").innerText();
   const skillDetailStatsText = await page.locator(".content-stats").innerText();
   const normalLogsClass = await page.getByRole("button", { name: /Normal Logs/i }).getAttribute("class");
+  await page.waitForFunction(() => {
+    const images = Array.from(document.querySelectorAll(".skill-unlock-icon img")).slice(0, 6);
+    return images.length >= 6 && images.every((image) => image.complete && image.naturalWidth > 0);
+  }, { timeout: 5000 });
   const unlockImageMetrics = await page.locator(".skill-unlock-icon img").evaluateAll((images) => images.slice(0, 6).map((image) => ({
     complete: image.complete,
     naturalHeight: image.naturalHeight,
