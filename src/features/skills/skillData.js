@@ -68,6 +68,7 @@ export const flatSkills = skillGroups.flatMap((group) => group.skills.map(([name
 
 export const totalSkillLevel = flatSkills.reduce((sum, skill) => sum + skill.level, 0);
 export const averageSkillLevel = Math.round(totalSkillLevel / flatSkills.length);
+export const totalSkillXp = flatSkills.reduce((sum, skill) => sum + skill.currentXp, 0);
 
 export function getSkillXpForLevel(level) {
   let points = 0;

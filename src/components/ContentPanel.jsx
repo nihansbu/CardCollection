@@ -28,27 +28,45 @@ export function ContentPanel({ actions = [], children, className = "", onBack, s
           <h1 id={headingId}>{title}</h1>
         </div>
         <div className="content-actions" aria-label={`${title} actions`}>
-          {actions.map((action) => (
-            <div className="content-action-slot" key={action.label}>
-              <button
-                aria-expanded={action.expanded}
-                className={`content-action-button ${action.className || ""}`.trim()}
-                onClick={action.onClick}
-                type="button"
-              >
-                {action.label}
-              </button>
-              {action.panel}
-            </div>
-          ))}
+          {actions.map((action) => {
+            const ActionIcon = action.Icon;
+
+            return (
+              <div className="content-action-slot" key={action.label}>
+                <button
+                  aria-expanded={action.expanded}
+                  aria-pressed={action.pressed}
+                  className={`content-action-button ${action.className || ""}`.trim()}
+                  onClick={action.onClick}
+                  title={action.label}
+                  type="button"
+                >
+                  {ActionIcon ? <ActionIcon size={17} strokeWidth={2.8} /> : null}
+                  <span>{action.shortLabel || action.label}</span>
+                </button>
+                {action.panel}
+              </div>
+            );
+          })}
         </div>
         <dl className="content-stats">
-          {stats.map((stat) => (
-            <div key={stat.label}>
-              <dt>{stat.label}</dt>
-              <dd>{stat.value}</dd>
-            </div>
-          ))}
+          {stats.map((stat) => {
+            const StatIcon = stat.Icon;
+
+            return (
+              <div className={StatIcon ? "has-icon" : ""} key={stat.label}>
+                {StatIcon ? (
+                  <span className="content-stat-icon" aria-hidden="true">
+                    <StatIcon size={19} strokeWidth={2.8} />
+                  </span>
+                ) : null}
+                <div className="content-stat-copy">
+                  <dt>{stat.label}</dt>
+                  <dd>{stat.value}</dd>
+                </div>
+              </div>
+            );
+          })}
         </dl>
       </div>
       <div className="content-body">{children}</div>

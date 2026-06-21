@@ -23,14 +23,15 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Der globale Screen selbst soll nicht vertikal scrollen. Nur die jeweilige Content-Body-Flaeche innerhalb des ContentPanel darf scrollen.
 - Der aktive Bottom-Navigation-Button wird rot markiert.
 - Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
-- Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, festem Titelcontainer, optionaler horizontaler Action-Button-Zone und eigenen Stats.
-- Hauptseiten ohne Back-Button zeigen zuerst den Titel, dann Actions und Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
+- Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, linksbuendigem Titelcontainer, rechtsbuendiger Action-Button-Zone in derselben Zeile und eigenen Stats.
+- Hauptseiten ohne Back-Button zeigen links den Titel, rechts modulbezogene Actions und darunter drei kompakte Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
 - Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als kompaktes mobile-only 3-Spalten-Skillpanel nach RuneScape-Anmutung. Die ehemalige untere RuneScape-Leiste mit Total Level/Combat/Quest Points wird nicht kopiert, weil diese Informationen in der vorhandenen Header-Stats-Bar leben.
 - Das Skills-Panel muss auch im normalen mobilen Browser mit sichtbarer Chrome-/Android-Leiste kompakt bleiben. Aktuell sollen 30 Skills in die Hauptansicht passen; bei mehr Inhalt scrollt nur die interne Content-Body-Flaeche.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
 - Die Skill-Kacheln zeigen nur das aktuelle Level, nicht `1/99`. Max-Level bleibt im Datenmodell erhalten.
 - Alle 30 Skills nutzen fantasy/MMO-inspirierte Icons im kompakten RuneScape-artigen Skillpanel.
-- Die Skills-Header-Stats zeigen `Total Skills`, die addierten `Skill Level` und das gerundete `Average Level`.
+- Die Skills-Header-Stats zeigen als Icon-Kacheln `Total Level`, `Average Level` und `Total XP`.
+- Skills hat rechts neben dem Titel einen `Training`-Action-Button mit Icon. Tap wechselt den Content-Body zwischen Skillgrid und Trainingsmenue.
 - Sailing ist als eigener Skill enthalten.
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
@@ -120,11 +121,11 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
   - gemeinsamer Panel-Rahmen.
   - Header-Bar mit optionalem Back-Slot ganz links.
   - festem Titelcontainer, der auf Mobile die volle Breite nutzt und mit Back-Button rechts vom Back-Slot sitzt.
-  - zentriertem Titeltext, dessen Schriftgroesse je nach Titel laengenabhaengig angepasst wird.
+  - linksbuendigem Titeltext, dessen Schriftgroesse je nach Titel laengenabhaengig angepasst wird.
   - horizontaler Action-Button-Zone fuer modulspezifische Aktionen.
   - statspezifischen Boxen, die auf Mobile in drei kompakte Karten passen.
   - modulabhaengigem Body darunter.
-- Skills nutzt die Header-Bar mit `Total Skills`, `Skill Level` und `Average Level`.
+- Skills nutzt die Header-Bar mit `Total Level`, `Average Level`, `Total XP` und dem `Training`-Action-Button.
 - Skill-Detailseiten nutzen die gleiche Header-Bar mit Back-Button, Skill-Titel und skill-spezifischen Stats.
 - Activities nutzt die Header-Bar mit `RAP Balance`, `Activities` und `Logged`.
 - Activities hat Subscreens fuer `Create Activity`, `Activity Log` und `Activity Stats`, jeweils mit Back-Button.

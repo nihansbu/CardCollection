@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { BarChart3, Sigma, Swords } from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import {
   averageSkillLevel,
@@ -6,10 +7,31 @@ import {
   formatSkillXp,
   getSkillXpForLevel,
   totalSkillLevel,
+  totalSkillXp,
 } from "./skillData.js";
 import { skillIcons } from "./SkillIcons.jsx";
 
 const LONG_PRESS_MS = 520;
+
+function XpIcon({ size = 19, strokeWidth = 2.8 }) {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      height={size}
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={strokeWidth}
+      viewBox="0 0 24 24"
+      width={size}
+    >
+      <path d="m4 7 6 10" />
+      <path d="m10 7-6 10" />
+      <path d="M14 17V7h4.2a3 3 0 0 1 0 6H14" />
+    </svg>
+  );
+}
 
 function SkillEmblem({ skill, size = 22 }) {
   const SkillIcon = skillIcons[skill.name];
@@ -73,60 +95,99 @@ function SkillCard({ onPreview, onSelect, skill }) {
   );
 }
 
+function SkillTrainingMenu() {
+  return (
+    <div className="skill-training-menu">
+      <article>
+        <span>Training</span>
+        <strong>Active Skill</strong>
+        <p>Select a skill later to spend RAP, earn XP, and unlock skill-specific actions.</p>
+      </article>
+      <article>
+        <span>Queue</span>
+        <strong>Next Action</strong>
+        <p>This area is reserved for quick training actions, costs, timers, and rewards.</p>
+      </article>
+      <article>
+        <span>Progress</span>
+        <strong>Milestones</strong>
+        <p>Future unlocks, level goals, and training logs will live here.</p>
+      </article>
+    </div>
+  );
+}
+
 export function SkillsPanel({ onSelectSkill }) {
   const [previewSkill, setPreviewSkill] = useState(null);
+  const [mode, setMode] = useState("overview");
+  const isTrainingMode = mode === "training";
 
   return (
     <ContentPanel
       className="skills-panel"
+      actions={[
+        {
+          Icon: Swords,
+          label: "Training",
+          onClick: () => {
+            setPreviewSkill(null);
+            setMode((currentMode) => (currentMode === "training" ? "overview" : "training"));
+          },
+          pressed: isTrainingMode,
+        },
+      ]}
       stats={[
-        { label: "Total Skills", value: flatSkills.length },
-        { label: "Skill Level", value: totalSkillLevel },
-        { label: "Average Level", value: averageSkillLevel },
+        { Icon: BarChart3, label: "Total Level", value: totalSkillLevel },
+        { Icon: Sigma, label: "Average Level", value: averageSkillLevel },
+        { Icon: XpIcon, label: "Total XP", value: formatSkillXp(totalSkillXp) },
       ]}
       title="Skills"
     >
-      <div className="skill-board" onPointerDown={() => setPreviewSkill(null)}>
-        {flatSkills.map((skill) => (
-          <SkillCard
-            key={skill.name}
-            onPreview={setPreviewSkill}
-            onSelect={onSelectSkill}
-            skill={skill}
-          />
-        ))}
-        {previewSkill && (
-          <div className="skill-quicklook" role="status" onPointerDown={(event) => event.stopPropagation()}>
-            <div className="skill-quicklook-head">
-              <span style={{ "--skill-color": previewSkill.color }}>
-                <SkillEmblem skill={previewSkill} size={21} />
-              </span>
-              <div>
-                <strong>{previewSkill.name}</strong>
-                <small>{previewSkill.group} Skill</small>
+      {isTrainingMode ? (
+        <SkillTrainingMenu />
+      ) : (
+        <div className="skill-board" onPointerDown={() => setPreviewSkill(null)}>
+          {flatSkills.map((skill) => (
+            <SkillCard
+              key={skill.name}
+              onPreview={setPreviewSkill}
+              onSelect={onSelectSkill}
+              skill={skill}
+            />
+          ))}
+          {previewSkill && (
+            <div className="skill-quicklook" role="status" onPointerDown={(event) => event.stopPropagation()}>
+              <div className="skill-quicklook-head">
+                <span style={{ "--skill-color": previewSkill.color }}>
+                  <SkillEmblem skill={previewSkill} size={21} />
+                </span>
+                <div>
+                  <strong>{previewSkill.name}</strong>
+                  <small>{previewSkill.group} Skill</small>
+                </div>
+                <button aria-label="Close skill preview" onClick={() => setPreviewSkill(null)} type="button">
+                  x
+                </button>
               </div>
-              <button aria-label="Close skill preview" onClick={() => setPreviewSkill(null)} type="button">
-                x
-              </button>
+              <dl>
+                <div>
+                  <dt>Level</dt>
+                  <dd>{previewSkill.level}</dd>
+                </div>
+                <div>
+                  <dt>XP</dt>
+                  <dd>{formatSkillXp(previewSkill.currentXp)}</dd>
+                </div>
+                <div>
+                  <dt>Next</dt>
+                  <dd>{formatSkillXp(getSkillXpForLevel(previewSkill.level + 1))}</dd>
+                </div>
+              </dl>
+              <p>{previewSkill.description}</p>
             </div>
-            <dl>
-              <div>
-                <dt>Level</dt>
-                <dd>{previewSkill.level}</dd>
-              </div>
-              <div>
-                <dt>XP</dt>
-                <dd>{formatSkillXp(previewSkill.currentXp)}</dd>
-              </div>
-              <div>
-                <dt>Next</dt>
-                <dd>{formatSkillXp(getSkillXpForLevel(previewSkill.level + 1))}</dd>
-              </div>
-            </dl>
-            <p>{previewSkill.description}</p>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </ContentPanel>
   );
 }

@@ -18,6 +18,8 @@
 .content-header {
   flex: 0 0 auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 10px;
   margin-bottom: 10px;
   padding: 10px;
@@ -53,7 +55,7 @@
 }
 
 .content-header-with-back {
-  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-columns: 48px minmax(0, 1fr) auto;
   align-items: center;
 }
 
@@ -90,7 +92,8 @@
   display: grid;
   min-width: 0;
   min-height: 54px;
-  place-items: center;
+  align-items: center;
+  justify-items: start;
   padding: 8px 12px;
   border: 1px solid rgba(213, 184, 130, 0.2);
   background:
@@ -108,7 +111,7 @@
   font-weight: 900;
   letter-spacing: 0.02em;
   line-height: 0.95;
-  text-align: center;
+  text-align: left;
   text-shadow:
     3px 3px 0 #080605,
     0 0 20px rgba(255, 237, 187, 0.14);
@@ -118,7 +121,7 @@
 
 .content-actions {
   display: flex;
-  grid-column: 1 / -1;
+  justify-content: flex-end;
   min-width: 0;
   gap: 8px;
   overflow-x: auto;
@@ -132,8 +135,12 @@
 }
 
 .content-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 42px;
-  padding: 0 13px;
+  gap: 6px;
+  padding: 0 11px;
   color: #fff2d3;
   border: 2px solid #5c4d3f;
   background:
@@ -152,9 +159,14 @@
 }
 
 .content-action-button:hover,
-.content-action-button:focus-visible {
+.content-action-button:focus-visible,
+.content-action-button[aria-pressed="true"] {
   color: #24f2ff;
   border-color: #b68e55;
+}
+
+.content-action-button svg {
+  flex: 0 0 auto;
 }
 
 .content-stats {
@@ -165,12 +177,40 @@
   margin: 0;
 }
 
-.content-stats div {
+.content-stats > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
   min-width: 0;
   min-height: 58px;
-  padding: 9px 10px;
+  gap: 8px;
+  padding: 8px 9px;
   border: 1px solid rgba(213, 184, 130, 0.24);
   background: rgba(0, 0, 0, 0.22);
+}
+
+.content-stats > div.has-icon {
+  grid-template-columns: 30px minmax(0, 1fr);
+}
+
+.content-stat-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: #090605;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.7), transparent 32%),
+    #24f2ff;
+  box-shadow:
+    inset -5px -5px 0 rgba(0, 0, 0, 0.22),
+    inset 3px 3px 0 rgba(255, 255, 255, 0.14),
+    0 3px 0 #070504;
+  transform: rotate(-5deg);
+}
+
+.content-stat-copy {
+  min-width: 0;
 }
 
 .content-stats dt {
@@ -181,7 +221,7 @@
   letter-spacing: 0.07em;
   line-height: 1.1;
   text-transform: uppercase;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 
 .content-stats dd {
