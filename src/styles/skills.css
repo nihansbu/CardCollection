@@ -72,7 +72,8 @@
   transform: rotate(-5deg);
 }
 
-.skill-sprite svg {
+.skill-sprite svg,
+.skill-quicklook-head > span svg {
   width: 23px;
   height: 23px;
   color: #080504;

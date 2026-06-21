@@ -1,12 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Crosshair,
-  Dumbbell,
-  HandHeart,
-  Shield,
-  Swords,
-  WandSparkles,
-} from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import {
   averageSkillLevel,
@@ -15,21 +7,23 @@ import {
   getSkillXpForLevel,
   totalSkillLevel,
 } from "./skillData.js";
+import { skillIcons } from "./SkillIcons.jsx";
 
 const LONG_PRESS_MS = 520;
-const skillIcons = {
-  Attack: Swords,
-  Defence: Shield,
-  Magic: WandSparkles,
-  Prayer: HandHeart,
-  Ranged: Crosshair,
-  Strength: Dumbbell,
-};
+
+function SkillEmblem({ skill, size = 22 }) {
+  const SkillIcon = skillIcons[skill.name];
+
+  if (SkillIcon) {
+    return <SkillIcon size={size} strokeWidth={2.8} />;
+  }
+
+  return <span>{skill.short}</span>;
+}
 
 function SkillCard({ onPreview, onSelect, skill }) {
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
-  const SkillIcon = skillIcons[skill.name];
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -70,7 +64,7 @@ function SkillCard({ onPreview, onSelect, skill }) {
       aria-label={`${skill.name}. Level ${skill.level}. Long press for details.`}
     >
       <div className="skill-sprite" aria-hidden="true">
-        {SkillIcon ? <SkillIcon size={22} strokeWidth={2.8} /> : <span>{skill.short}</span>}
+        <SkillEmblem skill={skill} />
       </div>
       <div className="skill-level-stack" aria-hidden="true">
         <strong>{skill.level}</strong>
@@ -104,7 +98,9 @@ export function SkillsPanel({ onSelectSkill }) {
         {previewSkill && (
           <div className="skill-quicklook" role="status" onPointerDown={(event) => event.stopPropagation()}>
             <div className="skill-quicklook-head">
-              <span style={{ "--skill-color": previewSkill.color }}>{previewSkill.short}</span>
+              <span style={{ "--skill-color": previewSkill.color }}>
+                <SkillEmblem skill={previewSkill} size={21} />
+              </span>
               <div>
                 <strong>{previewSkill.name}</strong>
                 <small>{previewSkill.group} Skill</small>
