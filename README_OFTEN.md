@@ -47,7 +47,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
-- Long-Press auf einem Skill zeigt eine kompakte Quicklook-Info im Skills-Panel. Normaler Tap oeffnet weiterhin die Detailseite.
+- Long-Press auf einem Skill, Header-Stat oder Header-Action zeigt eine kompakte Quicklook-Info im gemeinsamen unteren Info-Panel des Skills-Bodys. Normaler Tap oeffnet weiterhin die Detailseite oder fuehrt die normale Button-Aktion aus.
 - Skill-Quicklook-Werte werden aus dem aktuellen Skill-State abgeleitet und aktualisieren sich live, solange Training tickt.
 - Skill-Quicklook und Skill-Detailseiten verwenden die Labels `Current XP` und `XP to Next Level`. `XP to Next Level` zeigt zusaetzlich eine ETA in Klammern, wenn der Skill aktuell trainiert wird, sonst `Idle`.
 - Die Skill-XP-Werte nutzen aktuell eine RuneScape-artige XP-Kurve. Level 1 startet bei 0 XP, Level 2 liegt bei 83 XP.
@@ -157,9 +157,9 @@ Healthcheck 2026-06-21:
 - Der Back-Slot wird nur auf ContentPanel-Seiten mit echtem Back-Button genutzt; Hauptseiten ohne Back-Button lassen den Titel nach links ruecken.
 - Codex nutzt die Header-Bar mit Projekt-/Loop-/Status-Informationen.
 - Beastiary nutzt die Header-Bar mit Entries, Kills und Mastery als geplante Felder.
-- Informationen muessen sichtbar, tappbar, per Long-Press-Quicklook oder ueber Detailseiten erreichbar sein. Hover-only Informationen sind nicht erlaubt.
+- Informationen muessen sichtbar, tappbar, per Long-Press-Quicklook im gemeinsamen unteren Info-Panel oder ueber Detailseiten erreichbar sein. Hover-only Informationen sind nicht erlaubt.
 - Zahlen, die durch laufende Systeme veraendert werden koennen, sollen live aus dem aktuellen State gelesen werden. Fuer aktuelle Training-/RAP-Anzeigen ist ein etwa sekundenweiser Refresh ausreichend.
-- Header-Stats im `ContentPanel` unterstuetzen Long-Press-Quicklooks. Neue Stats sollen nach Moeglichkeit eine kurze `description` mitliefern, damit die Quicklook-Info nuetzlich ist.
+- Header-Stats und Header-Actions im `ContentPanel` koennen Long-Press-Quicklooks an die jeweilige Seite weitergeben. Neue Stats und Actions sollen nach Moeglichkeit eine kurze `description` mitliefern, damit die Quicklook-Info im gemeinsamen unteren Info-Panel nuetzlich ist.
 
 ## Pack-Design
 
@@ -258,7 +258,7 @@ Training laeuft aktuell als Live- und Offline-Tick im `MainMenuView`:
 
 Skill-Detailseiten leiten den angezeigten Skill aus dem aktuellen Skill-State ab, nicht aus einer alten Objektkopie. Dadurch aktualisieren sich XP/Level auch dann live, wenn eine Skill-Detailseite offen ist.
 
-Skill-Quicklooks speichern ebenfalls nur den Skillnamen und leiten die Anzeige aus dem aktuellen Skill-State ab. Dadurch bleiben `Current XP`, `XP to Next Level` und ETA live.
+Skill-Quicklooks speichern ebenfalls nur den Skillnamen und leiten die Anzeige aus dem aktuellen Skill-State ab. Dadurch bleiben `Current XP`, `XP to Next Level` und ETA live. Stat- und Action-Quicklooks auf der Skills-Flaeche nutzen dasselbe untere Info-Panel statt eigener Header-Panels.
 
 ## Cloud Save und Account-Plan
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 
 const LONG_PRESS_MS = 520;
@@ -12,26 +12,44 @@ function getTitleSize(title) {
   return "1.45rem";
 }
 
-export function ContentPanel({ actions = [], children, className = "", onBack, stats, title }) {
-  const [previewStatLabel, setPreviewStatLabel] = useState(null);
+export function ContentPanel({
+  actions = [],
+  children,
+  className = "",
+  onActionPreview,
+  onBack,
+  onStatPreview,
+  stats,
+  title,
+}) {
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
   const headingId = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`;
   const headerClassName = onBack ? "content-header content-header-with-back" : "content-header content-header-no-back";
-  const previewStat = previewStatLabel ? stats.find((stat) => stat.label === previewStatLabel) : null;
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
     longPressTimer.current = null;
   };
 
-  const startStatLongPress = (stat) => {
+  const startLongPress = (onPreview, item) => {
+    if (!onPreview) return;
+
     clearLongPress();
     suppressClick.current = false;
     longPressTimer.current = window.setTimeout(() => {
       suppressClick.current = true;
-      setPreviewStatLabel(stat.label);
+      onPreview?.(item);
     }, LONG_PRESS_MS);
+  };
+
+  const handleActionClick = (action) => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      return;
+    }
+
+    action.onClick?.();
   };
 
   const handleStatClick = (stat) => {
@@ -68,7 +86,11 @@ export function ContentPanel({ actions = [], children, className = "", onBack, s
                   aria-expanded={action.expanded}
                   aria-pressed={action.pressed}
                   className={`content-action-button ${action.className || ""}`.trim()}
-                  onClick={action.onClick}
+                  onClick={() => handleActionClick(action)}
+                  onPointerCancel={clearLongPress}
+                  onPointerDown={() => startLongPress(onActionPreview, action)}
+                  onPointerLeave={clearLongPress}
+                  onPointerUp={clearLongPress}
                   title={action.label}
                   type="button"
                 >
@@ -99,7 +121,7 @@ export function ContentPanel({ actions = [], children, className = "", onBack, s
                   stat.onClick?.();
                 }}
                 onPointerCancel={clearLongPress}
-                onPointerDown={() => startStatLongPress(stat)}
+                onPointerDown={() => startLongPress(onStatPreview, stat)}
                 onPointerLeave={clearLongPress}
                 onPointerUp={clearLongPress}
                 role={isInteractive ? "button" : undefined}
@@ -117,23 +139,6 @@ export function ContentPanel({ actions = [], children, className = "", onBack, s
               </div>
             );
           })}
-          {previewStat ? (
-            <div className="content-stat-quicklook" role="status">
-              <div>
-                <strong>{previewStat.label}</strong>
-                <button aria-label="Close stat preview" onClick={() => setPreviewStatLabel(null)} type="button">
-                  x
-                </button>
-              </div>
-              <dl>
-                <div>
-                  <dt>Value</dt>
-                  <dd>{previewStat.value}</dd>
-                </div>
-              </dl>
-              <p>{previewStat.description || `${previewStat.label}: ${previewStat.value}`}</p>
-            </div>
-          ) : null}
         </dl>
       </div>
       <div className="content-body">{children}</div>

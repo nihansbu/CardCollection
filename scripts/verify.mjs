@@ -54,8 +54,10 @@ try {
   await page.locator(".content-stats > div").first().dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await page.locator(".content-stats > div").first().dispatchEvent("pointerup");
-  await page.locator(".content-stat-quicklook").waitFor({ timeout: 5000 });
-  const statQuicklookText = await page.locator(".content-stat-quicklook").innerText();
+  await page.locator(".skill-quicklook").filter({ hasText: "TOTAL LEVEL" }).waitFor({ timeout: 5000 });
+  const statQuicklookText = await page.locator(".skill-quicklook").innerText();
+  const oldStatQuicklookCount = await page.locator(".content-stat-quicklook").count();
+  const sharedQuicklookCount = await page.locator(".skill-quicklook").count();
 
   const storedRap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
   const storedSkills = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-skills")));
@@ -73,6 +75,8 @@ try {
     quicklookLabels,
     quicklookValuesAfter,
     quicklookValuesBefore,
+    oldStatQuicklookCount,
+    sharedQuicklookCount,
     statQuicklookText,
     storedRap,
     trainingCards,
@@ -92,6 +96,8 @@ try {
     quicklookValuesBefore[1] !== quicklookValuesAfter[1] &&
     quicklookValuesAfter[2]?.includes("(") &&
     statQuicklookText.includes("TOTAL LEVEL") &&
+    oldStatQuicklookCount === 0 &&
+    sharedQuicklookCount === 1 &&
     storedRap < 10000 &&
     Number(woodcutting?.currentXp) > 0 &&
     overflow.bodyScrollWidth === overflow.clientWidth &&

@@ -53,6 +53,56 @@ function getXpToNextDisplay(skill, trainingSlots) {
   return `${formatCompactSkillValue(getSkillXpToNextLevel(skill))} (${getSkillTimeToNextLevel(skill, trainingSlots)})`;
 }
 
+function InfoPanel({ action, onClose, skill, stat, trainingSlots }) {
+  const isSkillPanel = Boolean(skill);
+  const preview = skill || stat || action;
+  const PreviewIcon = preview?.Icon;
+
+  if (!preview) return null;
+
+  const title = skill?.name || stat?.label || action?.label;
+  const subtitle = skill ? `${skill.group} Skill` : stat ? "Header Stat" : "Header Action";
+  const description = skill?.description || stat?.description || action?.description || `${title}: ${stat?.value ?? action?.shortLabel ?? ""}`;
+  const metrics = skill
+    ? [
+        ["Level", skill.level],
+        ["Current XP", formatCompactSkillValue(skill.currentXp)],
+        ["XP to Next Level", getXpToNextDisplay(skill, trainingSlots)],
+      ]
+    : [["Value", stat?.value ?? action?.shortLabel ?? action?.label]];
+
+  return (
+    <div
+      className="skill-quicklook"
+      role="status"
+      onPointerDown={(event) => event.stopPropagation()}
+      style={{ "--skill-color": skill?.color || "#24f2ff" }}
+    >
+      <div className="skill-quicklook-head">
+        <span>
+          {isSkillPanel ? <SkillEmblem skill={skill} size={21} /> : PreviewIcon ? <PreviewIcon size={21} strokeWidth={2.8} /> : null}
+        </span>
+        <div>
+          <strong>{title}</strong>
+          <small>{subtitle}</small>
+        </div>
+        <button aria-label="Close info panel" onClick={onClose} type="button">
+          x
+        </button>
+      </div>
+      <dl style={{ "--quicklook-stat-count": metrics.length }}>
+        {metrics.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+      <p>{description}</p>
+    </div>
+  );
+}
+
 function SkillCard({ isSelectedTrainingSkill = false, onPreview, onSelect, skill, trainingSlotIndex = -1 }) {
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
@@ -114,16 +164,18 @@ function SkillCard({ isSelectedTrainingSkill = false, onPreview, onSelect, skill
 
 function SkillGrid({
   onSelectSkill,
+  previewAction,
   previewSkillName,
+  previewStat,
   selectedTrainingSlot,
-  setPreviewSkillName,
+  setPreviewEntry,
   skills,
   trainingSlots = [],
 }) {
   const previewSkill = previewSkillName ? skills.find((skill) => skill.name === previewSkillName) : null;
 
   return (
-    <div className="skill-board" onPointerDown={() => setPreviewSkillName(null)}>
+    <div className="skill-board" onPointerDown={() => setPreviewEntry(null)}>
       {skills.map((skill) => {
         const trainingSlotIndex = trainingSlots.indexOf(skill.name);
 
@@ -131,44 +183,20 @@ function SkillGrid({
           <SkillCard
             isSelectedTrainingSkill={trainingSlotIndex >= 0 && trainingSlotIndex === selectedTrainingSlot}
             key={skill.name}
-            onPreview={(previewedSkill) => setPreviewSkillName(previewedSkill.name)}
+            onPreview={(previewedSkill) => setPreviewEntry({ skillName: previewedSkill.name, type: "skill" })}
             onSelect={onSelectSkill}
             skill={skill}
             trainingSlotIndex={trainingSlotIndex}
           />
         );
       })}
-      {previewSkill && (
-        <div className="skill-quicklook" role="status" onPointerDown={(event) => event.stopPropagation()}>
-          <div className="skill-quicklook-head">
-            <span style={{ "--skill-color": previewSkill.color }}>
-              <SkillEmblem skill={previewSkill} size={21} />
-            </span>
-            <div>
-              <strong>{previewSkill.name}</strong>
-              <small>{previewSkill.group} Skill</small>
-            </div>
-            <button aria-label="Close skill preview" onClick={() => setPreviewSkillName(null)} type="button">
-              x
-            </button>
-          </div>
-          <dl>
-            <div>
-              <dt>Level</dt>
-              <dd>{previewSkill.level}</dd>
-            </div>
-            <div>
-              <dt>Current XP</dt>
-              <dd>{formatCompactSkillValue(previewSkill.currentXp)}</dd>
-            </div>
-            <div>
-              <dt>XP to Next Level</dt>
-              <dd>{getXpToNextDisplay(previewSkill, trainingSlots)}</dd>
-            </div>
-          </dl>
-          <p>{previewSkill.description}</p>
-        </div>
-      )}
+      <InfoPanel
+        action={previewAction}
+        onClose={() => setPreviewEntry(null)}
+        skill={previewSkill}
+        stat={previewStat}
+        trainingSlots={trainingSlots}
+      />
     </div>
   );
 }
@@ -184,26 +212,36 @@ function getSkillStats(skills) {
 }
 
 export function SkillsPanel({ onOpenTraining, onSelectSkill, skills, trainingSlots }) {
-  const [previewSkillName, setPreviewSkillName] = useState(null);
+  const [previewEntry, setPreviewEntry] = useState(null);
+  const actions = [
+    {
+      Icon: Swords,
+      description: "Open Skills Training to spend RAP automatically on up to three selected skills.",
+      label: "Training",
+      onClick: onOpenTraining,
+    },
+  ];
+  const stats = getSkillStats(skills);
+  const previewSkillName = previewEntry?.type === "skill" ? previewEntry.skillName : null;
+  const previewStat = previewEntry?.type === "stat" ? stats.find((stat) => stat.label === previewEntry.label) : null;
+  const previewAction = previewEntry?.type === "action" ? actions.find((action) => action.label === previewEntry.label) : null;
 
   return (
     <ContentPanel
       className="skills-panel"
-      actions={[
-        {
-          Icon: Swords,
-          label: "Training",
-          onClick: onOpenTraining,
-        },
-      ]}
-      stats={getSkillStats(skills)}
+      actions={actions}
+      onActionPreview={(action) => setPreviewEntry({ label: action.label, type: "action" })}
+      onStatPreview={(stat) => setPreviewEntry({ label: stat.label, type: "stat" })}
+      stats={stats}
       title="Skills"
     >
       <SkillGrid
         onSelectSkill={onSelectSkill}
+        previewAction={previewAction}
         previewSkillName={previewSkillName}
+        previewStat={previewStat}
         selectedTrainingSlot={-1}
-        setPreviewSkillName={setPreviewSkillName}
+        setPreviewEntry={setPreviewEntry}
         skills={skills}
         trainingSlots={trainingSlots}
       />
@@ -220,45 +258,55 @@ export function SkillsTrainingPanel({
   skills,
   trainingSlots,
 }) {
-  const [previewSkillName, setPreviewSkillName] = useState(null);
+  const [previewEntry, setPreviewEntry] = useState(null);
   const skillsByName = new Map(skills.map((skill) => [skill.name, skill]));
+  const actions = [
+    {
+      Icon: Grid3X3,
+      description: "Return to the Skills overview without changing the currently active training slots.",
+      label: "Skills",
+      onClick: onBackToSkills,
+    },
+  ];
+  const stats = [
+    { Icon: Coins, description: "Current Real Life Activity Points available for spending.", label: "RAP", value: formatCompactSkillValue(rap) },
+    ...trainingSlots.map((skillName, index) => {
+      const trainingSkill = skillName ? skillsByName.get(skillName) : null;
+      const SlotIcon = trainingSkill ? skillIcons[trainingSkill.name] : CircleDot;
+
+      return {
+        Icon: SlotIcon,
+        ariaLabel: `Training slot ${index + 1}`,
+        description: trainingSkill
+          ? `Slot ${index + 1} is training ${trainingSkill.name}.`
+          : `Slot ${index + 1} is empty.`,
+        label: `Slot ${index + 1}`,
+        onClick: () => onSelectTrainingSlot(index),
+        pressed: selectedTrainingSlot === index,
+        value: trainingSkill?.short || "None",
+      };
+    }),
+  ];
+  const previewSkillName = previewEntry?.type === "skill" ? previewEntry.skillName : null;
+  const previewStat = previewEntry?.type === "stat" ? stats.find((stat) => stat.label === previewEntry.label) : null;
+  const previewAction = previewEntry?.type === "action" ? actions.find((action) => action.label === previewEntry.label) : null;
 
   return (
     <ContentPanel
       className="skills-panel skills-training-panel"
-      actions={[
-        {
-          Icon: Grid3X3,
-          label: "Skills",
-          onClick: onBackToSkills,
-        },
-      ]}
-      stats={[
-        { Icon: Coins, description: "Current Real Life Activity Points available for spending.", label: "RAP", value: formatCompactSkillValue(rap) },
-        ...trainingSlots.map((skillName, index) => {
-          const trainingSkill = skillName ? skillsByName.get(skillName) : null;
-          const SlotIcon = trainingSkill ? skillIcons[trainingSkill.name] : CircleDot;
-
-          return {
-            Icon: SlotIcon,
-            ariaLabel: `Training slot ${index + 1}`,
-            description: trainingSkill
-              ? `Slot ${index + 1} is training ${trainingSkill.name}.`
-              : `Slot ${index + 1} is empty.`,
-            label: `Slot ${index + 1}`,
-            onClick: () => onSelectTrainingSlot(index),
-            pressed: selectedTrainingSlot === index,
-            value: trainingSkill?.short || "None",
-          };
-        }),
-      ]}
+      actions={actions}
+      onActionPreview={(action) => setPreviewEntry({ label: action.label, type: "action" })}
+      onStatPreview={(stat) => setPreviewEntry({ label: stat.label, type: "stat" })}
+      stats={stats}
       title="Skills Training"
     >
       <SkillGrid
         onSelectSkill={onSelectSkill}
+        previewAction={previewAction}
         previewSkillName={previewSkillName}
+        previewStat={previewStat}
         selectedTrainingSlot={selectedTrainingSlot}
-        setPreviewSkillName={setPreviewSkillName}
+        setPreviewEntry={setPreviewEntry}
         skills={skills}
         trainingSlots={trainingSlots}
       />
