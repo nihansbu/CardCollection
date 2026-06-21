@@ -21,10 +21,26 @@ const navItems = [
 ];
 
 export function AppShell({ activeView, children, onChangeView }) {
+  const activeItem = navItems.find((item) => item.id === activeView) || navItems[0];
+
   return (
     <main className="app-shell">
       <div className="background-aura" />
-      <header className="codex-frame">
+      <header className="app-masthead">
+        <div className="app-brand">
+          <span>RAP Card Collection</span>
+          <strong>{activeItem.label}</strong>
+        </div>
+        <dl className="app-status-strip" aria-label="Account status">
+          <div>
+            <dt>Mode</dt>
+            <dd>Codex</dd>
+          </div>
+          <div>
+            <dt>Build</dt>
+            <dd>Mobile</dd>
+          </div>
+        </dl>
         <nav className="codex-nav" aria-label="Hauptnavigation">
           {navItems.map((item) => (
             <button
@@ -35,14 +51,14 @@ export function AppShell({ activeView, children, onChangeView }) {
               style={{ "--tone": `var(--tone-${item.tone})` }}
             >
               <span className="codex-nav-icon" aria-hidden="true">
-                <item.Icon size={34} strokeWidth={2.6} />
+                <item.Icon size={22} strokeWidth={2.7} />
               </span>
               <span className="codex-nav-label">{item.label}</span>
             </button>
           ))}
         </nav>
       </header>
-      {children}
+      <div className="app-content">{children}</div>
     </main>
   );
 }

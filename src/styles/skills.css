@@ -1,35 +1,37 @@
 .skill-board {
   display: grid;
-  grid-template-columns: repeat(8, minmax(126px, 1fr));
+  grid-template-columns: 1fr;
   gap: 8px;
-  padding: 10px;
+  padding: 8px;
   border: 2px solid #4f4438;
   background:
-    linear-gradient(rgba(255, 219, 156, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 219, 156, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(255, 219, 156, 0.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 219, 156, 0.024) 1px, transparent 1px),
     #120c0b;
-  background-size: 16px 16px;
+  background-size: 14px 14px;
   box-shadow: inset 0 0 0 2px #080605;
 }
 
 .skill-card {
   position: relative;
   display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
   width: 100%;
-  min-height: 138px;
-  align-content: space-between;
-  justify-items: center;
-  gap: 8px;
-  padding: 10px 8px 12px;
+  min-height: 84px;
+  gap: 10px;
+  padding: 10px;
+  color: inherit;
   border: 1px solid #504337;
   background:
-    radial-gradient(circle at 50% 22%, color-mix(in srgb, var(--skill-color), transparent 72%), transparent 36%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 32%),
+    radial-gradient(circle at 14% 50%, color-mix(in srgb, var(--skill-color), transparent 72%), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 38%),
     #1a1110;
   cursor: pointer;
   box-shadow:
     inset 0 0 0 2px rgba(0, 0, 0, 0.36),
-    inset 0 -6px 0 rgba(0, 0, 0, 0.22);
+    inset 0 -5px 0 rgba(0, 0, 0, 0.22);
+  text-align: left;
   transition:
     border-color 120ms ease,
     transform 120ms ease,
@@ -37,36 +39,36 @@
 }
 
 .skill-card:hover,
-.skill-card:focus-within {
+.skill-card:focus-visible {
   z-index: 4;
   border-color: color-mix(in srgb, var(--skill-color), white 14%);
   box-shadow:
     inset 0 0 0 2px rgba(255, 255, 255, 0.045),
     0 0 0 2px color-mix(in srgb, var(--skill-color), transparent 48%),
-    0 18px 24px rgba(0, 0, 0, 0.32);
-  transform: translateY(-2px);
+    0 14px 22px rgba(0, 0, 0, 0.28);
+  transform: translateY(-1px);
 }
 
 .skill-sprite {
   display: grid;
-  width: 62px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
   place-items: center;
   color: #090605;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.76), transparent 30%),
     var(--skill-color);
   box-shadow:
-    inset -8px -8px 0 rgba(0, 0, 0, 0.26),
-    inset 5px 5px 0 rgba(255, 255, 255, 0.16),
-    0 6px 0 #070504;
+    inset -7px -7px 0 rgba(0, 0, 0, 0.26),
+    inset 4px 4px 0 rgba(255, 255, 255, 0.16),
+    0 5px 0 #070504;
   image-rendering: pixelated;
   transform: rotate(-4deg);
 }
 
 .skill-sprite span {
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 1rem;
+  font-size: 0.86rem;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
@@ -74,26 +76,27 @@
 
 .skill-card-copy {
   display: grid;
-  gap: 5px;
-  text-align: center;
+  min-width: 0;
+  gap: 4px;
 }
 
 .skill-card-copy span {
   color: var(--skill-color);
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+  line-height: 1;
   text-transform: uppercase;
 }
 
 .skill-card-copy strong {
   color: #fff2d3;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 900;
-  letter-spacing: 0.03em;
-  line-height: 1.08;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
   text-shadow: 2px 2px 0 #090605;
   text-transform: uppercase;
 }
@@ -101,111 +104,22 @@
 .skill-card-copy small {
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.62rem;
+  font-size: 0.66rem;
   font-weight: 900;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
 }
 
 .skill-tooltip {
-  position: absolute;
   display: none;
-  left: 50%;
-  bottom: calc(100% + 8px);
-  z-index: 8;
-  width: min(300px, 86vw);
-  padding: 12px;
-  color: #e9e0ce;
-  border: 2px solid color-mix(in srgb, var(--skill-color), white 12%);
-  background: #100b0a;
-  box-shadow:
-    inset 0 0 0 2px #070504,
-    0 16px 24px rgba(0, 0, 0, 0.48);
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 6px);
-  transition:
-    opacity 120ms ease,
-    transform 120ms ease;
-}
-
-.skill-tooltip strong {
-  color: var(--skill-color);
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.85rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.skill-tooltip small {
-  display: block;
-  margin-top: 5px;
-  color: #f3dfad;
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.72rem;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.skill-tooltip-stats {
-  display: grid;
-  gap: 5px;
-  margin: 10px 0 0;
-  padding: 8px 0;
-  border-top: 1px solid rgba(212, 189, 136, 0.22);
-  border-bottom: 1px solid rgba(212, 189, 136, 0.22);
-}
-
-.skill-tooltip-stats div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.skill-tooltip-stats dt,
-.skill-tooltip-stats dd {
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  line-height: 1.15;
-  text-transform: uppercase;
-}
-
-.skill-tooltip-stats dt {
-  color: #b7aa91;
-}
-
-.skill-tooltip-stats dd {
-  margin: 0;
-  color: #24f2ff;
-  text-align: right;
-}
-
-.skill-tooltip p {
-  margin: 8px 0 0;
-  color: #d0c6b6;
-  font-size: 0.82rem;
-  line-height: 1.35;
-}
-
-.skill-card:hover .skill-tooltip,
-.skill-card:focus-within .skill-tooltip {
-  display: block;
-  opacity: 1;
-  transform: translate(-50%, 0);
 }
 
 .skill-detail-shell {
   display: grid;
-  grid-template-columns: 190px minmax(0, 1fr);
-  gap: 28px;
-  align-items: center;
-  min-height: 360px;
-  padding: 28px;
+  gap: 18px;
+  min-height: 0;
+  padding: 16px;
   border: 2px solid #4f4438;
   background:
     radial-gradient(circle at 50% 0%, rgba(245, 207, 114, 0.08), transparent 40%),
@@ -217,17 +131,17 @@
 .skill-detail-shell span {
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 900;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .skill-detail-shell h2 {
-  margin: 10px 0 0;
+  margin: 9px 0 0;
   color: #fff8e8;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(1.8rem, 3vw, 3.4rem);
+  font-size: clamp(1.55rem, 10vw, 2.4rem);
   line-height: 0.98;
   text-shadow: 3px 3px 0 #080605;
   text-transform: uppercase;
@@ -236,14 +150,14 @@
 .skill-detail-shell p {
   margin: 12px 0 0;
   color: #cfc2ae;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 0.98rem;
+  line-height: 1.46;
 }
 
 .skill-detail-sigil {
   display: grid;
-  width: 146px;
-  height: 146px;
+  width: min(42vw, 138px);
+  aspect-ratio: 1;
   place-items: center;
   color: #0b0705;
   border: 2px solid color-mix(in srgb, var(--skill-color), white 12%);
@@ -251,36 +165,123 @@
     linear-gradient(135deg, rgba(255, 255, 255, 0.62), transparent 32%),
     var(--skill-color);
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 2.2rem;
+  font-size: clamp(1.6rem, 11vw, 2.2rem);
   font-weight: 900;
   box-shadow:
-    inset -16px -16px 0 rgba(0, 0, 0, 0.28),
-    inset 8px 8px 0 rgba(255, 255, 255, 0.12),
-    0 10px 0 #080605;
+    inset -14px -14px 0 rgba(0, 0, 0, 0.28),
+    inset 7px 7px 0 rgba(255, 255, 255, 0.12),
+    0 9px 0 #080605;
   transform: rotate(-8deg);
 }
 
-@media (max-width: 1320px) {
+@media (min-width: 620px) {
   .skill-board {
-    grid-template-columns: repeat(4, minmax(132px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 820px) {
+@media (min-width: 960px) {
   .skill-board {
-    grid-template-columns: repeat(2, minmax(126px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .skill-card {
+    min-height: 100px;
   }
 
   .skill-detail-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: 170px minmax(0, 1fr);
+    align-items: center;
+    padding: 24px;
   }
 
   .skill-tooltip {
-    display: none;
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    z-index: 8;
+    width: min(300px, 86vw);
+    padding: 12px;
+    color: #e9e0ce;
+    border: 2px solid color-mix(in srgb, var(--skill-color), white 12%);
+    background: #100b0a;
+    box-shadow:
+      inset 0 0 0 2px #070504,
+      0 16px 24px rgba(0, 0, 0, 0.48);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 6px);
+    transition:
+      opacity 120ms ease,
+      transform 120ms ease;
+  }
+
+  .skill-tooltip strong {
+    color: var(--skill-color);
+    font-family: "Courier New", ui-monospace, monospace;
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .skill-tooltip small {
+    display: block;
+    margin-top: 5px;
+    color: #f3dfad;
+    font-family: "Courier New", ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .skill-tooltip-stats {
+    display: grid;
+    gap: 5px;
+    margin: 10px 0 0;
+    padding: 8px 0;
+    border-top: 1px solid rgba(212, 189, 136, 0.22);
+    border-bottom: 1px solid rgba(212, 189, 136, 0.22);
+  }
+
+  .skill-tooltip-stats div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .skill-tooltip-stats dt,
+  .skill-tooltip-stats dd {
+    font-family: "Courier New", ui-monospace, monospace;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  .skill-tooltip-stats dt {
+    color: #b7aa91;
+  }
+
+  .skill-tooltip-stats dd {
+    margin: 0;
+    color: #24f2ff;
+    text-align: right;
+  }
+
+  .skill-tooltip p {
+    margin: 8px 0 0;
+    color: #d0c6b6;
+    font-size: 0.82rem;
+    line-height: 1.35;
   }
 
   .skill-card:hover .skill-tooltip,
   .skill-card:focus-within .skill-tooltip {
-    display: none;
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 }

@@ -16,11 +16,11 @@
   --tone-rose: #ff5d86;
   position: relative;
   min-height: 100vh;
-  padding: 10px;
+  padding: max(10px, env(safe-area-inset-top)) 10px max(18px, env(safe-area-inset-bottom));
   background:
-    radial-gradient(circle at 82% 4%, rgba(151, 105, 49, 0.18), transparent 24%),
-    radial-gradient(circle at 15% 0%, rgba(75, 58, 42, 0.26), transparent 34%),
-    linear-gradient(180deg, #1d1612 0%, #120c0a 18%, #090807 100%);
+    radial-gradient(circle at 78% -8%, rgba(196, 42, 30, 0.2), transparent 28%),
+    radial-gradient(circle at 4% 0%, rgba(44, 216, 189, 0.12), transparent 30%),
+    linear-gradient(180deg, #1d1612 0%, #120c0a 32%, #080706 100%);
   isolation: isolate;
 }
 
@@ -30,59 +30,118 @@
   pointer-events: none;
   z-index: -1;
   background:
-    linear-gradient(rgba(255, 219, 156, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 219, 156, 0.025) 1px, transparent 1px);
-  background-size: 22px 22px;
-  opacity: 0.82;
+    linear-gradient(rgba(255, 219, 156, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 219, 156, 0.026) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.78;
 }
 
-.codex-frame {
-  max-width: 1980px;
+.app-masthead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  gap: 10px;
   margin: 0 auto;
-  padding: 18px;
-  border: 2px solid #6b5c48;
+  max-width: 760px;
+  padding: 10px;
+  border: 2px solid #5f513f;
   background:
-    linear-gradient(180deg, rgba(83, 70, 53, 0.56), transparent 18px),
-    #17100e;
+    linear-gradient(180deg, rgba(255, 244, 209, 0.06), transparent 34%),
+    rgba(19, 12, 10, 0.96);
   box-shadow:
-    inset 0 0 0 2px #0a0706,
-    inset 0 0 0 5px rgba(180, 154, 114, 0.22),
-    0 18px 45px rgba(0, 0, 0, 0.42);
+    inset 0 0 0 2px #070504,
+    0 12px 24px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(10px);
 }
 
-.codex-frame::before {
-  content: "";
-  display: block;
-  height: 5px;
-  margin: -12px 22px 14px;
-  background: linear-gradient(90deg, transparent, #a58350 8%, #3e3427 50%, #a58350 92%, transparent);
-  box-shadow: 0 2px 0 #050403;
+.app-brand {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  min-width: 0;
+}
+
+.app-brand span,
+.app-status-strip dt {
+  color: #b7aa91;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.app-brand strong {
+  overflow: hidden;
+  color: #fff8e8;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: clamp(1.3rem, 8vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 0.98;
+  text-overflow: ellipsis;
+  text-shadow: 3px 3px 0 #080605;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.app-status-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.app-status-strip div {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid rgba(213, 184, 130, 0.22);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.app-status-strip dd {
+  margin: 3px 0 0;
+  color: #24f2ff;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 0.84rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .codex-nav {
   display: grid;
-  grid-template-columns: repeat(8, minmax(128px, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(82px, 24vw);
   gap: 8px;
+  margin: 0 -2px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 2px 2px 8px;
+  scrollbar-width: thin;
 }
 
 .codex-nav-item {
   position: relative;
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr);
-  align-items: center;
-  min-height: 82px;
-  padding: 8px 12px;
+  min-height: 76px;
+  place-items: center;
+  gap: 6px;
+  padding: 8px 6px;
   color: #f2ecdd;
   border: 2px solid #4c4439;
   outline: 1px solid #100c09;
   background:
     linear-gradient(180deg, rgba(255, 244, 209, 0.07), transparent 34%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.28), transparent 44%),
     #160f0d;
   cursor: pointer;
   box-shadow:
     inset 0 0 0 2px rgba(255, 255, 255, 0.035),
-    inset 0 -8px 0 rgba(0, 0, 0, 0.18);
+    inset 0 -7px 0 rgba(0, 0, 0, 0.2);
+  scroll-snap-align: start;
   transition:
     border-color 120ms ease,
     box-shadow 120ms ease,
@@ -95,8 +154,8 @@
   border-color: color-mix(in srgb, var(--tone), white 16%);
   box-shadow:
     inset 0 0 0 2px rgba(255, 255, 255, 0.045),
-    inset 0 0 18px color-mix(in srgb, var(--tone), transparent 78%),
-    0 0 18px color-mix(in srgb, var(--tone), transparent 78%);
+    inset 0 0 18px color-mix(in srgb, var(--tone), transparent 80%),
+    0 0 14px color-mix(in srgb, var(--tone), transparent 82%);
   transform: translateY(-1px);
 }
 
@@ -105,69 +164,77 @@
   border-color: #e00d12;
   box-shadow:
     inset 0 0 0 2px rgba(255, 57, 57, 0.34),
-    inset 0 0 22px rgba(182, 0, 0, 0.34),
-    0 0 0 1px #360607,
-    0 0 22px rgba(237, 8, 8, 0.38);
+    inset 0 0 20px rgba(182, 0, 0, 0.34),
+    0 0 0 1px #360607;
 }
 
 .codex-nav-icon {
   position: relative;
   display: grid;
-  width: 54px;
-  height: 54px;
+  width: 38px;
+  height: 38px;
   place-items: center;
   color: #100c09;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.65), transparent 32%),
     var(--tone);
   box-shadow:
-    inset -7px -7px 0 rgba(0, 0, 0, 0.22),
-    inset 4px 4px 0 rgba(255, 255, 255, 0.16),
-    0 6px 0 #090605;
+    inset -6px -6px 0 rgba(0, 0, 0, 0.22),
+    inset 3px 3px 0 rgba(255, 255, 255, 0.16),
+    0 5px 0 #090605;
   transform: rotate(-7deg);
 }
 
 .codex-nav-icon::after {
   content: "";
   position: absolute;
-  right: -5px;
-  bottom: -5px;
-  width: 16px;
-  height: 16px;
+  right: -4px;
+  bottom: -4px;
+  width: 12px;
+  height: 12px;
   background: rgba(0, 0, 0, 0.48);
 }
 
 .codex-nav-label {
-  overflow-wrap: normal;
-  word-break: normal;
+  max-width: 100%;
+  overflow: hidden;
   color: inherit;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.82rem;
+  font-size: 0.6rem;
   font-weight: 900;
-  letter-spacing: 0.06em;
-  line-height: 1.15;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
   text-align: center;
+  text-overflow: ellipsis;
   text-shadow: 2px 2px 0 #090605;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
-@media (max-width: 820px) {
+.app-content {
+  margin: 10px auto 0;
+  max-width: 760px;
+}
+
+@media (min-width: 760px) {
   .app-shell {
-    padding: 8px;
+    padding: 18px;
   }
 
-  .codex-frame {
-    padding: 12px;
+  .app-masthead {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    align-items: end;
+    max-width: 1080px;
+    padding: 14px;
   }
 
   .codex-nav {
-    grid-template-columns: repeat(2, minmax(128px, 1fr));
+    grid-column: 1 / -1;
+    grid-auto-columns: minmax(110px, 1fr);
   }
 
   .codex-nav-item {
-    grid-template-columns: 48px minmax(0, 1fr);
-    min-height: 72px;
-    padding: 8px;
+    min-height: 82px;
   }
 
   .codex-nav-icon {
@@ -176,13 +243,17 @@
   }
 
   .codex-nav-label {
-    font-size: 0.66rem;
-    letter-spacing: 0.02em;
+    font-size: 0.68rem;
+  }
+
+  .app-content {
+    max-width: 1080px;
   }
 }
 
-@media (min-width: 821px) and (max-width: 1320px) {
-  .codex-nav {
-    grid-template-columns: repeat(4, minmax(148px, 1fr));
+@media (min-width: 1180px) {
+  .app-masthead,
+  .app-content {
+    max-width: 1240px;
   }
 }

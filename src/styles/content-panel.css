@@ -1,48 +1,44 @@
 .codex-content-panel {
-  max-width: 1980px;
-  min-height: calc(100vh - 232px);
-  margin: 10px auto 0;
-  padding: 18px;
+  min-height: auto;
+  padding: 10px;
   border: 2px solid #665844;
   background:
-    linear-gradient(180deg, rgba(101, 84, 62, 0.3), transparent 68px),
+    linear-gradient(180deg, rgba(101, 84, 62, 0.22), transparent 54px),
     #160f0d;
   box-shadow:
     inset 0 0 0 2px #090605,
-    inset 0 0 0 5px rgba(199, 171, 125, 0.16),
-    0 18px 40px rgba(0, 0, 0, 0.4);
+    inset 0 0 0 4px rgba(199, 171, 125, 0.12),
+    0 16px 32px rgba(0, 0, 0, 0.34);
 }
 
 .content-header {
   display: grid;
-  grid-template-columns: minmax(260px, 420px) minmax(220px, 1fr) auto;
-  gap: 12px;
-  align-items: center;
-  min-height: 78px;
-  margin-bottom: 14px;
-  padding: 12px 18px;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
   border: 2px solid #504538;
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.34), transparent 58%),
+    linear-gradient(180deg, rgba(255, 244, 209, 0.04), transparent 46%),
     #1b1310;
   box-shadow: inset 0 0 0 2px #0b0807;
 }
 
 .content-header-with-back {
-  grid-template-columns: 70px minmax(260px, 420px) minmax(220px, 1fr) auto;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
 }
 
 .content-back-slot {
   display: grid;
-  width: 58px;
-  height: 58px;
+  width: 44px;
+  height: 44px;
   place-items: center;
 }
 
 .content-back-button {
   display: grid;
-  width: 54px;
-  height: 54px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   color: #fff2d3;
   border: 2px solid #5c4d3f;
@@ -52,7 +48,7 @@
   cursor: pointer;
   box-shadow:
     inset 0 0 0 2px #090605,
-    inset 0 -7px 0 rgba(0, 0, 0, 0.24);
+    inset 0 -6px 0 rgba(0, 0, 0, 0.24);
 }
 
 .content-back-button:hover,
@@ -63,10 +59,10 @@
 
 .content-title-box {
   display: grid;
-  height: 58px;
   min-width: 0;
+  min-height: 54px;
   place-items: center;
-  padding: 0 12px;
+  padding: 8px 12px;
   border: 1px solid rgba(213, 184, 130, 0.2);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 42%),
@@ -74,23 +70,41 @@
   box-shadow: inset 0 0 0 2px #0b0807;
 }
 
+.content-header h1 {
+  max-width: 100%;
+  margin: 0;
+  color: #fff8e8;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: clamp(1.55rem, 9vw, min(var(--title-size, 2.35rem), 2.35rem));
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+  text-align: center;
+  text-shadow:
+    3px 3px 0 #080605,
+    0 0 20px rgba(255, 237, 187, 0.14);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
 .content-actions {
   display: flex;
+  grid-column: 1 / -1;
   min-width: 0;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
 .content-action-slot {
   position: relative;
   display: grid;
+  flex: 0 0 auto;
 }
 
 .content-action-button {
-  min-height: 44px;
-  padding: 0 18px;
+  min-height: 42px;
+  padding: 0 13px;
   color: #fff2d3;
   border: 2px solid #5c4d3f;
   background:
@@ -98,13 +112,14 @@
     #140e0c;
   cursor: pointer;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   box-shadow:
     inset 0 0 0 2px #090605,
-    inset 0 -6px 0 rgba(0, 0, 0, 0.24);
+    inset 0 -5px 0 rgba(0, 0, 0, 0.24);
+  white-space: nowrap;
 }
 
 .content-action-button:hover,
@@ -113,33 +128,18 @@
   border-color: #b68e55;
 }
 
-.content-header h1 {
-  max-width: 100%;
-  margin: 0;
-  color: #fff8e8;
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: var(--title-size, 3.3rem);
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  line-height: 0.9;
-  text-align: center;
-  text-shadow:
-    4px 4px 0 #080605,
-    0 0 22px rgba(255, 237, 187, 0.16);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .content-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(116px, auto));
-  gap: 10px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
   margin: 0;
 }
 
 .content-stats div {
-  min-height: 54px;
-  padding: 9px 13px;
+  min-width: 0;
+  min-height: 58px;
+  padding: 9px 10px;
   border: 1px solid rgba(213, 184, 130, 0.24);
   background: rgba(0, 0, 0, 0.22);
 }
@@ -147,57 +147,76 @@
 .content-stats dt {
   color: #b7aa91;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
+  line-height: 1.1;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .content-stats dd {
-  margin: 3px 0 0;
+  margin: 4px 0 0;
   color: #24f2ff;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 900;
+  line-height: 1.05;
   text-shadow: 0 0 14px rgba(36, 242, 255, 0.28);
+  overflow-wrap: anywhere;
 }
 
-@media (max-width: 820px) {
+@media (min-width: 760px) {
   .codex-content-panel {
-    min-height: auto;
+    padding: 14px;
   }
 
   .content-header {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
-    padding: 10px;
+    grid-template-columns: minmax(220px, 360px) minmax(0, 1fr);
+    align-items: center;
+    padding: 12px;
   }
 
   .content-header-with-back {
-    grid-template-columns: 54px minmax(0, 1fr);
+    grid-template-columns: 54px minmax(220px, 360px) minmax(0, 1fr);
   }
 
   .content-back-slot,
   .content-back-button {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
   }
 
-  .content-title-box {
-    height: 54px;
-    padding: 0 12px;
+  .content-actions {
+    grid-column: auto;
+    justify-content: flex-start;
   }
 
-  .content-header h1 {
-    font-size: min(var(--title-size, 2.4rem), 2.35rem);
-  }
-
-  .content-actions,
   .content-stats {
+    grid-template-columns: repeat(3, minmax(128px, 1fr));
+  }
+
+  .content-header-with-back .content-stats,
+  .content-header-with-back .content-actions {
     grid-column: 1 / -1;
   }
+}
+
+@media (min-width: 1080px) {
+  .content-header {
+    grid-template-columns: minmax(260px, 380px) minmax(220px, 1fr) minmax(340px, auto);
+  }
+
+  .content-header-with-back {
+    grid-template-columns: 58px minmax(260px, 380px) minmax(220px, 1fr) minmax(340px, auto);
+  }
 
   .content-stats {
-    grid-template-columns: 1fr;
+    grid-column: auto;
+    overflow: visible;
+  }
+
+  .content-header-with-back .content-stats {
+    grid-column: auto;
   }
 }

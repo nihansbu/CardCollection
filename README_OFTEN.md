@@ -14,25 +14,27 @@ Das Spiel ist als persoenliches, nicht veroeffentlichtes Fan-Projekt gedacht. Mo
 
 Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fantasy-Rahmenstil. Die Topbar ist zweireihig und soll als dauerhafte Modulnavigation dienen.
 
-- PC-first Layout mit grossem Codex-Rahmen.
-- Topbar hat 16 Slots.
+- Mobile-first Layout mit kompaktem Codex-Rahmen.
+- Desktop bleibt unterstuetzt, ist aber ab jetzt die breite Erweiterung des mobilen Layouts, nicht mehr die primaere Zielgroesse.
+- Die App-Shell besteht aus einem kompakten Masthead mit Projektname, aktivem Modul, Status-Strip und horizontal scrollbarerer Modulnavigation.
+- Die Navigation behaelt 16 Slots, wird auf Mobile aber als horizontale Button-Leiste behandelt.
 - Slot 1: Codex.
 - Slot 2: Skills.
 - Slot 3: Activities.
 - Slot 4: Beastiary.
 - Slots 5 bis 16 sind bewusst Placeholder, damit klar ist, dass diese Module noch nicht im Spiel sind.
 - Der aktive Topbar-Button wird rot markiert.
-- Das grosse Content Window unter der Topbar bleibt zwischen Modulen strukturell gleich.
-- Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, festem Titelcontainer, optionaler Action-Button-Zone und eigenen Stats.
-- Hauptseiten ohne Back-Button schieben den Titel ganz nach links, Subpages mit Back-Button zeigen links davon den Zurueck-Button.
-- Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills mit Hover-Informationen.
+- Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
+- Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, festem Titelcontainer, optionaler horizontaler Action-Button-Zone und eigenen Stats.
+- Hauptseiten ohne Back-Button zeigen zuerst den Titel, dann Actions und Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
+- Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als mobile Listenkarten. Desktop nutzt daraus ein breiteres Grid.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
 - Die Skills-Header-Stats zeigen `Total Skills`, die addierten `Skill Level` und das gerundete `Average Level`.
 - Sailing ist als eigener Skill enthalten.
 - Skills sind anklickbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Topbar bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
-- Skill-Hover zeigt neben der Kurzbeschreibung aktuell Level, Current XP, XP Remaining und Next Level At.
+- Skill-Hover zeigt auf Desktop neben der Kurzbeschreibung aktuell Level, Current XP, XP Remaining und Next Level At. Auf Mobile sind Hover-Tooltips deaktiviert, weil Touchscreens keine stabile Hover-Interaktion haben.
 - Die Skill-XP-Werte nutzen aktuell eine RuneScape-artige XP-Kurve. Level 1 startet bei 0 XP, Level 2 liegt bei 83 XP.
 - Codex beschreibt die neue Grundidee: Train, Collect, Upgrade, Unlock.
 - Beastiary ist als geplantes Monster-/Creature-Modul angelegt.
@@ -45,6 +47,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Activities koennen im Hauptscreen ueber ein kleines `Sorts` Popover nach Default, Name, RAP Reward, Type oder Unit sortiert werden.
 - Activity Stats ist als Subpage angelegt und zeigt All Activities oder eine einzelne Activity mit Kennzahlen, Longest Streak und rollender 365-Tage-Heatmap.
 - Der alte Pack-Shop, Pack-Kauf, Collection-Progress und Pull-Modals existieren im Code noch, sind aber aktuell nicht der sichtbare Hauptscreen.
+- Activities nutzt ebenfalls mobile Listenkarten, damit Aktivitaeten direkt antippbar bleiben. Die Actions `Sorts`, `Activity Log` und `Stats` bleiben im gemeinsamen Header-System.
 
 ## Version Control und Hosting
 
@@ -107,13 +110,17 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
 - Die Topbar bleibt auf allen Subscreens sichtbar und stabil.
 - Neue echte Module sollen zuerst als Topbar-Slot, dann als eigener ContentPanel-Inhalt angelegt werden.
 - Placeholder-Slots duerfen sichtbar bleiben, sollen aber klar als nicht fertige Module wirken.
+- Mobile ist ab jetzt die primaere UI-Zielgroesse. Neue Module muessen zuerst auf 390px bis 430px Breite funktionieren.
+- Desktop-Layouts duerfen Inhalte auf mehrere Spalten erweitern, aber keine Desktop-only Struktur erzwingen.
+- Wiederverwendbare Flaechen sollen bevorzugt ueber `AppShell`, `ContentPanel`, mobile Listenkarten, Header-Actions und Header-Stats laufen.
+- Die Modulnavigation bleibt horizontal scrollbar und darf weitere Slots aufnehmen, ohne das mobile Layout zu sprengen.
 - Das Content Window besteht aus:
   - gemeinsamer Panel-Rahmen.
   - Header-Bar mit optionalem Back-Slot ganz links.
-  - festem Titelcontainer, der ohne Back-Button links buendig beginnt und mit Back-Button rechts vom Back-Slot sitzt.
-  - zentriertem Titeltext, dessen Schriftgroesse je nach Titel laengenabhaengig angepasst wird, damit keine Ellipsis noetig ist.
-  - mittiger Action-Button-Zone fuer modulspezifische Aktionen.
-  - statspezifischen Boxen rechts.
+  - festem Titelcontainer, der auf Mobile die volle Breite nutzt und mit Back-Button rechts vom Back-Slot sitzt.
+  - zentriertem Titeltext, dessen Schriftgroesse je nach Titel laengenabhaengig angepasst wird.
+  - horizontaler Action-Button-Zone fuer modulspezifische Aktionen.
+  - statspezifischen Boxen, die auf Mobile in drei kompakte Karten passen.
   - modulabhaengigem Body darunter.
 - Skills nutzt die Header-Bar mit `Total Skills`, `Skill Level` und `Average Level`.
 - Skill-Detailseiten nutzen die gleiche Header-Bar mit Back-Button, Skill-Titel und skill-spezifischen Stats.
@@ -124,7 +131,7 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
 - Der Back-Slot wird nur auf ContentPanel-Seiten mit echtem Back-Button genutzt; Hauptseiten ohne Back-Button lassen den Titel nach links ruecken.
 - Codex nutzt die Header-Bar mit Projekt-/Loop-/Status-Informationen.
 - Beastiary nutzt die Header-Bar mit Entries, Kills und Mastery als geplante Felder.
-- Hover-Informationen sollen bei sammelbaren/anklickbaren Eintraegen verwendet werden, wenn mehr Details benoetigt werden.
+- Hover-Informationen sollen nur fuer Desktop verwendet werden. Mobile braucht sichtbare, tappbare Informationen oder Detailseiten.
 
 ## Pack-Design
 
@@ -287,8 +294,9 @@ Der Shop zeigt zwischen Pack-Raster und Roll Odds eine kompakte Collection Progr
 
 ## Wichtige Designziele
 
-- PC-first entwickeln, mobile nur als responsive Fallback.
-- Desktop soll dicht, klar und wiederholt nutzbar bleiben.
+- Mobile-first entwickeln; Desktop bleibt als verdichtete breite Variante erhalten.
+- Mobile soll direkt auf dem Handy bedienbar sein: grosse Touch-Ziele, keine Hover-Abhaengigkeit, keine horizontale Seitenueberbreite.
+- Desktop soll weiterhin dicht, klar und wiederholt nutzbar bleiben.
 - Das Spiel soll wie ein hochwertiger Fantasy-/Codex-Collector wirken, aber funktional als Desktop-App/Tool brauchbar bleiben.
 - Die UI soll sich an dunklen, pixeligen Codex-/Logbook-Menues orientieren.
 - Topbar und Content Window sollen als langlebige Hauptstruktur dienen.
