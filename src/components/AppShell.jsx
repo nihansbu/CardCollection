@@ -6,7 +6,7 @@ import {
   Box,
   CircleEllipsis,
   CircleUserRound,
-  ScrollText,
+  KeyRound,
   Shield,
   Skull,
   Sparkles,
@@ -14,10 +14,10 @@ import {
 } from "lucide-react";
 
 const characterItems = [
+  { id: "account", label: "Account", Icon: KeyRound, tone: "aqua" },
   { id: "codex", label: "Codex", Icon: BookOpen, tone: "cyan" },
   { id: "placeholder-1", label: "Gear", Icon: Shield, tone: "steel" },
   { id: "placeholder-2", label: "Stats", Icon: Trophy, tone: "gold" },
-  { id: "placeholder-3", label: "Quests", Icon: ScrollText, tone: "amber" },
 ];
 
 const bottomNavItems = [

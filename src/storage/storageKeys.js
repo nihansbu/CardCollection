@@ -1,6 +1,7 @@
 export const localStorageKeys = {
   activities: "codex-collector-v1-activities",
   activityLog: "codex-collector-v1-activity-log",
+  localAccountSession: "codex-collector-v1-local-account-session",
   rap: "codex-collector-v1-rap",
   skills: "codex-collector-v1-skills",
   trainingLastTick: "codex-collector-v1-skill-training-last-tick",
@@ -8,4 +9,3 @@ export const localStorageKeys = {
 };
 
 export const LOCAL_SAVE_SCHEMA_VERSION = 1;
-

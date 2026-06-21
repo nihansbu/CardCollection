@@ -30,6 +30,13 @@ Run `npm run verify` in a second terminal while the dev server is running. The v
 
 The app currently runs local-first. Save data is still cached in the existing `localStorage` keys, but the code now has a central save layer under `src/storage/`.
 
+The Account screen is available through `Character -> Account`. Without Supabase environment values, use the local demo account for testing:
+
+- Username: `Admin`
+- Password: `Admin`
+
+This demo account is local-only and does not protect cloud data.
+
 To prepare Supabase:
 
 1. Create a Supabase project.
@@ -37,7 +44,7 @@ To prepare Supabase:
 3. Copy `.env.example` to `.env.local`.
 4. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 
-Cloud auth/login UI is the next implementation step. Without these environment values, the app continues to run fully local.
+Without these environment values, the app continues to run fully local.
 
 ## Project Memory
 

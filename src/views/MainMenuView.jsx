@@ -5,6 +5,7 @@ import {
   ActivityLogPanel,
   ActivityStatsPanel,
 } from "../features/activities/ActivitiesView.jsx";
+import { AccountPanel } from "../features/account/AccountPanel.jsx";
 import { activityStorageKeys, defaultActivities } from "../features/activities/activityData.js";
 import {
   getActivityReward,
@@ -163,6 +164,10 @@ export function MainMenuView({ activeView }) {
 
   if (activeView === "codex") {
     return <CodexPanel />;
+  }
+
+  if (activeView === "account") {
+    return <AccountPanel />;
   }
 
   if (activeView === "skills") {

@@ -18,7 +18,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Desktop wird nicht mehr gezielt designed oder unterstuetzt. Grosse Screens zeigen nur die mobile App-Spalte zentriert.
 - Die App-Shell nutzt eine dauerhaft sichtbare Bottom-Navigation statt einer Topbar.
 - Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Inventory, Skills, Activities, Beastiary, Codex, Slot 7 und More.
-- Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Codex, Gear, Stats und Quests als vorbereiteten Sub-Buttons.
+- Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Account, Codex, Gear und Stats als vorbereiteten Sub-Buttons.
+- Account ist der Startpunkt fuer lokale Demo-Session und spaeter Cloud Login.
 - Die Bottom-Navigation bleibt fixiert sichtbar. Flyouts duerfen die Content Section leicht ueberlappen.
 - Der globale Screen selbst soll nicht vertikal scrollen. Nur die jeweilige Content-Body-Flaeche innerhalb des ContentPanel darf scrollen.
 - Der aktive Bottom-Navigation-Button wird rot markiert.
@@ -75,6 +76,7 @@ Das Projekt wird ab jetzt ueber GitHub versioniert und soll regelmaessig dorthin
 - GitHub ist die zentrale Version-Control-Quelle fuer den Projektstand.
 - Relevante Aenderungen sollen nach erfolgreichem lokalen Build committed und gepusht werden.
 - GitHub Pages wird als kostenloses statisches Hosting genutzt, damit die App auch ausserhalb des lokalen WLANs erreichbar ist.
+- Mit GitHub Free ist GitHub Pages fuer oeffentliche Repositories verfuegbar. Private Repositories mit Pages benoetigen laut GitHub-Doku Pro/Team/Enterprise oder Enterprise-Access-Control. Fuer dieses Projekt bleibt das Repo vorerst oeffentlich, aber echte Secrets duerfen nie im Frontend-Code liegen.
 - Der GitHub-Pages-Deploy laeuft ueber `.github/workflows/deploy-pages.yml`.
 - Vite nutzt `base: "./"` in `vite.config.js`, damit gebaute Assets unter GitHub Pages korrekt geladen werden.
 - Vor dem Push mindestens `npm run build` ausfuehren. Fuer mobile Skills-/Training-Regressions zusaetzlich `npm run verify` verwenden, waehrend der Dev-Server auf `127.0.0.1:5173` laeuft.
@@ -88,6 +90,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/components/AppShell.jsx`: Fixierte Mobile-Bottom-Navigation mit 8 Slots und Character-Flyout.
 - `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Uebersicht/-Training/-Detail-State, RAP-Ausgabe durch Training und Activity-Subpage-State.
 - `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Slot, festem Seitentitel, Action-Button-Zone und Stats-Bar.
+- `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Demo-Session, Cloud-Auth-Formular und lokalem Save-Status.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
 - `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
 - `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.
@@ -115,6 +118,7 @@ CSS ist nach Flaechen getrennt:
 - `src/styles/app-shell.css`
 - `src/styles/content-panel.css`
 - `src/styles/codex-panels.css`
+- `src/styles/account.css`
 - `src/styles/skills.css`
 - `src/styles/activities.css`
 - `src/styles/shop.css`
@@ -158,6 +162,7 @@ Healthcheck 2026-06-21:
 - `Sorts` oeffnet ein kleines Popover direkt am Button und sortiert die Activity-Karten ohne Seitenwechsel.
 - Der Back-Slot wird nur auf ContentPanel-Seiten mit echtem Back-Button genutzt; Hauptseiten ohne Back-Button lassen den Titel nach links ruecken.
 - Codex nutzt die Header-Bar mit Projekt-/Loop-/Status-Informationen.
+- Account nutzt die Header-Bar mit `User`, `Cloud` und `Mode`. Der lokale Demo-Login ist `Admin` / `Admin` und dient nur als UI-/Flow-Test, nicht als echte Sicherheit.
 - Beastiary nutzt die Header-Bar mit Entries, Kills und Mastery als geplante Felder.
 - Informationen muessen sichtbar, tappbar, per Long-Press-Quicklook im gemeinsamen unteren Info-Panel oder ueber Detailseiten erreichbar sein. Hover-only Informationen sind nicht erlaubt.
 - Zahlen, die durch laufende Systeme veraendert werden koennen, sollen live aus dem aktuellen State gelesen werden. Fuer aktuelle Training-/RAP-Anzeigen ist ein etwa sekundenweiser Refresh ausreichend.
@@ -273,6 +278,8 @@ Empfohlene Richtung fuer den naechsten Architektur-Schritt: Supabase. Die erste 
 - `src/storage/localSave.js`: Snapshot-Load/Write/Export/Import fuer den aktuellen lokalen Spielstand.
 - `src/storage/supabaseClient.js`: optionaler Supabase-Client ueber `VITE_SUPABASE_URL` und `VITE_SUPABASE_ANON_KEY`.
 - `src/storage/cloudSave.js`: erste Cloud-Save-Funktionen fuer User-Erkennung, Laden und Upsert von `game_saves`.
+- `src/storage/authService.js`: Supabase Auth Wrapper fuer E-Mail/Passwort Login, Signup und Logout.
+- `src/storage/accountSession.js`: lokale Demo-Session fuer `Admin` / `Admin`, ausschliesslich fuer privates Testen im aktuellen Browser.
 - `supabase/migrations/20260621235000_initial_cloud_save.sql`: erstes Postgres-Schema mit `profiles`, `game_saves`, `activity_events`, `save_events`, `client_sync_state` und RLS-Policies.
 
 Begruendung:

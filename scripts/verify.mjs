@@ -33,6 +33,14 @@ try {
   });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page.locator('.bottom-nav-item[aria-label="Character"]').click();
+  await page.getByRole("menuitem", { name: /Account/i }).click();
+  await page.getByRole("heading", { name: /^Account$/i }).waitFor({ timeout: 5000 });
+  await page.getByLabel("Password").first().fill("Admin");
+  await page.getByRole("button", { name: /Login Demo/i }).click();
+  await page.locator(".account-message", { hasText: "Local demo account active." }).waitFor({ timeout: 5000 });
+  const accountStatsText = await page.locator(".content-stats").innerText();
+
   await page.locator('.bottom-nav-item[aria-label="Skills"]').click();
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
 
@@ -71,6 +79,7 @@ try {
 
   result = {
     attackClass,
+    accountStatsText,
     overflow,
     quicklookLabels,
     quicklookValuesAfter,
@@ -88,6 +97,7 @@ try {
 
   ok = (
     trainingCards === 1 &&
+    accountStatsText.includes("Admin") &&
     woodcuttingClass?.includes("is-training-skill") &&
     !attackClass?.includes("is-training-skill") &&
     woodcuttingCardText.includes("WOODCUTTING") &&
