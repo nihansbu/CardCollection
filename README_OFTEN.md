@@ -39,6 +39,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Aktuell trainierte Skills werden sowohl in `Skills Training` als auch in der normalen Skills-Uebersicht gelb markiert.
 - Nur aktuell trainierte Skills zeigen in der Skill-Kachel zusaetzlich zum Level eine Prozentanzeige fuer den Fortschritt bis zum naechsten Level.
 - Skilltraining tauscht RAP 1:1 gegen Skill-XP. Insgesamt koennen maximal 5000 RAP/XP pro Stunde ausgegeben werden. Ein aktiver Slot bekommt 5000 XP/h, zwei aktive Slots je 2500 XP/h, drei aktive Slots je ein Drittel. RAP, Skill-XP und Level werden jede Sekunde aktualisiert und gespeichert.
+- Skilltraining laeuft auch offline weiter: Beim naechsten App-Start wird die vergangene Zeit seit dem letzten Trainings-Tick nachgerechnet.
+- Wenn RAP durch Training auf `0` faellt, werden alle Trainingsslots automatisch geleert.
 - Groessere RAP- und XP-Werte werden in kompakten Werten dargestellt, z. B. `7320` als `7,3k`.
 - Sailing ist als eigener Skill enthalten.
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
@@ -216,6 +218,7 @@ Skills werden aktuell aus der statischen Skill-Liste normalisiert und mit gespei
 
 - Key `codex-collector-v1-skills`: aktueller XP- und Level-Stand aller Skills.
 - Key `codex-collector-v1-skill-training-slots`: drei Trainingsslots als Skillnamen oder `null`.
+- Key `codex-collector-v1-skill-training-last-tick`: letzter Zeitpunkt, bis zu dem Skilltraining abgerechnet wurde.
 
 Ein Skill enthaelt aktuell:
 
@@ -228,13 +231,14 @@ Ein Skill enthaelt aktuell:
 - `level`: aus XP berechnetes Level.
 - `maxLevel`: aktuell 99.
 
-Training laeuft aktuell als Live-Tick im `MainMenuView`:
+Training laeuft aktuell als Live- und Offline-Tick im `MainMenuView`:
 
 1. Alle belegten Trainingsslots werden als aktive Skills genommen.
-2. Pro Sekunde werden bis zu `5000 / 3600` RAP ausgegeben.
+2. Pro Sekunde oder offline vergangener Sekunde werden bis zu `5000 / 3600` RAP ausgegeben.
 3. Die ausgegebenen RAP werden 1:1 als XP auf aktive Skills verteilt.
 4. Skill-Level werden nach der RuneScape-artigen XP-Kurve neu berechnet.
-5. RAP, Skill-XP und Slots werden persistent in `localStorage` gespeichert.
+5. RAP, Skill-XP, Slots und letzter Trainings-Tick werden persistent in `localStorage` gespeichert.
+6. Wenn nicht mehr genug RAP vorhanden ist, wird nur bis `0` ausgegeben und danach werden die Trainingsslots geleert.
 
 Skill-Detailseiten leiten den angezeigten Skill aus dem aktuellen Skill-State ab, nicht aus einer alten Objektkopie. Dadurch aktualisieren sich XP/Level auch dann live, wenn eine Skill-Detailseite offen ist.
 

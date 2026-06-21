@@ -6,6 +6,7 @@ export const SKILL_TRAINING_RAP_PER_SECOND = SKILL_TRAINING_RAP_PER_HOUR / 3600;
 
 export const skillStorageKeys = {
   skills: "codex-collector-v1-skills",
+  trainingLastTick: "codex-collector-v1-skill-training-last-tick",
   trainingSlots: "codex-collector-v1-skill-training-slots",
 };
 
@@ -161,4 +162,53 @@ export function getSkillLevelProgress(skill) {
   const progress = ((skill.currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100;
 
   return Math.max(0, Math.min(99, Math.floor(progress)));
+}
+
+export function getActiveTrainingSkills(trainingSlots) {
+  return [...new Set(trainingSlots.filter(Boolean))];
+}
+
+export function applySkillTrainingProgress({ elapsedSeconds, rap, skills, trainingSlots }) {
+  const activeTrainingSkills = getActiveTrainingSkills(trainingSlots);
+  const availableRap = Math.max(0, Number(rap) || 0);
+  const seconds = Math.max(0, Number(elapsedSeconds) || 0);
+
+  if (activeTrainingSkills.length === 0) {
+    return { changed: false, rap: availableRap, skills, trainingSlots };
+  }
+
+  if (availableRap <= 0) {
+    return {
+      changed: true,
+      rap: 0,
+      skills,
+      trainingSlots: trainingSlots.map(() => null),
+    };
+  }
+
+  const spentRap = Math.min(availableRap, SKILL_TRAINING_RAP_PER_SECOND * seconds);
+
+  if (spentRap <= 0) {
+    return { changed: false, rap: availableRap, skills, trainingSlots };
+  }
+
+  const xpPerSkill = spentRap / activeTrainingSkills.length;
+  const nextSkills = skills.map((skill) => {
+    if (!activeTrainingSkills.includes(skill.name)) return skill;
+
+    const currentXp = skill.currentXp + xpPerSkill;
+
+    return {
+      ...skill,
+      currentXp,
+      level: getSkillLevelForXp(currentXp),
+    };
+  });
+
+  return {
+    changed: true,
+    rap: Math.max(0, availableRap - spentRap),
+    skills: nextSkills,
+    trainingSlots: spentRap >= availableRap ? trainingSlots.map(() => null) : trainingSlots,
+  };
 }

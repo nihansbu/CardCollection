@@ -112,7 +112,7 @@ function SkillGrid({
 
         return (
           <SkillCard
-            isSelectedTrainingSkill={trainingSlotIndex === selectedTrainingSlot}
+            isSelectedTrainingSkill={trainingSlotIndex >= 0 && trainingSlotIndex === selectedTrainingSlot}
             key={skill.name}
             onPreview={setPreviewSkill}
             onSelect={onSelectSkill}
