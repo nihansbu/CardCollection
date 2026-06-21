@@ -10,40 +10,38 @@ import {
   getActivityReward,
   getActivityType,
   normalizeActivities,
-  readJson,
-  writeJson,
 } from "../features/activities/activityUtils.js";
 import { BeastiaryPanel, CodexPanel, PlaceholderPanel } from "../features/codex/CodexPanels.jsx";
 import { SkillDetailPanel, SkillsPanel, SkillsTrainingPanel } from "../features/skills/SkillsPanel.jsx";
 import {
   applySkillTrainingProgress,
-  normalizeSkills,
-  normalizeTrainingSlots,
   skillStorageKeys,
 } from "../features/skills/skillData.js";
+import { loadLocalGameSave, writeJson } from "../storage/localSave.js";
 
 export function MainMenuView({ activeView }) {
   const initialTrainingState = useRef(null);
 
   if (!initialTrainingState.current) {
     const now = Date.now();
-    const storedSkills = normalizeSkills(readJson(skillStorageKeys.skills, []));
-    const storedTrainingSlots = normalizeTrainingSlots(readJson(skillStorageKeys.trainingSlots, []));
-    const storedRap = Math.max(0, Number(readJson(activityStorageKeys.rap, 0)) || 0);
-    const lastTrainingTick = Math.max(0, Number(readJson(skillStorageKeys.trainingLastTick, now)) || now);
-    const elapsedSeconds = Math.max(0, (now - lastTrainingTick) / 1000);
+    const localSave = loadLocalGameSave(now);
+    const elapsedSeconds = Math.max(0, (now - localSave.trainingLastTick) / 1000);
     const nextTrainingState = applySkillTrainingProgress({
       elapsedSeconds,
-      rap: storedRap,
-      skills: storedSkills,
-      trainingSlots: storedTrainingSlots,
+      rap: localSave.rap,
+      skills: localSave.skills,
+      trainingSlots: localSave.trainingSlots,
     });
 
     writeJson(activityStorageKeys.rap, nextTrainingState.rap);
     writeJson(skillStorageKeys.skills, nextTrainingState.skills);
     writeJson(skillStorageKeys.trainingSlots, nextTrainingState.trainingSlots);
     writeJson(skillStorageKeys.trainingLastTick, now);
-    initialTrainingState.current = nextTrainingState;
+    initialTrainingState.current = {
+      ...localSave,
+      ...nextTrainingState,
+      trainingLastTick: now,
+    };
   }
 
   const [selectedSkillName, setSelectedSkillName] = useState(null);
@@ -52,8 +50,8 @@ export function MainMenuView({ activeView }) {
   const [skills, setSkills] = useState(initialTrainingState.current.skills);
   const [trainingSlots, setTrainingSlots] = useState(initialTrainingState.current.trainingSlots);
   const [activityMode, setActivityMode] = useState("list");
-  const [activities, setActivities] = useState(() => normalizeActivities(readJson(activityStorageKeys.activities, defaultActivities)));
-  const [activityLog, setActivityLog] = useState(() => readJson(activityStorageKeys.activityLog, []));
+  const [activities, setActivities] = useState(() => normalizeActivities(initialTrainingState.current.activities || defaultActivities));
+  const [activityLog, setActivityLog] = useState(() => initialTrainingState.current.activityLog || []);
   const [rap, setRap] = useState(initialTrainingState.current.rap);
   const rapRef = useRef(rap);
   const skillsRef = useRef(skills);

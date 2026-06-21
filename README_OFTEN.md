@@ -94,6 +94,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/features/activities/activityData.js`: Activity-Defaults, Activity-Typen, Sortieroptionen und Storage-Keys.
 - `src/features/activities/activityUtils.js`: Activity-Berechnungen, Storage-Helfer, Log-Gruppierung, Stats und Heatmap-Daten.
 - `src/features/codex/CodexPanels.jsx`: Codex-, Beastiary- und Placeholder-Panels.
+- `src/storage/`: zentrale lokale Save-Schicht, Supabase-Client-Konfiguration und erste Cloud-Save-Operationen.
 - `src/views/ShopView.jsx`: Legacy-Shop-Raster, Collection Progress und Roll Odds.
 - `src/views/CollectionView.jsx`: Legacy-Sammlungsscreen mit Progress-Uebersicht.
 - `src/views/PlaceholderView.jsx`: Legacy-Platzhalter.
@@ -104,6 +105,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/components/PullModal.jsx`: Ergebnis nach Pack-Oeffnung.
 - `src/utils/collection.js`: abgeleitete Collection-Statistiken.
 - `scripts/verify.mjs`: Mobile-Smoke-Test fuer aktuellen Skills-/Offline-Training-Flow.
+- `supabase/migrations/20260621235000_initial_cloud_save.sql`: erstes Cloud-Save-Schema mit RLS-Policies.
 - `vite.config.js`: Vite-Konfiguration, inklusive GitHub-Pages-kompatibler relativer Asset-Basis.
 - `.github/workflows/deploy-pages.yml`: GitHub-Actions-Workflow fuer Build und GitHub-Pages-Deployment.
 
@@ -178,13 +180,13 @@ Pack-Karten sollen image-first bleiben:
 
 ## Aktuelles Datenmodell
 
-Aktuell ist `localStorage` noch die primaere Persistenz. Das ist fuer den Prototyp ausreichend, aber nicht ausreichend fuer wertvollen Langzeitfortschritt. Cloud Save ist ein priorisiertes Architekturthema, bevor Fortschritt stark wertvoll oder oeffentlich wird.
+Aktuell ist die App local-first. `localStorage` bleibt als lokaler Cache und Prototyp-Persistenz erhalten, ist aber nicht mehr als langfristige Source of Truth geplant. Eine zentrale Save-Schicht unter `src/storage/` kapselt die bisherigen Keys und bereitet Cloud Save vor.
 
 ### RAP und Activities
 
 RAP steht fuer Real Life Activity Points und ist die Hauptwaehrung des Spiels.
 
-Activities werden aktuell in `localStorage` gespeichert:
+Activities werden aktuell ueber die zentrale lokale Save-Schicht in `localStorage` gespeichert:
 
 - Key `codex-collector-v1-rap`: aktuelle RAP-Balance.
 - Key `codex-collector-v1-activities`: gespeicherte Aktivitaeten.
@@ -230,7 +232,7 @@ Activity Stats nutzt die Roh-Eintraege fuer erste Analytics:
 
 ### Skills und Training
 
-Skills werden aktuell aus der statischen Skill-Liste normalisiert und mit gespeichertem Fortschritt aus `localStorage` kombiniert:
+Skills werden aktuell aus der statischen Skill-Liste normalisiert und mit gespeichertem Fortschritt aus der zentralen lokalen Save-Schicht kombiniert:
 
 - Key `codex-collector-v1-skills`: aktueller XP- und Level-Stand aller Skills.
 - Key `codex-collector-v1-skill-training-slots`: drei Trainingsslots als Skillnamen oder `null`.
@@ -253,7 +255,7 @@ Training laeuft aktuell als Live- und Offline-Tick im `MainMenuView`:
 2. Pro Sekunde oder offline vergangener Sekunde werden bis zu `5000 / 3600` RAP ausgegeben.
 3. Die ausgegebenen RAP werden 1:1 als XP auf aktive Skills verteilt.
 4. Skill-Level werden nach der RuneScape-artigen XP-Kurve neu berechnet.
-5. RAP, Skill-XP, Slots und letzter Trainings-Tick werden persistent in `localStorage` gespeichert.
+5. RAP, Skill-XP, Slots und letzter Trainings-Tick werden ueber die zentrale Save-Schicht persistent gespeichert.
 6. Wenn nicht mehr genug RAP vorhanden ist, wird nur bis `0` ausgegeben und danach werden die Trainingsslots geleert.
 
 Skill-Detailseiten leiten den angezeigten Skill aus dem aktuellen Skill-State ab, nicht aus einer alten Objektkopie. Dadurch aktualisieren sich XP/Level auch dann live, wenn eine Skill-Detailseite offen ist.
@@ -264,7 +266,14 @@ Skill-Quicklooks speichern ebenfalls nur den Skillnamen und leiten die Anzeige a
 
 Ziel: Fortschritt darf nicht an ein einzelnes Browser-LocalStorage gebunden bleiben. Der Spieler soll sich auf einem anderen Handy oder spaeter in einer nativen App anmelden koennen und denselben Fortschritt sehen.
 
-Empfohlene Richtung fuer den naechsten Architektur-Schritt: Supabase.
+Empfohlene Richtung fuer den naechsten Architektur-Schritt: Supabase. Die erste technische Basis ist angelegt:
+
+- `src/storage/storageKeys.js`: zentrales Register fuer bestehende lokale Save-Keys.
+- `src/storage/jsonStorage.js`: gekapselte JSON-Lese-/Schreibfunktionen fuer lokalen Cache.
+- `src/storage/localSave.js`: Snapshot-Load/Write/Export/Import fuer den aktuellen lokalen Spielstand.
+- `src/storage/supabaseClient.js`: optionaler Supabase-Client ueber `VITE_SUPABASE_URL` und `VITE_SUPABASE_ANON_KEY`.
+- `src/storage/cloudSave.js`: erste Cloud-Save-Funktionen fuer User-Erkennung, Laden und Upsert von `game_saves`.
+- `supabase/migrations/20260621235000_initial_cloud_save.sql`: erstes Postgres-Schema mit `profiles`, `game_saves`, `activity_events`, `save_events`, `client_sync_state` und RLS-Policies.
 
 Begruendung:
 
@@ -288,9 +297,9 @@ Vorgeschlagenes Datenmodell fuer Cloud Save:
 
 Migrationsreihenfolge:
 
-1. Lokales Save-Schema zentralisieren: eine einzige Save-Schicht statt verstreuter `localStorage`-Keys.
-2. Export-/Import-Snapshot bauen, damit vorhandener Fortschritt gesichert werden kann.
-3. Supabase-Projekt anlegen, Auth aktivieren, Tabellen und RLS-Policies erstellen.
+1. Lokales Save-Schema zentralisieren: eine einzige Save-Schicht statt verstreuter `localStorage`-Keys. Erledigt als erste Basis.
+2. Export-/Import-Snapshot bauen, damit vorhandener Fortschritt gesichert werden kann. Erste Funktionen existieren in `localSave.js`; UI fehlt noch.
+3. Supabase-Projekt anlegen, Auth aktivieren, Tabellen und RLS-Policies erstellen. SQL-Migration liegt im Repo.
 4. Login-Screen oder Account-Button als kleines Modul einfuehren.
 5. Beim ersten Login lokalen Save-Snapshot in die Cloud migrieren.
 6. Danach Cloud als Quelle der Wahrheit verwenden und `localStorage` nur noch als Offline-/Performance-Cache nutzen.

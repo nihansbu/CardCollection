@@ -1,3 +1,5 @@
+import { localStorageKeys } from "../../storage/storageKeys.js";
+
 export const SKILL_STARTING_LEVEL = 1;
 export const SKILL_MAX_LEVEL = 99;
 export const SKILL_STARTING_XP = 0;
@@ -5,9 +7,9 @@ export const SKILL_TRAINING_RAP_PER_HOUR = 5000;
 export const SKILL_TRAINING_RAP_PER_SECOND = SKILL_TRAINING_RAP_PER_HOUR / 3600;
 
 export const skillStorageKeys = {
-  skills: "codex-collector-v1-skills",
-  trainingLastTick: "codex-collector-v1-skill-training-last-tick",
-  trainingSlots: "codex-collector-v1-skill-training-slots",
+  skills: localStorageKeys.skills,
+  trainingLastTick: localStorageKeys.trainingLastTick,
+  trainingSlots: localStorageKeys.trainingSlots,
 };
 
 export const skillGroups = [

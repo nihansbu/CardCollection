@@ -1,11 +1,13 @@
+import { localStorageKeys } from "../../storage/storageKeys.js";
+
 export const ACTIVITY_LOG_LIMIT = 50;
 export const ACTIVITY_HEATMAP_DAYS = 365;
 export const DAY_MS = 24 * 60 * 60 * 1000;
 
 export const activityStorageKeys = {
-  activities: "codex-collector-v1-activities",
-  activityLog: "codex-collector-v1-activity-log",
-  rap: "codex-collector-v1-rap",
+  activities: localStorageKeys.activities,
+  activityLog: localStorageKeys.activityLog,
+  rap: localStorageKeys.rap,
 };
 
 export const defaultActivities = [

@@ -4,19 +4,7 @@ import {
   DAY_MS,
   defaultActivities,
 } from "./activityData.js";
-
-export function readJson(key, fallback) {
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-export function writeJson(key, value) {
-  window.localStorage.setItem(key, JSON.stringify(value));
-}
+export { readJson, writeJson } from "../../storage/jsonStorage.js";
 
 export function formatRap(value) {
   const number = Math.floor(Number(value) || 0);
