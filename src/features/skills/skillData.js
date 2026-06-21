@@ -1,6 +1,13 @@
 export const SKILL_STARTING_LEVEL = 1;
 export const SKILL_MAX_LEVEL = 99;
 export const SKILL_STARTING_XP = 0;
+export const SKILL_TRAINING_RAP_PER_HOUR = 5000;
+export const SKILL_TRAINING_RAP_PER_SECOND = SKILL_TRAINING_RAP_PER_HOUR / 3600;
+
+export const skillStorageKeys = {
+  skills: "codex-collector-v1-skills",
+  trainingSlots: "codex-collector-v1-skill-training-slots",
+};
 
 export const skillGroups = [
   {
@@ -66,10 +73,6 @@ export const flatSkills = skillGroups.flatMap((group) => group.skills.map(([name
   short,
 })));
 
-export const totalSkillLevel = flatSkills.reduce((sum, skill) => sum + skill.level, 0);
-export const averageSkillLevel = Math.round(totalSkillLevel / flatSkills.length);
-export const totalSkillXp = flatSkills.reduce((sum, skill) => sum + skill.currentXp, 0);
-
 export function getSkillXpForLevel(level) {
   let points = 0;
 
@@ -80,6 +83,54 @@ export function getSkillXpForLevel(level) {
   return Math.floor(points / 4);
 }
 
+export function getSkillLevelForXp(xp) {
+  let level = SKILL_STARTING_LEVEL;
+
+  for (let nextLevel = SKILL_STARTING_LEVEL + 1; nextLevel <= SKILL_MAX_LEVEL; nextLevel += 1) {
+    if (xp < getSkillXpForLevel(nextLevel)) break;
+    level = nextLevel;
+  }
+
+  return level;
+}
+
+export function normalizeSkills(savedSkills = []) {
+  const savedByName = new Map(savedSkills.map((skill) => [skill.name, skill]));
+
+  return flatSkills.map((baseSkill) => {
+    const savedSkill = savedByName.get(baseSkill.name);
+    const currentXp = Math.max(0, Number(savedSkill?.currentXp ?? baseSkill.currentXp) || 0);
+
+    return {
+      ...baseSkill,
+      currentXp,
+      level: getSkillLevelForXp(currentXp),
+    };
+  });
+}
+
+export function normalizeTrainingSlots(savedSlots = []) {
+  const knownSkillNames = new Set(flatSkills.map((skill) => skill.name));
+  const slots = Array.isArray(savedSlots) ? savedSlots : [];
+
+  return [0, 1, 2].map((index) => {
+    const skillName = slots[index];
+    return knownSkillNames.has(skillName) ? skillName : null;
+  });
+}
+
+export function getSkillTotals(skills) {
+  const totalSkillLevel = skills.reduce((sum, skill) => sum + skill.level, 0);
+  const totalSkillXp = skills.reduce((sum, skill) => sum + skill.currentXp, 0);
+  const averageSkillLevel = Math.round(totalSkillLevel / skills.length);
+
+  return {
+    averageSkillLevel,
+    totalSkillLevel,
+    totalSkillXp,
+  };
+}
+
 export function formatSkillXp(value) {
-  return new Intl.NumberFormat("de-DE").format(value);
+  return new Intl.NumberFormat("de-DE").format(Math.floor(value));
 }

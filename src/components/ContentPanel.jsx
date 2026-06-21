@@ -49,12 +49,27 @@ export function ContentPanel({ actions = [], children, className = "", onBack, s
             );
           })}
         </div>
-        <dl className="content-stats">
+        <dl className="content-stats" style={{ "--stat-count": stats.length }}>
           {stats.map((stat) => {
             const StatIcon = stat.Icon;
+            const isInteractive = Boolean(stat.onClick);
 
             return (
-              <div className={StatIcon ? "has-icon" : ""} key={stat.label}>
+              <div
+                aria-label={stat.ariaLabel || stat.label}
+                aria-pressed={isInteractive ? Boolean(stat.pressed) : undefined}
+                className={`${StatIcon ? "has-icon" : ""} ${isInteractive ? "is-interactive" : ""} ${stat.pressed ? "is-active" : ""}`.trim()}
+                key={stat.label}
+                onClick={stat.onClick}
+                onKeyDown={(event) => {
+                  if (!isInteractive) return;
+                  if (event.key !== "Enter" && event.key !== " ") return;
+                  event.preventDefault();
+                  stat.onClick();
+                }}
+                role={isInteractive ? "button" : undefined}
+                tabIndex={isInteractive ? 0 : undefined}
+              >
                 {StatIcon ? (
                   <span className="content-stat-icon" aria-hidden="true">
                     <StatIcon size={19} strokeWidth={2.8} />

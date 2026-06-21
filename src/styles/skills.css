@@ -17,9 +17,43 @@
   gap: 7px;
 }
 
-.skills-panel .content-stats div {
+.skills-panel .content-stats > div {
   min-height: 50px;
   padding: 6px 7px;
+}
+
+.skills-training-panel .content-stats {
+  gap: 5px;
+}
+
+.skills-training-panel .content-stats > div {
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 50px;
+  padding: 5px;
+}
+
+.skills-training-panel .content-stats > div.has-icon {
+  grid-template-columns: 23px minmax(0, 1fr);
+  gap: 5px;
+}
+
+.skills-training-panel .content-stat-icon {
+  width: 23px;
+  height: 23px;
+}
+
+.skills-training-panel .content-stat-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.skills-training-panel .content-stats dt {
+  font-size: 0.44rem;
+}
+
+.skills-training-panel .content-stats dd {
+  font-size: 0.68rem;
+  overflow-wrap: anywhere;
 }
 
 .skills-panel .content-stats dt {
@@ -96,6 +130,42 @@
     0 0 0 2px color-mix(in srgb, var(--skill-color), transparent 48%),
     0 14px 22px rgba(0, 0, 0, 0.28);
   transform: translateY(-1px);
+}
+
+.skill-card.is-training-skill {
+  border-color: #f4cf5a;
+  box-shadow:
+    inset 0 0 0 2px rgba(244, 207, 90, 0.18),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(244, 207, 90, 0.3);
+}
+
+.skill-card.is-selected-training-skill {
+  z-index: 3;
+  border-color: #ffe27a;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 226, 122, 0.26),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.24),
+    0 0 0 2px rgba(244, 207, 90, 0.5),
+    0 0 18px rgba(244, 207, 90, 0.2);
+}
+
+.skill-training-badge {
+  position: absolute;
+  top: 3px;
+  left: 27px;
+  display: grid;
+  min-width: 15px;
+  height: 15px;
+  place-items: center;
+  color: #100b08;
+  border: 1px solid #6d5520;
+  background: #f4cf5a;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 0.58rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 1px 0 #070504;
 }
 
 .skill-sprite {

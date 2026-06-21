@@ -24,14 +24,19 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Der aktive Bottom-Navigation-Button wird rot markiert.
 - Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
 - Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, linksbuendigem Titelcontainer, rechtsbuendiger Action-Button-Zone in derselben Zeile und eigenen Stats.
-- Hauptseiten ohne Back-Button zeigen links den Titel, rechts modulbezogene Actions und darunter drei kompakte Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
+- Hauptseiten ohne Back-Button zeigen links den Titel, rechts modulbezogene Actions und darunter kompakte Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
 - Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als kompaktes mobile-only 3-Spalten-Skillpanel nach RuneScape-Anmutung. Die ehemalige untere RuneScape-Leiste mit Total Level/Combat/Quest Points wird nicht kopiert, weil diese Informationen in der vorhandenen Header-Stats-Bar leben.
 - Das Skills-Panel muss auch im normalen mobilen Browser mit sichtbarer Chrome-/Android-Leiste kompakt bleiben. Aktuell sollen 30 Skills in die Hauptansicht passen; bei mehr Inhalt scrollt nur die interne Content-Body-Flaeche.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
 - Die Skill-Kacheln zeigen nur das aktuelle Level, nicht `1/99`. Max-Level bleibt im Datenmodell erhalten.
 - Alle 30 Skills nutzen fantasy/MMO-inspirierte Icons im kompakten RuneScape-artigen Skillpanel.
 - Die Skills-Header-Stats zeigen als Icon-Kacheln `Total Level`, `Average Level` und `Total XP`.
-- Skills hat rechts neben dem Titel einen `Training`-Action-Button mit Icon. Tap wechselt den Content-Body zwischen Skillgrid und Trainingsmenue.
+- Skills hat rechts neben dem Titel einen `Training`-Action-Button mit Icon. Tap oeffnet die eigene `Skills Training`-Ansicht im gleichen ContentPanel-System.
+- `Skills Training` nutzt dieselbe mobile Layout-Struktur wie Skills: linksbuendiger Titel, rechts ein `Skills`-Action-Button zurueck zur Uebersicht, darunter vier Header-Stats und im Content-Body dasselbe 3-Spalten-Skillgrid.
+- Die vier Header-Stats im Training sind `RAP`, `Slot 1`, `Slot 2` und `Slot 3`. Die Slots sind tappbar; der aktive Slot wird gelb markiert.
+- In `Skills Training` weist ein Tap auf einen Skill den Skill dem aktiven Slot zu. Wenn derselbe Skill im aktiven Slot erneut getappt wird, wird er entfernt. Wenn der Skill in einem anderen Slot liegt, wandert er in den aktiven Slot.
+- Aktuell trainierte Skills werden im Grid gelb umrahmt und zeigen einen kleinen Slot-Badge.
+- Skilltraining tauscht RAP 1:1 gegen Skill-XP. Insgesamt koennen maximal 5000 RAP/XP pro Stunde ausgegeben werden. Ein aktiver Slot bekommt 5000 XP/h, zwei aktive Slots je 2500 XP/h, drei aktive Slots je ein Drittel. RAP, Skill-XP und Level werden jede Sekunde aktualisiert und gespeichert.
 - Sailing ist als eigener Skill enthalten.
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
@@ -73,10 +78,10 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 
 - `src/App.jsx`: Aktive Codex-View und Routing zwischen Codex-Modulen.
 - `src/components/AppShell.jsx`: Fixierte Mobile-Bottom-Navigation mit 8 Slots und Character-Flyout.
-- `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Subpage-State und Activity-Subpage-State.
+- `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Uebersicht/-Training/-Detail-State, RAP-Ausgabe durch Training und Activity-Subpage-State.
 - `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Slot, festem Seitentitel, Action-Button-Zone und Stats-Bar.
-- `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht und Skill-Detailseiten.
-- `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults und XP-Helfer.
+- `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
+- `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
 - `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.
 - `src/features/activities/activityData.js`: Activity-Defaults, Activity-Typen, Sortieroptionen und Storage-Keys.
 - `src/features/activities/activityUtils.js`: Activity-Berechnungen, Storage-Helfer, Log-Gruppierung, Stats und Heatmap-Daten.
@@ -123,9 +128,10 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
   - festem Titelcontainer, der auf Mobile die volle Breite nutzt und mit Back-Button rechts vom Back-Slot sitzt.
   - linksbuendigem Titeltext, dessen Schriftgroesse je nach Titel laengenabhaengig angepasst wird.
   - horizontaler Action-Button-Zone fuer modulspezifische Aktionen.
-  - statspezifischen Boxen, die auf Mobile in drei kompakte Karten passen.
+  - statspezifischen Boxen, die auf Mobile als kompakte Karten in der benoetigten Anzahl passen.
   - modulabhaengigem Body darunter.
 - Skills nutzt die Header-Bar mit `Total Level`, `Average Level`, `Total XP` und dem `Training`-Action-Button.
+- Skills Training nutzt die Header-Bar mit `RAP`, `Slot 1`, `Slot 2`, `Slot 3` und dem `Skills`-Action-Button.
 - Skill-Detailseiten nutzen die gleiche Header-Bar mit Back-Button, Skill-Titel und skill-spezifischen Stats.
 - Activities nutzt die Header-Bar mit `RAP Balance`, `Activities` und `Logged`.
 - Activities hat Subscreens fuer `Create Activity`, `Activity Log` und `Activity Stats`, jeweils mit Back-Button.
@@ -200,6 +206,32 @@ Activity Stats nutzt die Roh-Eintraege fuer erste Analytics:
 - Longest Streak speichert aktuell Laenge sowie Start- und Enddatum fuer die Anzeige.
 - Die Heatmap zeigt rollend die letzten 365 Tage, nicht nur das aktuelle Kalenderjahr, damit ein Jahreswechsel die Anzeige nicht komplett leert.
 - Die Heatmap-Intensitaet basiert aktuell auf Entry-Anzahl pro Tag.
+
+### Skills und Training
+
+Skills werden aktuell aus der statischen Skill-Liste normalisiert und mit gespeichertem Fortschritt aus `localStorage` kombiniert:
+
+- Key `codex-collector-v1-skills`: aktueller XP- und Level-Stand aller Skills.
+- Key `codex-collector-v1-skill-training-slots`: drei Trainingsslots als Skillnamen oder `null`.
+
+Ein Skill enthaelt aktuell:
+
+- `name`: sichtbarer Skillname.
+- `short`: kurze Anzeige fuer Slots, z. B. `SUM`.
+- `group`: grobe Kategorie, z. B. Combat, Gathering, Artisan oder Support.
+- `description`: Quicklook-/Detailbeschreibung.
+- `color`: UI-Akzentfarbe.
+- `currentXp`: aktueller XP-Wert.
+- `level`: aus XP berechnetes Level.
+- `maxLevel`: aktuell 99.
+
+Training laeuft aktuell als Live-Tick im `MainMenuView`:
+
+1. Alle belegten Trainingsslots werden als aktive Skills genommen.
+2. Pro Sekunde werden bis zu `5000 / 3600` RAP ausgegeben.
+3. Die ausgegebenen RAP werden 1:1 als XP auf aktive Skills verteilt.
+4. Skill-Level werden nach der RuneScape-artigen XP-Kurve neu berechnet.
+5. RAP, Skill-XP und Slots werden persistent in `localStorage` gespeichert.
 
 ### Legacy Packs
 
