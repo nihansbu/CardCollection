@@ -1,10 +1,43 @@
+.skills-panel {
+  padding: 8px;
+}
+
+.skills-panel .content-header {
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+}
+
+.skills-panel .content-title-box {
+  min-height: 48px;
+  padding: 6px 10px;
+}
+
+.skills-panel .content-stats {
+  gap: 7px;
+}
+
+.skills-panel .content-stats div {
+  min-height: 50px;
+  padding: 7px 8px;
+}
+
+.skills-panel .content-stats dt {
+  font-size: 0.56rem;
+}
+
+.skills-panel .content-stats dd {
+  margin-top: 3px;
+  font-size: 0.95rem;
+}
+
 .skill-board {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: start;
-  gap: 4px;
-  padding: 6px;
+  gap: 3px;
+  padding: 5px;
   border: 2px solid #4f4438;
   background:
     radial-gradient(circle at 50% 0%, rgba(230, 170, 80, 0.08), transparent 42%),
@@ -16,12 +49,12 @@
 .skill-card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 22px;
+  grid-template-columns: minmax(0, 1fr) 20px;
   align-items: center;
   width: 100%;
-  min-height: 47px;
-  gap: 4px;
-  padding: 5px 4px;
+  min-height: 41px;
+  gap: 3px;
+  padding: 4px;
   color: inherit;
   border: 2px solid #332b23;
   background:
@@ -57,8 +90,8 @@
 
 .skill-sprite {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   place-items: center;
   color: #090605;
   background:
@@ -74,8 +107,8 @@
 
 .skill-sprite svg,
 .skill-quicklook-head > span svg {
-  width: 23px;
-  height: 23px;
+  width: 21px;
+  height: 21px;
   color: #080504;
   filter:
     drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.18))

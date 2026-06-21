@@ -19,6 +19,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Die App-Shell besteht aus einer kompakten, einklappbaren Topbar ohne redundante Status-/Seitentexte.
 - Die Navigation behaelt 16 Slots und zeigt sie als 4x4-Touchraster.
 - Die Topbar hat einen mittigen Handle-Button unterhalb des Rasters. Tap klappt die Topbar ein oder aus, Swipe nach oben/unten soll ebenfalls funktionieren.
+- Der eingeklappte Topbar-Handle soll keinen eigenen vertikalen Layout-Space reservieren, sondern als Overlay leicht in den oberen Content-Rahmen hineinragen.
 - Nach Auswahl eines Moduls klappt die Topbar automatisch ein, damit mehr Platz fuer den Seitenscreen bleibt.
 - Slot 1: Codex.
 - Slot 2: Skills.
@@ -30,6 +31,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, festem Titelcontainer, optionaler horizontaler Action-Button-Zone und eigenen Stats.
 - Hauptseiten ohne Back-Button zeigen zuerst den Titel, dann Actions und Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
 - Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als kompaktes mobile-only 3-Spalten-Skillpanel nach RuneScape-Anmutung. Die ehemalige untere RuneScape-Leiste mit Total Level/Combat/Quest Points wird nicht kopiert, weil diese Informationen in der vorhandenen Header-Stats-Bar leben.
+- Das Skills-Panel muss auch im normalen mobilen Browser mit sichtbarer Chrome-/Android-Leiste kompakt genug bleiben, damit alle 30 Skills ohne vertikales Scrollen sichtbar sind.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
 - Die Skill-Kacheln zeigen nur das aktuelle Level, nicht `1/99`. Max-Level bleibt im Datenmodell erhalten.
 - Alle 30 Skills nutzen fantasy/MMO-inspirierte Icons im kompakten RuneScape-artigen Skillpanel.

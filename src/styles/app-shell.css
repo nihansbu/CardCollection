@@ -37,14 +37,16 @@
 }
 
 .app-masthead {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  left: 50%;
   z-index: 20;
   display: grid;
   justify-items: center;
-  margin: 0 auto;
-  max-width: 430px;
-  width: 100%;
+  max-width: min(430px, calc(100vw - 20px));
+  width: calc(100vw - 20px);
+  pointer-events: none;
+  transform: translateX(-50%);
 }
 
 .codex-nav-panel {
@@ -67,6 +69,7 @@
     padding 180ms ease,
     transform 180ms ease,
     border-color 180ms ease;
+  pointer-events: auto;
 }
 
 .codex-nav {
@@ -188,6 +191,7 @@
   box-shadow:
     inset -6px -6px 0 rgba(0, 0, 0, 0.16),
     0 8px 18px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
 }
 
 .codex-nav-toggle:focus-visible {
@@ -209,7 +213,7 @@
 }
 
 .app-content {
-  margin: 8px auto 0;
+  margin: 28px auto 0;
   max-width: 430px;
 }
 
