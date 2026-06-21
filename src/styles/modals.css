@@ -4,7 +4,7 @@
   z-index: 10;
   display: grid;
   place-items: center;
-  padding: 26px;
+  padding: 12px;
 }
 
 .modal-backdrop {
@@ -17,8 +17,8 @@
 .pull-modal,
 .card-list-modal {
   position: relative;
-  width: min(900px, 100%);
-  padding: 26px;
+  width: min(430px, 100%);
+  padding: 16px;
   border: 1px solid rgba(255, 211, 111, 0.35);
   background: linear-gradient(145deg, rgba(18, 23, 31, 0.98), rgba(4, 8, 13, 0.98));
   box-shadow: 0 26px 80px rgba(0, 0, 0, 0.55);
@@ -68,7 +68,7 @@
 
 .card-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
 }
 
@@ -95,7 +95,7 @@
 
 .pull-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 
@@ -153,11 +153,4 @@
 
 .pull-result.is-shiny {
   box-shadow: 0 0 80px rgba(127, 235, 255, 0.22);
-}
-
-@media (max-width: 760px) {
-  .pull-grid,
-  .card-list {
-    grid-template-columns: 1fr;
-  }
 }

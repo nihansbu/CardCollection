@@ -4,7 +4,7 @@ Projekt-Memory fuer RAP Card Collection. Diese Datei soll regelmaessig aktualisi
 
 ## Projektidee
 
-Das Projekt entwickelt sich von einer reinen RAP Card Collection zu einem groesseren PC-first Codex Collector. Der Spieler soll Punkte verdienen und ausgeben koennen, um Dinge zu leveln, zu trainieren, zu sammeln, upzugraden, freizuschalten und langfristig Account-Fortschritt aufzubauen.
+Das Projekt entwickelt sich von einer reinen RAP Card Collection zu einer Mobile-only Codex-Tracking-App. Der Spieler soll unterwegs schnell reale Aktivitaeten tracken, Punkte verdienen und ausgeben koennen, um Dinge zu leveln, zu trainieren, zu sammeln, upzugraden, freizuschalten und langfristig Account-Fortschritt aufzubauen.
 
 RAP, kurz fuer Real Life Activity Points, bleibt als moegliche Hauptwaehrung fuer reale Aktivitaeten, Belohnungen und Freischaltungen erhalten. Die fruehere Pack-Shop-Idee ist nicht verworfen, aber aktuell nicht mehr der alleinige Hauptscreen. Sie wird als ein moegliches Modul im groesseren Codex-Collector-System behandelt.
 
@@ -12,12 +12,12 @@ Das Spiel ist als persoenliches, nicht veroeffentlichtes Fan-Projekt gedacht. Mo
 
 ## Aktueller Fokus
 
-Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fantasy-Rahmenstil. Die Topbar ist zweireihig und soll als dauerhafte Modulnavigation dienen.
+Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fantasy-Rahmenstil. Die mobile Masthead-Navigation soll als dauerhafte Modulnavigation dienen.
 
-- Mobile-first Layout mit kompaktem Codex-Rahmen.
-- Desktop bleibt unterstuetzt, ist aber ab jetzt die breite Erweiterung des mobilen Layouts, nicht mehr die primaere Zielgroesse.
+- Mobile-only Layout mit kompaktem Codex-Rahmen.
+- Desktop wird nicht mehr gezielt designed oder unterstuetzt. Grosse Screens zeigen nur die mobile App-Spalte zentriert.
 - Die App-Shell besteht aus einem kompakten Masthead mit Projektname, aktivem Modul, Status-Strip und horizontal scrollbarerer Modulnavigation.
-- Die Navigation behaelt 16 Slots, wird auf Mobile aber als horizontale Button-Leiste behandelt.
+- Die Navigation behaelt 16 Slots und bleibt als horizontale Button-Leiste fuer Touchscreens ausgelegt.
 - Slot 1: Codex.
 - Slot 2: Skills.
 - Slot 3: Activities.
@@ -27,14 +27,14 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
 - Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, festem Titelcontainer, optionaler horizontaler Action-Button-Zone und eigenen Stats.
 - Hauptseiten ohne Back-Button zeigen zuerst den Titel, dann Actions und Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
-- Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als mobile Listenkarten. Desktop nutzt daraus ein breiteres Grid.
+- Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als mobile Listenkarten. Es gibt keine Desktop-Grid-Variante mehr.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
 - Die Skills-Header-Stats zeigen `Total Skills`, die addierten `Skill Level` und das gerundete `Average Level`.
 - Sailing ist als eigener Skill enthalten.
 - Skills sind anklickbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Topbar bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
-- Skill-Hover zeigt auf Desktop neben der Kurzbeschreibung aktuell Level, Current XP, XP Remaining und Next Level At. Auf Mobile sind Hover-Tooltips deaktiviert, weil Touchscreens keine stabile Hover-Interaktion haben.
+- Hover-Tooltips sind abgeschafft. Mobile braucht sichtbare, tappbare Informationen oder Detailseiten.
 - Die Skill-XP-Werte nutzen aktuell eine RuneScape-artige XP-Kurve. Level 1 startet bei 0 XP, Level 2 liegt bei 83 XP.
 - Codex beschreibt die neue Grundidee: Train, Collect, Upgrade, Unlock.
 - Beastiary ist als geplantes Monster-/Creature-Modul angelegt.
@@ -70,7 +70,7 @@ Das Projekt wird ab jetzt ueber GitHub versioniert und soll regelmaessig dorthin
 Die App ist in kleinere Views und Komponenten aufgeteilt:
 
 - `src/App.jsx`: Aktive Codex-View und Routing zwischen Codex-Modulen.
-- `src/components/AppShell.jsx`: Zweireihige Codex-Topbar mit 16 Slots.
+- `src/components/AppShell.jsx`: Mobile Masthead mit Status-Strip und horizontaler Modulnavigation mit 16 Slots.
 - `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Subpage-State und Activity-Subpage-State.
 - `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Slot, festem Seitentitel, Action-Button-Zone und Stats-Bar.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht und Skill-Detailseiten.
@@ -110,8 +110,9 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
 - Die Topbar bleibt auf allen Subscreens sichtbar und stabil.
 - Neue echte Module sollen zuerst als Topbar-Slot, dann als eigener ContentPanel-Inhalt angelegt werden.
 - Placeholder-Slots duerfen sichtbar bleiben, sollen aber klar als nicht fertige Module wirken.
-- Mobile ist ab jetzt die primaere UI-Zielgroesse. Neue Module muessen zuerst auf 390px bis 430px Breite funktionieren.
-- Desktop-Layouts duerfen Inhalte auf mehrere Spalten erweitern, aber keine Desktop-only Struktur erzwingen.
+- Mobile ist ab jetzt die einzige UI-Zielgroesse. Neue Module muessen auf 390px bis 430px Breite funktionieren.
+- Keine Desktop-spezifischen Breakpoints, keine mehrspaltigen Desktop-Grids und keine Hover-only Interaktionen.
+- Grosse Screens duerfen die mobile App-Spalte nur zentrieren; Desktop ist kein eigenes Feature-Ziel mehr.
 - Wiederverwendbare Flaechen sollen bevorzugt ueber `AppShell`, `ContentPanel`, mobile Listenkarten, Header-Actions und Header-Stats laufen.
 - Die Modulnavigation bleibt horizontal scrollbar und darf weitere Slots aufnehmen, ohne das mobile Layout zu sprengen.
 - Das Content Window besteht aus:
@@ -131,7 +132,7 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
 - Der Back-Slot wird nur auf ContentPanel-Seiten mit echtem Back-Button genutzt; Hauptseiten ohne Back-Button lassen den Titel nach links ruecken.
 - Codex nutzt die Header-Bar mit Projekt-/Loop-/Status-Informationen.
 - Beastiary nutzt die Header-Bar mit Entries, Kills und Mastery als geplante Felder.
-- Hover-Informationen sollen nur fuer Desktop verwendet werden. Mobile braucht sichtbare, tappbare Informationen oder Detailseiten.
+- Informationen muessen sichtbar, tappbar oder ueber Detailseiten erreichbar sein. Hover-only Informationen sind nicht erlaubt.
 
 ## Pack-Design
 
@@ -294,10 +295,10 @@ Der Shop zeigt zwischen Pack-Raster und Roll Odds eine kompakte Collection Progr
 
 ## Wichtige Designziele
 
-- Mobile-first entwickeln; Desktop bleibt als verdichtete breite Variante erhalten.
-- Mobile soll direkt auf dem Handy bedienbar sein: grosse Touch-Ziele, keine Hover-Abhaengigkeit, keine horizontale Seitenueberbreite.
-- Desktop soll weiterhin dicht, klar und wiederholt nutzbar bleiben.
-- Das Spiel soll wie ein hochwertiger Fantasy-/Codex-Collector wirken, aber funktional als Desktop-App/Tool brauchbar bleiben.
+- Mobile-only entwickeln; Zielbreite 390px bis 430px.
+- Die App soll direkt auf dem Handy bedienbar sein: grosse Touch-Ziele, keine Hover-Abhaengigkeit, keine horizontale Seitenueberbreite.
+- Desktop nicht als Feature-Ziel behandeln; grosse Screens zeigen nur die zentrierte mobile App-Spalte.
+- Das Spiel soll wie ein hochwertiger Fantasy-/Codex-Collector wirken, aber funktional als schnelle mobile Tracking-App brauchbar bleiben.
 - Die UI soll sich an dunklen, pixeligen Codex-/Logbook-Menues orientieren.
 - Topbar und Content Window sollen als langlebige Hauptstruktur dienen.
 - Module sollen trainierbare, sammelbare, upgradebare oder freischaltbare Inhalte bekommen koennen.

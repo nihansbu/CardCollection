@@ -88,10 +88,13 @@ export function formatDayKey(dayKey) {
 
 export function getRollingDays(dayCount = ACTIVITY_HEATMAP_DAYS) {
   const today = startOfLocalDay(new Date());
-  const firstDay = new Date(today.getTime() - (dayCount - 1) * DAY_MS);
+  const firstDay = new Date(today);
+  firstDay.setDate(today.getDate() - dayCount + 1);
 
   return Array.from({ length: dayCount }, (_, index) => {
-    const date = new Date(firstDay.getTime() + index * DAY_MS);
+    const date = new Date(firstDay);
+    date.setDate(firstDay.getDate() + index);
+
     return {
       date,
       key: getDayKey(date),

@@ -3,8 +3,6 @@ import { ContentPanel } from "../../components/ContentPanel.jsx";
 import {
   averageSkillLevel,
   flatSkills,
-  formatSkillXp,
-  getSkillXpForLevel,
   totalSkillLevel,
 } from "./skillData.js";
 
@@ -23,25 +21,6 @@ function SkillCard({ onSelect, skill }) {
         <span>{skill.group}</span>
         <strong>{skill.name}</strong>
         <small>Level {skill.level}/{skill.maxLevel}</small>
-      </div>
-      <div className="skill-tooltip" role="tooltip">
-        <strong>{skill.name}</strong>
-        <small>Level {skill.level}/{skill.maxLevel}</small>
-        <dl className="skill-tooltip-stats">
-          <div>
-            <dt>Current XP</dt>
-            <dd>{formatSkillXp(skill.currentXp)}</dd>
-          </div>
-          <div>
-            <dt>XP Remaining</dt>
-            <dd>{formatSkillXp(Math.max(0, getSkillXpForLevel(skill.level + 1) - skill.currentXp))}</dd>
-          </div>
-          <div>
-            <dt>Next Level At</dt>
-            <dd>{formatSkillXp(getSkillXpForLevel(skill.level + 1))}</dd>
-          </div>
-        </dl>
-        <p>{skill.description}</p>
       </div>
     </button>
   );

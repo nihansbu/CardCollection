@@ -43,7 +43,7 @@
   display: grid;
   gap: 10px;
   margin: 0 auto;
-  max-width: 760px;
+  max-width: 430px;
   padding: 10px;
   border: 2px solid #5f513f;
   background:
@@ -115,7 +115,7 @@
 .codex-nav {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(82px, 24vw);
+  grid-auto-columns: minmax(82px, 96px);
   gap: 8px;
   margin: 0 -2px;
   overflow-x: auto;
@@ -213,47 +213,5 @@
 
 .app-content {
   margin: 10px auto 0;
-  max-width: 760px;
-}
-
-@media (min-width: 760px) {
-  .app-shell {
-    padding: 18px;
-  }
-
-  .app-masthead {
-    grid-template-columns: minmax(0, 1fr) 220px;
-    align-items: end;
-    max-width: 1080px;
-    padding: 14px;
-  }
-
-  .codex-nav {
-    grid-column: 1 / -1;
-    grid-auto-columns: minmax(110px, 1fr);
-  }
-
-  .codex-nav-item {
-    min-height: 82px;
-  }
-
-  .codex-nav-icon {
-    width: 44px;
-    height: 44px;
-  }
-
-  .codex-nav-label {
-    font-size: 0.68rem;
-  }
-
-  .app-content {
-    max-width: 1080px;
-  }
-}
-
-@media (min-width: 1180px) {
-  .app-masthead,
-  .app-content {
-    max-width: 1240px;
-  }
+  max-width: 430px;
 }
