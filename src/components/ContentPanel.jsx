@@ -5,7 +5,7 @@ function getTitleSize(title) {
   if (title.length <= 6) return "3.35rem";
   if (title.length <= 8) return "3rem";
   if (title.length <= 10) return "2.55rem";
-  if (title.length <= 12) return "2.15rem";
+  if (title.length <= 12) return "1.85rem";
   if (title.length <= 16) return "1.75rem";
   return "1.45rem";
 }

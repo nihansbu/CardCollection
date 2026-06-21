@@ -24,7 +24,7 @@ import {
 } from "../features/skills/skillData.js";
 
 export function MainMenuView({ activeView }) {
-  const [selectedSkill, setSelectedSkill] = useState(null);
+  const [selectedSkillName, setSelectedSkillName] = useState(null);
   const [skillMode, setSkillMode] = useState("overview");
   const [selectedTrainingSlot, setSelectedTrainingSlot] = useState(0);
   const [skills, setSkills] = useState(() => normalizeSkills(readJson(skillStorageKeys.skills, [])));
@@ -46,7 +46,7 @@ export function MainMenuView({ activeView }) {
 
   useEffect(() => {
     if (activeView !== "skills") {
-      setSelectedSkill(null);
+      setSelectedSkillName(null);
       setSkillMode("overview");
     }
 
@@ -150,8 +150,10 @@ export function MainMenuView({ activeView }) {
   }
 
   if (activeView === "skills") {
+    const selectedSkill = selectedSkillName ? skills.find((skill) => skill.name === selectedSkillName) : null;
+
     if (selectedSkill) {
-      return <SkillDetailPanel onBack={() => setSelectedSkill(null)} skill={selectedSkill} />;
+      return <SkillDetailPanel onBack={() => setSelectedSkillName(null)} skill={selectedSkill} />;
     }
 
     if (skillMode === "training") {
@@ -168,7 +170,14 @@ export function MainMenuView({ activeView }) {
       );
     }
 
-    return <SkillsPanel onOpenTraining={() => setSkillMode("training")} onSelectSkill={setSelectedSkill} skills={skills} />;
+    return (
+      <SkillsPanel
+        onOpenTraining={() => setSkillMode("training")}
+        onSelectSkill={(skill) => setSelectedSkillName(skill.name)}
+        skills={skills}
+        trainingSlots={trainingSlots}
+      />
+    );
   }
 
   if (activeView === "activities") {

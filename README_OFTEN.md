@@ -36,7 +36,10 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Die vier Header-Stats im Training sind `RAP`, `Slot 1`, `Slot 2` und `Slot 3`. Die Slots sind tappbar; der aktive Slot wird gelb markiert.
 - In `Skills Training` weist ein Tap auf einen Skill den Skill dem aktiven Slot zu. Wenn derselbe Skill im aktiven Slot erneut getappt wird, wird er entfernt. Wenn der Skill in einem anderen Slot liegt, wandert er in den aktiven Slot.
 - Aktuell trainierte Skills werden im Grid gelb umrahmt und zeigen einen kleinen Slot-Badge.
+- Aktuell trainierte Skills werden sowohl in `Skills Training` als auch in der normalen Skills-Uebersicht gelb markiert.
+- Nur aktuell trainierte Skills zeigen in der Skill-Kachel zusaetzlich zum Level eine Prozentanzeige fuer den Fortschritt bis zum naechsten Level.
 - Skilltraining tauscht RAP 1:1 gegen Skill-XP. Insgesamt koennen maximal 5000 RAP/XP pro Stunde ausgegeben werden. Ein aktiver Slot bekommt 5000 XP/h, zwei aktive Slots je 2500 XP/h, drei aktive Slots je ein Drittel. RAP, Skill-XP und Level werden jede Sekunde aktualisiert und gespeichert.
+- Groessere RAP- und XP-Werte werden in kompakten Werten dargestellt, z. B. `7320` als `7,3k`.
 - Sailing ist als eigener Skill enthalten.
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
@@ -232,6 +235,8 @@ Training laeuft aktuell als Live-Tick im `MainMenuView`:
 3. Die ausgegebenen RAP werden 1:1 als XP auf aktive Skills verteilt.
 4. Skill-Level werden nach der RuneScape-artigen XP-Kurve neu berechnet.
 5. RAP, Skill-XP und Slots werden persistent in `localStorage` gespeichert.
+
+Skill-Detailseiten leiten den angezeigten Skill aus dem aktuellen Skill-State ab, nicht aus einer alten Objektkopie. Dadurch aktualisieren sich XP/Level auch dann live, wenn eine Skill-Detailseite offen ist.
 
 ### Legacy Packs
 

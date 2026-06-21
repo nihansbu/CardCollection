@@ -219,6 +219,13 @@
   letter-spacing: 0;
 }
 
+.skill-level-stack span {
+  margin-top: 3px;
+  color: #f4cf5a;
+  font-size: 0.54rem;
+  text-shadow: 1px 1px 0 #050403;
+}
+
 .skill-quicklook {
   position: sticky;
   right: 6px;

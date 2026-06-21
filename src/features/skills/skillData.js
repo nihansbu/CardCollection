@@ -134,3 +134,31 @@ export function getSkillTotals(skills) {
 export function formatSkillXp(value) {
   return new Intl.NumberFormat("de-DE").format(Math.floor(value));
 }
+
+export function formatCompactSkillValue(value) {
+  const number = Math.floor(Number(value) || 0);
+
+  if (number < 1000) {
+    return new Intl.NumberFormat("de-DE").format(number);
+  }
+
+  if (number < 1000000) {
+    const compactValue = number / 1000;
+    const maximumFractionDigits = compactValue < 10 && number % 1000 !== 0 ? 1 : 0;
+    return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits }).format(compactValue)}k`;
+  }
+
+  const compactValue = number / 1000000;
+  const maximumFractionDigits = compactValue < 10 && number % 1000000 !== 0 ? 1 : 0;
+  return `${new Intl.NumberFormat("de-DE", { maximumFractionDigits }).format(compactValue)}m`;
+}
+
+export function getSkillLevelProgress(skill) {
+  if (skill.level >= skill.maxLevel) return 100;
+
+  const currentLevelXp = getSkillXpForLevel(skill.level);
+  const nextLevelXp = getSkillXpForLevel(skill.level + 1);
+  const progress = ((skill.currentXp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100;
+
+  return Math.max(0, Math.min(99, Math.floor(progress)));
+}

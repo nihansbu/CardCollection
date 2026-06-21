@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { BarChart3, CircleDot, Coins, Grid3X3, Sigma, Swords } from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import {
-  formatSkillXp,
+  formatCompactSkillValue,
+  getSkillLevelProgress,
   getSkillXpForLevel,
   getSkillTotals,
 } from "./skillData.js";
@@ -44,6 +45,7 @@ function SkillCard({ isSelectedTrainingSkill = false, onPreview, onSelect, skill
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
   const isTrainingSkill = trainingSlotIndex >= 0;
+  const levelProgress = isTrainingSkill ? getSkillLevelProgress(skill) : null;
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -89,6 +91,7 @@ function SkillCard({ isSelectedTrainingSkill = false, onPreview, onSelect, skill
       {isTrainingSkill ? <span className="skill-training-badge" aria-hidden="true">{trainingSlotIndex + 1}</span> : null}
       <div className="skill-level-stack" aria-hidden="true">
         <strong>{skill.level}</strong>
+        {isTrainingSkill ? <span>{levelProgress}%</span> : null}
       </div>
     </button>
   );
@@ -139,11 +142,11 @@ function SkillGrid({
             </div>
             <div>
               <dt>XP</dt>
-              <dd>{formatSkillXp(previewSkill.currentXp)}</dd>
+              <dd>{formatCompactSkillValue(previewSkill.currentXp)}</dd>
             </div>
             <div>
               <dt>Next</dt>
-              <dd>{formatSkillXp(getSkillXpForLevel(previewSkill.level + 1))}</dd>
+              <dd>{formatCompactSkillValue(getSkillXpForLevel(previewSkill.level + 1))}</dd>
             </div>
           </dl>
           <p>{previewSkill.description}</p>
@@ -159,11 +162,11 @@ function getSkillStats(skills) {
   return [
     { Icon: BarChart3, label: "Total Level", value: totalSkillLevel },
     { Icon: Sigma, label: "Average Level", value: averageSkillLevel },
-    { Icon: XpIcon, label: "Total XP", value: formatSkillXp(totalSkillXp) },
+    { Icon: XpIcon, label: "Total XP", value: formatCompactSkillValue(totalSkillXp) },
   ];
 }
 
-export function SkillsPanel({ onOpenTraining, onSelectSkill, skills }) {
+export function SkillsPanel({ onOpenTraining, onSelectSkill, skills, trainingSlots }) {
   const [previewSkill, setPreviewSkill] = useState(null);
 
   return (
@@ -179,7 +182,14 @@ export function SkillsPanel({ onOpenTraining, onSelectSkill, skills }) {
       stats={getSkillStats(skills)}
       title="Skills"
     >
-      <SkillGrid onSelectSkill={onSelectSkill} previewSkill={previewSkill} setPreviewSkill={setPreviewSkill} skills={skills} />
+      <SkillGrid
+        onSelectSkill={onSelectSkill}
+        previewSkill={previewSkill}
+        selectedTrainingSlot={-1}
+        setPreviewSkill={setPreviewSkill}
+        skills={skills}
+        trainingSlots={trainingSlots}
+      />
     </ContentPanel>
   );
 }
@@ -207,7 +217,7 @@ export function SkillsTrainingPanel({
         },
       ]}
       stats={[
-        { Icon: Coins, label: "RAP", value: formatSkillXp(rap) },
+        { Icon: Coins, label: "RAP", value: formatCompactSkillValue(rap) },
         ...trainingSlots.map((skillName, index) => {
           const trainingSkill = skillName ? skillsByName.get(skillName) : null;
           const SlotIcon = trainingSkill ? skillIcons[trainingSkill.name] : CircleDot;
@@ -243,7 +253,7 @@ export function SkillDetailPanel({ onBack, skill }) {
       onBack={onBack}
       stats={[
         { label: "Level", value: skill.level },
-        { label: "XP", value: formatSkillXp(skill.currentXp) },
+        { label: "XP", value: formatCompactSkillValue(skill.currentXp) },
         { label: "Unlocks", value: "Soon" },
       ]}
       title={skill.name}
