@@ -1,17 +1,19 @@
 import { chromium } from "playwright-core";
 
-const baseUrl = process.env.RAP_APP_URL ?? "http://127.0.0.1:4173";
+const baseUrl = process.env.RAP_APP_URL ?? "http://127.0.0.1:5173/CardCollection/";
 const browser = await chromium.launch({
-  headless: true,
-  executablePath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
   args: ["--disable-gpu"],
+  channel: "msedge",
+  headless: true,
 });
 
-const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+const page = await browser.newPage({ isMobile: true, viewport: { width: 393, height: 852 } });
 const messages = [];
 
 page.on("console", (message) => {
-  messages.push(`${message.type()}: ${message.text()}`);
+  if (message.type() === "error") {
+    messages.push(`${message.type()}: ${message.text()}`);
+  }
 });
 
 page.on("pageerror", (error) => {
@@ -19,45 +21,66 @@ page.on("pageerror", (error) => {
 });
 
 let ok = false;
-let bodyText = "";
-let rootHtmlLength = 0;
 let failure = null;
+let result = {};
 
 try {
-  await page.goto(baseUrl, { waitUntil: "networkidle" });
-  await page.waitForTimeout(1000);
-  rootHtmlLength = await page.locator("#root").evaluate((element) => element.innerHTML.length);
-  bodyText = await page.locator("body").innerText();
+  await page.addInitScript(() => {
+    localStorage.setItem("codex-collector-v1-rap", "10000");
+    localStorage.removeItem("codex-collector-v1-skills");
+    localStorage.setItem("codex-collector-v1-skill-training-slots", JSON.stringify(["Woodcutting", null, null]));
+    localStorage.setItem("codex-collector-v1-skill-training-last-tick", String(Date.now() - 60000));
+  });
 
-  await page.getByRole("button", { name: /Karten anzeigen/ }).first().click({ timeout: 5000 });
-  await page.getByText("Master Chief").waitFor({ timeout: 5000 });
-  await page.getByRole("button", { name: "Kartenliste schliessen" }).click({ timeout: 5000 });
-  await page.getByRole("button", { name: "Test-RAP hinzufuegen" }).click({ timeout: 5000 });
-  await page.getByRole("button", { name: /kaufen/i }).first().click({ timeout: 5000 });
-  await page.getByText("Pack geoeffnet.").waitFor({ timeout: 5000 });
-  await page.getByRole("button", { name: "Weiter" }).click({ timeout: 5000 });
-  ok = true;
+  await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page.locator('.bottom-nav-item[aria-label="Skills"]').click();
+  await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
+
+  const trainingCards = await page.locator(".skill-card.is-training-skill").count();
+  const woodcuttingClass = await page.getByRole("button", { name: /Woodcutting/i }).getAttribute("class");
+  const attackClass = await page.getByRole("button", { name: /Attack/i }).getAttribute("class");
+  const storedRap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
+  const storedSkills = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-skills")));
+  const woodcutting = storedSkills.find((skill) => skill.name === "Woodcutting");
+  const overflow = await page.evaluate(() => ({
+    bodyScrollHeight: document.body.scrollHeight,
+    bodyScrollWidth: document.body.scrollWidth,
+    clientHeight: document.documentElement.clientHeight,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+
+  result = {
+    attackClass,
+    overflow,
+    storedRap,
+    trainingCards,
+    woodcuttingClass,
+    woodcuttingLevel: woodcutting?.level,
+    woodcuttingXp: woodcutting?.currentXp,
+  };
+
+  ok = (
+    trainingCards === 1 &&
+    woodcuttingClass?.includes("is-training-skill") &&
+    !attackClass?.includes("is-training-skill") &&
+    storedRap < 10000 &&
+    Number(woodcutting?.currentXp) > 0 &&
+    overflow.bodyScrollWidth === overflow.clientWidth &&
+    overflow.bodyScrollHeight === overflow.clientHeight &&
+    messages.length === 0
+  );
 } catch (error) {
   failure = error.message;
 } finally {
-  await page.screenshot({
-    path: "C:\\Users\\nikla\\Documents\\CardCollection\\shop-screenshot.png",
-    fullPage: true,
-  });
-
   await browser.close();
 }
 
 console.log(JSON.stringify({
-  ok,
-  url: baseUrl,
-  rootHtmlLength,
-  bodyPreview: bodyText.slice(0, 600),
-  containsShopNav: bodyText.includes("SHOP") && bodyText.includes("SAMMLUNG"),
-  containsCollectionProgress: /Total Cards\s+\d+\/24/.test(bodyText),
-  containsMythicOdds: bodyText.includes("Mythic") && bodyText.includes("0.33%"),
-  messages,
+  baseUrl,
   failure,
+  messages,
+  ok,
+  result,
 }, null, 2));
 
 if (!ok) {

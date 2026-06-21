@@ -132,10 +132,6 @@ export function getSkillTotals(skills) {
   };
 }
 
-export function formatSkillXp(value) {
-  return new Intl.NumberFormat("de-DE").format(Math.floor(value));
-}
-
 export function formatCompactSkillValue(value) {
   const number = Math.floor(Number(value) || 0);
 

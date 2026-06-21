@@ -74,7 +74,7 @@ Das Projekt wird ab jetzt ueber GitHub versioniert und soll regelmaessig dorthin
 - GitHub Pages wird als kostenloses statisches Hosting genutzt, damit die App auch ausserhalb des lokalen WLANs erreichbar ist.
 - Der GitHub-Pages-Deploy laeuft ueber `.github/workflows/deploy-pages.yml`.
 - Vite nutzt `base: "./"` in `vite.config.js`, damit gebaute Assets unter GitHub Pages korrekt geladen werden.
-- Vor dem Push mindestens `npm run build` ausfuehren.
+- Vor dem Push mindestens `npm run build` ausfuehren. Fuer mobile Skills-/Training-Regressions zusaetzlich `npm run verify` verwenden, waehrend der Dev-Server auf `127.0.0.1:5173` laeuft.
 - Diese Projekt-Memory weiter aktualisieren, wenn sich Hosting, Branching, Deployment oder technische Grundregeln aendern.
 
 ## UI-Aufbau
@@ -100,6 +100,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/components/CardListModal.jsx`: Kartenliste pro Pack.
 - `src/components/PullModal.jsx`: Ergebnis nach Pack-Oeffnung.
 - `src/utils/collection.js`: abgeleitete Collection-Statistiken.
+- `scripts/verify.mjs`: Mobile-Smoke-Test fuer aktuellen Skills-/Offline-Training-Flow.
 - `vite.config.js`: Vite-Konfiguration, inklusive GitHub-Pages-kompatibler relativer Asset-Basis.
 - `.github/workflows/deploy-pages.yml`: GitHub-Actions-Workflow fuer Build und GitHub-Pages-Deployment.
 
@@ -116,6 +117,14 @@ CSS ist nach Flaechen getrennt:
 - `src/styles/modals.css`
 
 Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-menu.css` wurden aufgeteilt. Neue Systeme sollen bevorzugt als eigenes Feature unter `src/features/<name>/` plus eigenes CSS in `src/styles/` angelegt werden.
+
+Healthcheck 2026-06-21:
+
+- Skills ist aktuell die stilistische Referenz fuer neue Module.
+- Activities ist funktional, soll bei einer spaeteren UI-Ueberarbeitung aber staerker dem Skills-Muster folgen: Header-Stats, Action-Zone, kompakter Body, keine abweichende Seitenlogik.
+- Legacy-Pack-/Collection-Dateien bleiben bewusst im Repo, weil Packs/Karten als spaeteres Modul nicht verworfen sind.
+- Die alte ungenutzte `src/storage.js` wurde entfernt, weil sie nur alte Pack-Shop-Keys enthielt und nicht mehr eingebunden war.
+- `scripts/verify.mjs` wurde vom alten Shop-Test auf den aktuellen mobile Skills-/Offline-Training-Flow umgestellt.
 
 ## Codex-UI-Regeln
 
@@ -163,6 +172,8 @@ Pack-Karten sollen image-first bleiben:
 - RuneScape und World of Warcraft nutzen noch temporare grafische Platzhalter.
 
 ## Aktuelles Datenmodell
+
+Aktuell ist `localStorage` noch die primaere Persistenz. Das ist fuer den Prototyp ausreichend, aber nicht ausreichend fuer wertvollen Langzeitfortschritt. Cloud Save ist ein priorisiertes Architekturthema, bevor Fortschritt stark wertvoll oder oeffentlich wird.
 
 ### RAP und Activities
 
@@ -241,6 +252,49 @@ Training laeuft aktuell als Live- und Offline-Tick im `MainMenuView`:
 6. Wenn nicht mehr genug RAP vorhanden ist, wird nur bis `0` ausgegeben und danach werden die Trainingsslots geleert.
 
 Skill-Detailseiten leiten den angezeigten Skill aus dem aktuellen Skill-State ab, nicht aus einer alten Objektkopie. Dadurch aktualisieren sich XP/Level auch dann live, wenn eine Skill-Detailseite offen ist.
+
+## Cloud Save und Account-Plan
+
+Ziel: Fortschritt darf nicht an ein einzelnes Browser-LocalStorage gebunden bleiben. Der Spieler soll sich auf einem anderen Handy oder spaeter in einer nativen App anmelden koennen und denselben Fortschritt sehen.
+
+Empfohlene Richtung fuer den naechsten Architektur-Schritt: Supabase.
+
+Begruendung:
+
+- Postgres passt gut zum Spielstand, weil Skills, Activities, Logs, Training-State, spaetere Monster/Karten und Events langfristig strukturierte Daten sind.
+- Supabase Auth deckt Account/Login ab, ohne sofort einen eigenen Auth-Server zu bauen.
+- Row Level Security muss von Anfang an verwendet werden, damit jeder User nur seine eigenen Save-Daten lesen und schreiben kann.
+- GitHub Pages kann als statisches Frontend vorerst bleiben; die App spricht direkt mit Supabase APIs.
+- Eine spaetere mobile Store-App kann dieselbe Backend-Struktur weiterverwenden.
+
+Firebase bleibt eine realistische Alternative, vor allem wenn maximale Mobile-SDK-Integration wichtiger wird als relationales Datenmodell. Fuer dieses Projekt ist Supabase/Postgres aber voraussichtlich sauberer, weil Account-Fortschritt, Logs, Balancing und spaetere Auswertungen relational besser abbildbar sind.
+
+Cloudflare D1/Workers ist technisch interessant, aber eher ein Backend/API-Ansatz. Fuer den naechsten Schritt waere der Aufwand hoeher, weil Auth, Policies und Sync-Konflikte staerker selbst entworfen werden muessten.
+
+Vorgeschlagenes Datenmodell fuer Cloud Save:
+
+- `profiles`: ein Datensatz pro User, Basisdaten und Created/Updated-Timestamps.
+- `game_saves`: aktuelle kanonische Save-Snapshot-Version pro User, z. B. RAP, Skills, TrainingSlots, TrainingLastTick, Settings und Versionsnummer als JSONB.
+- `activity_events`: append-only Log fuer getrackte Aktivitaeten, damit Fortschritt und Analytics nachvollziehbar bleiben.
+- `save_events`: optionales append-only Journal fuer wichtige Fortschrittsereignisse, z. B. Skill-Level-Up, RAP-Ausgaben, spaetere Unlocks.
+- `client_sync_state`: optional fuer Konfliktloesung, letzte Client-Version, Device-ID und letzter Sync-Zeitpunkt.
+
+Migrationsreihenfolge:
+
+1. Lokales Save-Schema zentralisieren: eine einzige Save-Schicht statt verstreuter `localStorage`-Keys.
+2. Export-/Import-Snapshot bauen, damit vorhandener Fortschritt gesichert werden kann.
+3. Supabase-Projekt anlegen, Auth aktivieren, Tabellen und RLS-Policies erstellen.
+4. Login-Screen oder Account-Button als kleines Modul einfuehren.
+5. Beim ersten Login lokalen Save-Snapshot in die Cloud migrieren.
+6. Danach Cloud als Quelle der Wahrheit verwenden und `localStorage` nur noch als Offline-/Performance-Cache nutzen.
+7. Konfliktregel definieren: serverseitiger `updated_at` plus Save-Version; bei Konflikt erst konservativ nicht ueberschreiben, sondern zusammenfuehren oder User bestaetigen lassen.
+
+Wichtige Regel fuer Idle-/Offline-Training:
+
+- Der Server sollte langfristig nicht jede Sekunde speichern.
+- Gespeichert wird der letzte abgerechnete Trainingszeitpunkt.
+- Beim Oeffnen, Syncen oder Server-Update wird vergangene Zeit deterministisch nachgerechnet.
+- Dadurch bleibt Idle-Fortschritt billig, nachvollziehbar und robust.
 
 ### Legacy Packs
 
