@@ -60,14 +60,19 @@ try {
   const skillDetailActionText = await page.locator(".content-actions").innerText();
   const skillDetailTopbar = await page.locator(".content-title-box").evaluate((node) => {
     const box = node.getBoundingClientRect();
-    const title = node.querySelector("h1").getBoundingClientRect();
+    const titleNode = node.querySelector("h1");
+    const title = titleNode.getBoundingClientRect();
     const back = node.querySelector(".content-back-button").getBoundingClientRect();
+    const styles = window.getComputedStyle(node);
+    const titleAreaLeft = back.right + Number.parseFloat(styles.columnGap || styles.gap || "0");
+    const titleAreaRight = box.right - Number.parseFloat(styles.paddingRight || "0");
 
     return {
       backInsideTitle: back.left >= box.left && back.right <= box.right,
       backLeftOffset: Math.round(back.left - box.left),
-      boxCenter: Math.round(box.left + box.width / 2),
+      titleAreaCenter: Math.round(titleAreaLeft + (titleAreaRight - titleAreaLeft) / 2),
       titleCenter: Math.round(title.left + title.width / 2),
+      titleFits: titleNode.scrollWidth <= titleNode.clientWidth + 1,
     };
   });
   await page.locator(".content-action-button", { hasText: "Skills" }).click();
@@ -127,7 +132,8 @@ try {
     skillDetailActionText.includes("SKILLS") &&
     skillDetailTopbar.backInsideTitle &&
     skillDetailTopbar.backLeftOffset <= 12 &&
-    Math.abs(skillDetailTopbar.boxCenter - skillDetailTopbar.titleCenter) <= 2 &&
+    Math.abs(skillDetailTopbar.titleAreaCenter - skillDetailTopbar.titleCenter) <= 2 &&
+    skillDetailTopbar.titleFits &&
     woodcuttingClass?.includes("is-training-skill") &&
     !attackClass?.includes("is-training-skill") &&
     woodcuttingCardText.includes("WOODCUTTING") &&

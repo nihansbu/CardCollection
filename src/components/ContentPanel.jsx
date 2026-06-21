@@ -3,13 +3,22 @@ import { ArrowLeft } from "lucide-react";
 
 const LONG_PRESS_MS = 520;
 
-function getTitleSize(title) {
-  if (title.length <= 6) return "3rem";
-  if (title.length <= 8) return "2.3rem";
-  if (title.length <= 10) return "1.35rem";
-  if (title.length <= 12) return "1.28rem";
-  if (title.length <= 16) return "1.28rem";
-  return "1.08rem";
+function getTitleSize(title, isCompact) {
+  if (!isCompact) {
+    if (title.length <= 6) return "3rem";
+    if (title.length <= 8) return "2.3rem";
+    if (title.length <= 10) return "1.8rem";
+    if (title.length <= 12) return "1.55rem";
+    if (title.length <= 16) return "1.28rem";
+    return "1.08rem";
+  }
+
+  if (title.length <= 6) return "2rem";
+  if (title.length <= 8) return "1.78rem";
+  if (title.length <= 10) return "1.42rem";
+  if (title.length <= 12) return "1.18rem";
+  if (title.length <= 16) return "0.92rem";
+  return "0.78rem";
 }
 
 export function ContentPanel({
@@ -26,6 +35,7 @@ export function ContentPanel({
   const suppressClick = useRef(false);
   const headingId = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`;
   const headerClassName = onBack ? "content-header content-header-with-back" : "content-header content-header-no-back";
+  const isCompactTitle = Boolean(onBack || actions.length);
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -66,7 +76,10 @@ export function ContentPanel({
   return (
     <section className={`codex-content-panel ${className}`} aria-labelledby={headingId}>
       <div className={headerClassName}>
-        <div className="content-title-box" style={{ "--title-size": getTitleSize(title) }}>
+        <div
+          className={`content-title-box ${onBack ? "has-back" : ""}`.trim()}
+          style={{ "--title-size": getTitleSize(title, isCompactTitle) }}
+        >
           {onBack ? (
             <button className="content-back-button" onClick={onBack} type="button" aria-label="Back">
               <ArrowLeft size={24} strokeWidth={3} />
