@@ -12,12 +12,14 @@ Das Spiel ist als persoenliches, nicht veroeffentlichtes Fan-Projekt gedacht. Mo
 
 ## Aktueller Fokus
 
-Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fantasy-Rahmenstil. Die mobile Masthead-Navigation soll als dauerhafte Modulnavigation dienen.
+Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fantasy-Rahmenstil. Die mobile Topbar-Navigation soll als dauerhafte Modulnavigation dienen.
 
 - Mobile-only Layout mit kompaktem Codex-Rahmen.
 - Desktop wird nicht mehr gezielt designed oder unterstuetzt. Grosse Screens zeigen nur die mobile App-Spalte zentriert.
-- Die App-Shell besteht aus einem kompakten Masthead mit Projektname, aktivem Modul, Status-Strip und horizontal scrollbarerer Modulnavigation.
-- Die Navigation behaelt 16 Slots und bleibt als horizontale Button-Leiste fuer Touchscreens ausgelegt.
+- Die App-Shell besteht aus einer kompakten, einklappbaren Topbar ohne redundante Status-/Seitentexte.
+- Die Navigation behaelt 16 Slots und zeigt sie als 4x4-Touchraster.
+- Die Topbar hat einen mittigen Handle-Button unterhalb des Rasters. Tap klappt die Topbar ein oder aus, Swipe nach oben/unten soll ebenfalls funktionieren.
+- Nach Auswahl eines Moduls klappt die Topbar automatisch ein, damit mehr Platz fuer den Seitenscreen bleibt.
 - Slot 1: Codex.
 - Slot 2: Skills.
 - Slot 3: Activities.
@@ -70,7 +72,7 @@ Das Projekt wird ab jetzt ueber GitHub versioniert und soll regelmaessig dorthin
 Die App ist in kleinere Views und Komponenten aufgeteilt:
 
 - `src/App.jsx`: Aktive Codex-View und Routing zwischen Codex-Modulen.
-- `src/components/AppShell.jsx`: Mobile Masthead mit Status-Strip und horizontaler Modulnavigation mit 16 Slots.
+- `src/components/AppShell.jsx`: Einklappbare Mobile-Topbar mit 16-Slot-Raster und Handle-Button.
 - `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Subpage-State und Activity-Subpage-State.
 - `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Slot, festem Seitentitel, Action-Button-Zone und Stats-Bar.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht und Skill-Detailseiten.
@@ -114,7 +116,7 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
 - Keine Desktop-spezifischen Breakpoints, keine mehrspaltigen Desktop-Grids und keine Hover-only Interaktionen.
 - Grosse Screens duerfen die mobile App-Spalte nur zentrieren; Desktop ist kein eigenes Feature-Ziel mehr.
 - Wiederverwendbare Flaechen sollen bevorzugt ueber `AppShell`, `ContentPanel`, mobile Listenkarten, Header-Actions und Header-Stats laufen.
-- Die Modulnavigation bleibt horizontal scrollbar und darf weitere Slots aufnehmen, ohne das mobile Layout zu sprengen.
+- Die Modulnavigation bleibt ein kompaktes 4x4-Touchraster. Keine horizontale Scrollbar in der Hauptnavigation.
 - Das Content Window besteht aus:
   - gemeinsamer Panel-Rahmen.
   - Header-Bar mit optionalem Back-Slot ganz links.
