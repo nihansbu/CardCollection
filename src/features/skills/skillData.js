@@ -16,6 +16,10 @@ export const skillStorageKeys = {
   unlocks: localStorageKeys.unlocks,
 };
 
+function publicAsset(path) {
+  return `${import.meta.env?.DEV ? "/" : "./"}${path}`;
+}
+
 export const skillGroups = [
   {
     title: "Combat",
@@ -83,6 +87,7 @@ export const flatSkills = skillGroups.flatMap((group) => group.skills.map(([name
 export const skillUnlockDefinitions = [
   {
     description: "Basic trees and starting logs are available immediately.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/normal-logs.png"),
     iconText: "LOG",
     id: "woodcutting-normal-logs",
     levelRequired: 1,
@@ -91,6 +96,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock oak trees as the first paid Woodcutting milestone.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/oak-logs.png"),
     iconText: "OAK",
     id: "woodcutting-oak-logs",
     levelRequired: 2,
@@ -99,6 +105,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock willow trees for early gathering routes.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/willow-logs.png"),
     iconText: "WIL",
     id: "woodcutting-willow-logs",
     levelRequired: 5,
@@ -107,6 +114,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock maple trees for mid-tier logs.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/maple-logs.png"),
     iconText: "MAP",
     id: "woodcutting-maple-logs",
     levelRequired: 10,
@@ -115,6 +123,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock teak trees and faster material gathering.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/teak-logs.png"),
     iconText: "TEK",
     id: "woodcutting-teak-logs",
     levelRequired: 15,
@@ -123,6 +132,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock mahogany trees for valuable hardwood.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/mahogany-logs.png"),
     iconText: "MAH",
     id: "woodcutting-mahogany-logs",
     levelRequired: 20,
@@ -131,6 +141,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock yew trees and high-value long-term gathering.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/yew-logs.png"),
     iconText: "YEW",
     id: "woodcutting-yew-logs",
     levelRequired: 30,
@@ -139,6 +150,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock magic trees for rare logs and late-game activities.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/magic-logs.png"),
     iconText: "MAG",
     id: "woodcutting-magic-logs",
     levelRequired: 40,
@@ -147,6 +159,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock elder trees as a high-level Woodcutting target.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/elder-logs.png"),
     iconText: "ELD",
     id: "woodcutting-elder-logs",
     levelRequired: 60,
@@ -155,6 +168,7 @@ export const skillUnlockDefinitions = [
   },
   {
     description: "Unlock crystal trees for future premium gathering rewards.",
+    iconSrc: publicAsset("unlock-icons/woodcutting/crystal-trees.png"),
     iconText: "CRY",
     id: "woodcutting-crystal-trees",
     levelRequired: 75,

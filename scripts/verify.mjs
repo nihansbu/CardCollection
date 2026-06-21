@@ -90,6 +90,12 @@ try {
   const skillDetailActionText = await page.locator(".content-actions").innerText();
   const skillDetailStatsText = await page.locator(".content-stats").innerText();
   const normalLogsClass = await page.getByRole("button", { name: /Normal Logs/i }).getAttribute("class");
+  const unlockImageMetrics = await page.locator(".skill-unlock-icon img").evaluateAll((images) => images.slice(0, 6).map((image) => ({
+    complete: image.complete,
+    naturalHeight: image.naturalHeight,
+    naturalWidth: image.naturalWidth,
+    src: image.getAttribute("src"),
+  })));
   const oakLogsButton = page.getByRole("button", { name: /Oak Logs/i });
   const oakLogsClassBefore = await oakLogsButton.getAttribute("class");
   const willowLogsClass = await page.getByRole("button", { name: /Willow Logs/i }).getAttribute("class");
@@ -175,6 +181,7 @@ try {
     skillDetailStatsText,
     skillDetailTopbar,
     normalLogsClass,
+    unlockImageMetrics,
     oakLogsClassAfter,
     oakLogsClassAfterOffline,
     oakLogsClassBefore,
@@ -207,6 +214,8 @@ try {
     Math.abs(skillDetailTopbar.titleAreaCenter - skillDetailTopbar.titleCenter) <= 2 &&
     skillDetailTopbar.titleFits &&
     normalLogsClass?.includes("is-unlocked") &&
+    unlockImageMetrics.length >= 6 &&
+    unlockImageMetrics.every((image) => image.complete && image.naturalWidth === 128 && image.naturalHeight === 128) &&
     oakLogsClassBefore?.includes("is-available") &&
     oakLogsClassAfter?.includes("is-unlocking") &&
     oakLogsClassAfterOffline?.includes("is-unlocked") &&

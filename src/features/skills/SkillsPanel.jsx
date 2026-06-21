@@ -362,7 +362,7 @@ function SkillUnlockRow({ onStartUnlock, skill, unlock }) {
     >
       <span className="skill-unlock-level">Lv {unlock.levelRequired}</span>
       <span className="skill-unlock-icon" aria-hidden="true">
-        {unlock.iconText}
+        {unlock.iconSrc ? <img alt="" src={unlock.iconSrc} /> : unlock.iconText}
       </span>
       <span className="skill-unlock-copy">
         <strong>{unlock.name}</strong>

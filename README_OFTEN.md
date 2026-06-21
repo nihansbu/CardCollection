@@ -52,6 +52,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Skill-Subpages zeigen in der Header-Stats-Bar aktuell `Level`, `Current XP`, `XP to Next Level` und `RAP`, weil Unlocks direkt RAP verbrauchen.
 - Woodcutting hat als erster Skill eine Unlock-Liste im Skill-Detail-Body. Unlocks werden nicht in Kategorien unterteilt, sondern als volle Zeilen untereinander dargestellt.
 - Unlock-Zeilen zeigen Level-Anforderung, Icon-/Item-Platzhalter, Unlock-Name, RAP-Kosten und Dauer. Die Zeilen nutzen die volle Breite und sind ungefaehr so hoch wie Skill-Kacheln.
+- Woodcutting-Unlocks nutzen generierte transparente PNG-Icons unter `public/unlock-icons/woodcutting/`. Der runde beige Icon-Hintergrund ist bewusst CSS/UI und nicht in den PNGs gebacken.
+- Unlock-Icons sollen als einfache, gut lesbare Pixel-/Fantasy-Items angelegt werden. Aehnliche Item-Familien, zum Beispiel Logs oder spaeter Aexte, sollen eine gemeinsame Silhouette nutzen und sich primaer durch Material/Farbe unterscheiden.
 - Unlock-Zeilen zeigen ebenfalls eine horizontale Fortschrittsfuellung von links nach rechts. Freigeschaltete Unlocks sind 100 Prozent gefuellt; laufende Unlocks animieren die Füllung und speichern auch kleine Teilfortschritte.
 - Unlock-Statusfarben: rot = Level noch nicht erreicht, gelb = Level erreicht und kaufbar, tuerkis = Unlock laeuft gerade, gruen = freigeschaltet.
 - Level-1-Unlocks sind automatisch freigeschaltet. Ab Level 2 muessen Unlocks mit RAP gestartet und fertig abgerechnet werden.
@@ -104,6 +106,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Account-Erstellung/Login, Cloud-Auth-Formular und lokalem Save-Status.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
 - `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
+- `public/unlock-icons/woodcutting/`: generierte transparente Woodcutting-Unlock-Icons; runde Badge-Hintergruende bleiben CSS.
 - `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.
 - `src/features/activities/activityData.js`: Activity-Defaults, Activity-Typen, Sortieroptionen und Storage-Keys.
 - `src/features/activities/activityUtils.js`: Activity-Berechnungen, Storage-Helfer, Log-Gruppierung, Stats und Heatmap-Daten.
