@@ -12,33 +12,28 @@ Das Spiel ist als persoenliches, nicht veroeffentlichtes Fan-Projekt gedacht. Mo
 
 ## Aktueller Fokus
 
-Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fantasy-Rahmenstil. Die mobile Topbar-Navigation soll als dauerhafte Modulnavigation dienen.
+Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fantasy-Rahmenstil. Die mobile Bottom-Navigation soll als dauerhafte Modulnavigation dienen.
 
 - Mobile-only Layout mit kompaktem Codex-Rahmen.
 - Desktop wird nicht mehr gezielt designed oder unterstuetzt. Grosse Screens zeigen nur die mobile App-Spalte zentriert.
-- Die App-Shell besteht aus einer kompakten, einklappbaren Topbar ohne redundante Status-/Seitentexte.
-- Die Navigation behaelt 16 Slots und zeigt sie als 4x4-Touchraster.
-- Die Topbar hat einen mittigen Handle-Button unterhalb des Rasters. Tap klappt die Topbar ein oder aus, Swipe nach oben/unten soll ebenfalls funktionieren.
-- Der eingeklappte Topbar-Handle soll keinen eigenen vertikalen Layout-Space reservieren, sondern als Overlay leicht in den oberen Content-Rahmen hineinragen.
-- Nach Auswahl eines Moduls klappt die Topbar automatisch ein, damit mehr Platz fuer den Seitenscreen bleibt.
-- Slot 1: Codex.
-- Slot 2: Skills.
-- Slot 3: Activities.
-- Slot 4: Beastiary.
-- Slots 5 bis 16 sind bewusst Placeholder, damit klar ist, dass diese Module noch nicht im Spiel sind.
-- Der aktive Topbar-Button wird rot markiert.
+- Die App-Shell nutzt eine dauerhaft sichtbare Bottom-Navigation statt einer Topbar.
+- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Inventory, Skills, Activities, Beastiary, Codex, Slot 7 und More.
+- Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Codex, Gear, Stats und Quests als vorbereiteten Sub-Buttons.
+- Die Bottom-Navigation bleibt fixiert sichtbar. Flyouts duerfen die Content Section leicht ueberlappen.
+- Der globale Screen selbst soll nicht vertikal scrollen. Nur die jeweilige Content-Body-Flaeche innerhalb des ContentPanel darf scrollen.
+- Der aktive Bottom-Navigation-Button wird rot markiert.
 - Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
 - Jedes Modul nutzt eine gemeinsame Header-Bar mit optionalem Back-Slot, festem Titelcontainer, optionaler horizontaler Action-Button-Zone und eigenen Stats.
 - Hauptseiten ohne Back-Button zeigen zuerst den Titel, dann Actions und Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
 - Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als kompaktes mobile-only 3-Spalten-Skillpanel nach RuneScape-Anmutung. Die ehemalige untere RuneScape-Leiste mit Total Level/Combat/Quest Points wird nicht kopiert, weil diese Informationen in der vorhandenen Header-Stats-Bar leben.
-- Das Skills-Panel muss auch im normalen mobilen Browser mit sichtbarer Chrome-/Android-Leiste kompakt genug bleiben, damit alle 30 Skills ohne vertikales Scrollen sichtbar sind.
+- Das Skills-Panel muss auch im normalen mobilen Browser mit sichtbarer Chrome-/Android-Leiste kompakt bleiben. Aktuell sollen 30 Skills in die Hauptansicht passen; bei mehr Inhalt scrollt nur die interne Content-Body-Flaeche.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
 - Die Skill-Kacheln zeigen nur das aktuelle Level, nicht `1/99`. Max-Level bleibt im Datenmodell erhalten.
 - Alle 30 Skills nutzen fantasy/MMO-inspirierte Icons im kompakten RuneScape-artigen Skillpanel.
 - Die Skills-Header-Stats zeigen `Total Skills`, die addierten `Skill Level` und das gerundete `Average Level`.
 - Sailing ist als eigener Skill enthalten.
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
-- Skill-Subpages behalten die globale Topbar bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
+- Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
 - Long-Press auf einem Skill zeigt eine kompakte Quicklook-Info im Skills-Panel. Normaler Tap oeffnet weiterhin die Detailseite.
 - Die Skill-XP-Werte nutzen aktuell eine RuneScape-artige XP-Kurve. Level 1 startet bei 0 XP, Level 2 liegt bei 83 XP.
@@ -76,7 +71,7 @@ Das Projekt wird ab jetzt ueber GitHub versioniert und soll regelmaessig dorthin
 Die App ist in kleinere Views und Komponenten aufgeteilt:
 
 - `src/App.jsx`: Aktive Codex-View und Routing zwischen Codex-Modulen.
-- `src/components/AppShell.jsx`: Einklappbare Mobile-Topbar mit 16-Slot-Raster und Handle-Button.
+- `src/components/AppShell.jsx`: Fixierte Mobile-Bottom-Navigation mit 8 Slots und Character-Flyout.
 - `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Subpage-State und Activity-Subpage-State.
 - `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Slot, festem Seitentitel, Action-Button-Zone und Stats-Bar.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht und Skill-Detailseiten.
@@ -113,14 +108,14 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
 
 ## Codex-UI-Regeln
 
-- Die Topbar bleibt auf allen Subscreens sichtbar und stabil.
-- Neue echte Module sollen zuerst als Topbar-Slot, dann als eigener ContentPanel-Inhalt angelegt werden.
+- Die Bottom-Navigation bleibt auf allen Subscreens sichtbar und stabil.
+- Neue echte Module sollen zuerst als Bottom-Navigation-Slot oder Character-Flyout-Subslot, dann als eigener ContentPanel-Inhalt angelegt werden.
 - Placeholder-Slots duerfen sichtbar bleiben, sollen aber klar als nicht fertige Module wirken.
 - Mobile ist ab jetzt die einzige UI-Zielgroesse. Neue Module muessen auf 390px bis 430px Breite funktionieren.
 - Keine Desktop-spezifischen Breakpoints, keine mehrspaltigen Desktop-Grids und keine Hover-only Interaktionen.
 - Grosse Screens duerfen die mobile App-Spalte nur zentrieren; Desktop ist kein eigenes Feature-Ziel mehr.
 - Wiederverwendbare Flaechen sollen bevorzugt ueber `AppShell`, `ContentPanel`, mobile Listenkarten, Header-Actions und Header-Stats laufen.
-- Die Modulnavigation bleibt ein kompaktes 4x4-Touchraster. Keine horizontale Scrollbar in der Hauptnavigation.
+- Die Modulnavigation bleibt eine kompakte Bottom-Bar mit 8 Touch-Slots. Keine horizontale Scrollbar in der Hauptnavigation.
 - Das Content Window besteht aus:
   - gemeinsamer Panel-Rahmen.
   - Header-Bar mit optionalem Back-Slot ganz links.
@@ -306,7 +301,7 @@ Der Shop zeigt zwischen Pack-Raster und Roll Odds eine kompakte Collection Progr
 - Desktop nicht als Feature-Ziel behandeln; grosse Screens zeigen nur die zentrierte mobile App-Spalte.
 - Das Spiel soll wie ein hochwertiger Fantasy-/Codex-Collector wirken, aber funktional als schnelle mobile Tracking-App brauchbar bleiben.
 - Die UI soll sich an dunklen, pixeligen Codex-/Logbook-Menues orientieren.
-- Topbar und Content Window sollen als langlebige Hauptstruktur dienen.
+- Bottom-Navigation und Content Window sollen als langlebige Hauptstruktur dienen.
 - Module sollen trainierbare, sammelbare, upgradebare oder freischaltbare Inhalte bekommen koennen.
 - Klar sichtbare Progression: Level, Punkte, Unlocks, Mastery, Sammlung und Upgrades.
 - RAP-Oekonomie bleibt wichtig, muss aber in das groessere Codex-Collector-System eingebettet werden.

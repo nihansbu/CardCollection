@@ -51,7 +51,7 @@ export function ContentPanel({ actions = [], children, className = "", onBack, s
           ))}
         </dl>
       </div>
-      {children}
+      <div className="content-body">{children}</div>
     </section>
   );
 }

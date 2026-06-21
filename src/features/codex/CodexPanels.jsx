@@ -24,7 +24,7 @@ export function CodexPanel() {
           <span>Core Direction</span>
           <h2>Codex Collector</h2>
           <p>
-            A PC-first collection game where players spend earned points to train,
+            A mobile-first collection game where players spend earned points to train,
             collect, upgrade, unlock, and expand a growing account codex.
           </p>
         </article>
@@ -85,7 +85,7 @@ export function PlaceholderPanel() {
           <span>Coming soon</span>
           <h2>Future Module Slot</h2>
           <p>
-            This button is intentionally empty so the topbar can keep its final
+            This button is intentionally empty so the bottom navigation can keep its final
             shape while future systems are designed one by one.
           </p>
         </div>
