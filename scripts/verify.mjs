@@ -1,4 +1,9 @@
 import { chromium } from "playwright-core";
+import {
+  applySkillUnlockProgress,
+  normalizeSkillUnlocks,
+  startSkillUnlock,
+} from "./../src/features/skills/skillData.js";
 
 const baseUrl = process.env.RAP_APP_URL ?? "http://127.0.0.1:5173/CardCollection/";
 const browser = await chromium.launch({
@@ -31,6 +36,23 @@ let failure = null;
 let result = {};
 
 try {
+  const lowRapStartedUnlocks = startSkillUnlock({
+    skillLevel: 5,
+    unlockId: "woodcutting-oak-logs",
+    unlocks: startSkillUnlock({
+      skillLevel: 5,
+      unlockId: "woodcutting-willow-logs",
+      unlocks: normalizeSkillUnlocks([]),
+    }),
+  });
+  const lowRapUnlockState = applySkillUnlockProgress({
+    elapsedSeconds: 3600,
+    rap: 100,
+    unlocks: lowRapStartedUnlocks,
+  });
+  const lowRapOakUnlock = lowRapUnlockState.unlocks.find((unlock) => unlock.id === "woodcutting-oak-logs");
+  const lowRapWillowUnlock = lowRapUnlockState.unlocks.find((unlock) => unlock.id === "woodcutting-willow-logs");
+
   await page.addInitScript(() => {
     localStorage.setItem("codex-collector-v1-rap", "10000");
     localStorage.removeItem("codex-collector-v1-local-account-credentials");
@@ -75,6 +97,8 @@ try {
   await page.waitForTimeout(1300);
   const oakLogsClassAfter = await oakLogsButton.getAttribute("class");
   const oakLogsTextAfter = await oakLogsButton.innerText();
+  const oakLogsProgressStyleAfter = await oakLogsButton.evaluate((node) => window.getComputedStyle(node).getPropertyValue("--unlock-progress").trim());
+  const normalLogsProgressStyle = await page.getByRole("button", { name: /Normal Logs/i }).evaluate((node) => window.getComputedStyle(node).getPropertyValue("--unlock-progress").trim());
   const storedUnlocksAfterClick = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-skill-unlocks")));
   const oakUnlockAfterClick = storedUnlocksAfterClick.find((unlock) => unlock.id === "woodcutting-oak-logs");
   await page.evaluate(() => {
@@ -154,9 +178,14 @@ try {
     oakLogsClassAfter,
     oakLogsClassAfterOffline,
     oakLogsClassBefore,
+    oakLogsProgressStyleAfter,
     oakLogsTextAfter,
     oakUnlockAfterClick,
     oakUnlockAfterOffline,
+    normalLogsProgressStyle,
+    lowRapOakUnlock,
+    lowRapRemainingRap: lowRapUnlockState.rap,
+    lowRapWillowUnlock,
     statQuicklookText,
     storedRap,
     trainingCards,
@@ -182,8 +211,15 @@ try {
     oakLogsClassAfter?.includes("is-unlocking") &&
     oakLogsClassAfterOffline?.includes("is-unlocked") &&
     oakLogsTextAfter.toUpperCase().includes("RAP LEFT") &&
+    Number.parseFloat(oakLogsProgressStyleAfter) > 0 &&
+    normalLogsProgressStyle === "100%" &&
     Number(oakUnlockAfterClick?.progressRap) > 0 &&
     oakUnlockAfterOffline?.status === "unlocked" &&
+    lowRapUnlockState.rap === 0 &&
+    lowRapOakUnlock?.status === "unlocking" &&
+    lowRapWillowUnlock?.status === "unlocking" &&
+    Number(lowRapOakUnlock?.progressRap) > 0 &&
+    Number(lowRapWillowUnlock?.progressRap) > 0 &&
     willowLogsClass?.includes("is-locked") &&
     woodcuttingClass?.includes("is-training-skill") &&
     !attackClass?.includes("is-training-skill") &&

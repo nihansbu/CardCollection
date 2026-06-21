@@ -39,6 +39,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Aktuell trainierte Skills werden im Grid gelb umrahmt und zeigen einen kleinen Slot-Badge.
 - Aktuell trainierte Skills werden sowohl in `Skills Training` als auch in der normalen Skills-Uebersicht gelb markiert.
 - Nur aktuell trainierte Skills zeigen in der Skill-Kachel zusaetzlich zum Level eine Prozentanzeige fuer den Fortschritt bis zum naechsten Level.
+- Alle Skill-Kacheln zeigen eine horizontale Fortschrittsfuellung von links nach rechts fuer den aktuellen Fortschritt im Level. Bei aktiv trainierten Skills ist diese Füllung animiert und aktualisiert sich live mit dem Trainingstick.
 - Skill-Kacheln zeigen jetzt auch den Skillnamen direkt in der Kachel. Lange Skillnamen werden kleiner gesetzt, ohne die Kachelhoehe zu vergroessern.
 - Skilltraining tauscht RAP 1:1 gegen Skill-XP. Insgesamt koennen maximal 5000 RAP/XP pro Stunde ausgegeben werden. Ein aktiver Slot bekommt 5000 XP/h, zwei aktive Slots je 2500 XP/h, drei aktive Slots je ein Drittel. RAP, Skill-XP und Level werden jede Sekunde aktualisiert und gespeichert.
 - Skilltraining laeuft auch offline weiter: Beim naechsten App-Start wird die vergangene Zeit seit dem letzten Trainings-Tick nachgerechnet.
@@ -51,10 +52,12 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Skill-Subpages zeigen in der Header-Stats-Bar aktuell `Level`, `Current XP`, `XP to Next Level` und `RAP`, weil Unlocks direkt RAP verbrauchen.
 - Woodcutting hat als erster Skill eine Unlock-Liste im Skill-Detail-Body. Unlocks werden nicht in Kategorien unterteilt, sondern als volle Zeilen untereinander dargestellt.
 - Unlock-Zeilen zeigen Level-Anforderung, Icon-/Item-Platzhalter, Unlock-Name, RAP-Kosten und Dauer. Die Zeilen nutzen die volle Breite und sind ungefaehr so hoch wie Skill-Kacheln.
+- Unlock-Zeilen zeigen ebenfalls eine horizontale Fortschrittsfuellung von links nach rechts. Freigeschaltete Unlocks sind 100 Prozent gefuellt; laufende Unlocks animieren die Füllung und speichern auch kleine Teilfortschritte.
 - Unlock-Statusfarben: rot = Level noch nicht erreicht, gelb = Level erreicht und kaufbar, tuerkis = Unlock laeuft gerade, gruen = freigeschaltet.
 - Level-1-Unlocks sind automatisch freigeschaltet. Ab Level 2 muessen Unlocks mit RAP gestartet und fertig abgerechnet werden.
 - Unlock-Kosten skalieren aktuell ab Level 2 linear mit `levelRequired * 100 RAP`. Level-1-Unlocks kosten 0 RAP. Beispiel: Level 5 kostet 500 RAP, Level 40 kostet 4000 RAP.
 - Unlocks verbrauchen pro laufendem Unlock bis zu 5000 RAP pro Stunde. Mehrere Unlocks koennen gleichzeitig laufen und sind grundsaetzlich unabhaengig; bei knapper RAP-Balance wird vorhandener RAP proportional auf laufende Unlocks verteilt.
+- Wenn RAP ausgeht, bleiben laufende Unlocks auf `unlocking` und behalten ihren gespeicherten `progressRap`. Sobald wieder RAP vorhanden ist, koennen sie ab diesem Teilfortschritt weiterlaufen.
 - Unlock-Fortschritt laeuft auch offline weiter: Beim naechsten App-Start wird die vergangene Zeit seit dem letzten Unlock-Tick nachgerechnet.
 - Long-Press auf einem Skill, Header-Stat oder Header-Action zeigt eine kompakte Quicklook-Info im gemeinsamen unteren Info-Panel des Skills-Bodys. Normaler Tap oeffnet weiterhin die Detailseite oder fuehrt die normale Button-Aktion aus.
 - Skill-Quicklook-Werte werden aus dem aktuellen Skill-State abgeleitet und aktualisieren sich live, solange Training tickt.
@@ -314,8 +317,9 @@ Unlock-Fortschritt laeuft live und offline:
 2. Jeder aktive Unlock will bis zu `5000 / 3600` RAP pro Sekunde verbrauchen.
 3. Bei genug RAP laufen mehrere Unlocks parallel unabhaengig weiter.
 4. Bei zu wenig RAP wird der verfuegbare RAP proportional auf laufende Unlocks verteilt.
-5. Sobald `progressRap >= rapCost`, wird der Unlock auf `unlocked` gesetzt.
-6. Beim App-Start wird vergangene Zeit seit `codex-collector-v1-skill-unlock-last-tick` nachgerechnet.
+5. Wenn RAP auf 0 faellt, bleiben Teilfortschritt und `unlocking`-Status gespeichert.
+6. Sobald `progressRap >= rapCost`, wird der Unlock auf `unlocked` gesetzt.
+7. Beim App-Start wird vergangene Zeit seit `codex-collector-v1-skill-unlock-last-tick` nachgerechnet.
 
 ## Cloud Save und Account-Plan
 

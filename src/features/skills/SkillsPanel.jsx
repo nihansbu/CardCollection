@@ -65,6 +65,20 @@ function getUnlockProgressDisplay(unlock) {
   return `${formatCompactSkillValue(remainingRap)} RAP left (${formatUnlockDurationFromRap(remainingRap)})`;
 }
 
+function getUnlockProgressPercent(unlock) {
+  if (unlock.rapCost <= 0) return 100;
+
+  return Math.max(0, Math.min(100, Math.floor((unlock.progressRap / unlock.rapCost) * 100)));
+}
+
+function getUnlockProgressStylePercent(unlock) {
+  if (unlock.rapCost <= 0) return 100;
+
+  const progress = (unlock.progressRap / unlock.rapCost) * 100;
+
+  return Math.max(0, Math.min(100, progress));
+}
+
 function InfoPanel({ action, onClose, skill, stat, trainingSlots }) {
   const isSkillPanel = Boolean(skill);
   const preview = skill || stat || action;
@@ -119,7 +133,7 @@ function SkillCard({ isSelectedTrainingSkill = false, onPreview, onSelect, skill
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
   const isTrainingSkill = trainingSlotIndex >= 0;
-  const levelProgress = isTrainingSkill ? getSkillLevelProgress(skill) : null;
+  const levelProgress = getSkillLevelProgress(skill);
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -155,7 +169,7 @@ function SkillCard({ isSelectedTrainingSkill = false, onPreview, onSelect, skill
       onPointerDown={startLongPress}
       onPointerLeave={clearLongPress}
       onPointerUp={clearLongPress}
-      style={{ "--skill-color": skill.color }}
+      style={{ "--skill-color": skill.color, "--skill-progress": `${levelProgress}%` }}
       type="button"
       aria-label={`${skill.name}. Level ${skill.level}${isTrainingSkill ? `. Training slot ${trainingSlotIndex + 1}` : ""}. Long press for details.`}
     >
@@ -329,7 +343,7 @@ export function SkillsTrainingPanel({
 function SkillUnlockRow({ onStartUnlock, skill, unlock }) {
   const status = getSkillUnlockStatus(unlock, skill.level);
   const isActionable = status === "available";
-  const progressPercent = unlock.rapCost > 0 ? Math.floor((unlock.progressRap / unlock.rapCost) * 100) : 100;
+  const progressPercent = getUnlockProgressPercent(unlock);
   const statusLabel = {
     available: "Ready",
     locked: "Locked",
@@ -343,6 +357,7 @@ function SkillUnlockRow({ onStartUnlock, skill, unlock }) {
       className={`skill-unlock-row is-${status}`}
       disabled={!isActionable}
       onClick={() => onStartUnlock(unlock)}
+      style={{ "--unlock-progress": `${getUnlockProgressStylePercent(unlock)}%` }}
       type="button"
     >
       <span className="skill-unlock-level">Lv {unlock.levelRequired}</span>
