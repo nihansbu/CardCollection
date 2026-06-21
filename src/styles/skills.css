@@ -227,25 +227,39 @@
   height: 30px;
   place-items: center;
   color: #090605;
+  border: 1px solid #6e5730;
+  border-radius: 999px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.76), transparent 30%),
-    var(--skill-color);
+    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.6), transparent 24%),
+    radial-gradient(circle at 50% 58%, #ffe3a8 0 48%, #d5a95d 68%, #7b5628 100%);
   box-shadow:
-    inset -5px -5px 0 rgba(0, 0, 0, 0.28),
-    inset 3px 3px 0 rgba(255, 255, 255, 0.18),
+    inset -3px -3px 0 rgba(80, 48, 18, 0.42),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.25),
     0 3px 0 #070504;
   image-rendering: pixelated;
   transform: rotate(-5deg);
 }
 
-.skill-sprite svg,
-.skill-quicklook-head > span svg {
-  width: 21px;
-  height: 21px;
-  color: #080504;
+.skill-icon-image,
+.skill-sprite img,
+.skill-quicklook-head > span img,
+.skill-detail-sigil img {
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
   filter:
-    drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.18))
-    drop-shadow(-1px -1px 0 rgba(0, 0, 0, 0.16));
+    drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.12))
+    drop-shadow(-1px -1px 0 rgba(0, 0, 0, 0.18));
+}
+
+.skill-sprite img {
+  width: 27px;
+  height: 27px;
+}
+
+.skill-quicklook-head > span img {
+  width: 29px;
+  height: 29px;
 }
 
 .skill-sprite span {
@@ -313,14 +327,17 @@
   height: 32px;
   place-items: center;
   color: #090605;
+  border: 1px solid #6e5730;
+  border-radius: 999px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.7), transparent 32%),
-    var(--skill-color);
+    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.6), transparent 24%),
+    radial-gradient(circle at 50% 58%, #ffe3a8 0 48%, #d5a95d 68%, #7b5628 100%);
   font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.6rem;
   font-weight: 900;
   box-shadow:
-    inset -5px -5px 0 rgba(0, 0, 0, 0.28),
+    inset -3px -3px 0 rgba(80, 48, 18, 0.42),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.25),
     0 3px 0 #070504;
 }
 
@@ -487,18 +504,24 @@
   aspect-ratio: 1;
   place-items: center;
   color: #0b0705;
-  border: 2px solid color-mix(in srgb, var(--skill-color), white 12%);
+  border: 2px solid #6e5730;
+  border-radius: 999px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.62), transparent 32%),
-    var(--skill-color);
+    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.6), transparent 24%),
+    radial-gradient(circle at 50% 58%, #ffe3a8 0 48%, #d5a95d 68%, #7b5628 100%);
   font-family: "Courier New", ui-monospace, monospace;
   font-size: clamp(1.6rem, 11vw, 2.2rem);
   font-weight: 900;
   box-shadow:
-    inset -14px -14px 0 rgba(0, 0, 0, 0.28),
-    inset 7px 7px 0 rgba(255, 255, 255, 0.12),
+    inset -10px -10px 0 rgba(80, 48, 18, 0.34),
+    inset 6px 6px 0 rgba(255, 255, 255, 0.18),
     0 9px 0 #080605;
   transform: rotate(-8deg);
+}
+
+.skill-detail-sigil img {
+  width: min(32vw, 106px);
+  height: min(32vw, 106px);
 }
 
 .skill-unlock-list {

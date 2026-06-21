@@ -30,7 +30,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Das Skills-Panel muss auch im normalen mobilen Browser mit sichtbarer Chrome-/Android-Leiste kompakt bleiben. Aktuell sollen 30 Skills in die Hauptansicht passen; bei mehr Inhalt scrollt nur die interne Content-Body-Flaeche.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
 - Die Skill-Kacheln zeigen nur das aktuelle Level, nicht `1/99`. Max-Level bleibt im Datenmodell erhalten.
-- Alle 30 Skills nutzen fantasy/MMO-inspirierte Icons im kompakten RuneScape-artigen Skillpanel.
+- Alle 30 Skills nutzen generierte transparente `128x128` PNG-Icons im kompakten RuneScape-artigen Skillpanel. Diese Icons liegen unter `public/skill-icons/` und sollen auch fuer Inventar, Detailseiten und spaetere Item-/Skill-Referenzen wiederverwendbar bleiben.
+- Skill-Icons und Unlock-Icons trennen Asset und UI-Badge: Das PNG enthaelt nur das lesbare Fantasy-/Pixel-Icon, runde beige Badge-Hintergruende und Rahmen kommen aus CSS.
 - Die Skills-Header-Stats zeigen als Icon-Kacheln `Total Level`, `Average Level` und `Total XP`.
 - Skills hat rechts neben dem Titel einen `Training`-Action-Button mit Icon. Tap oeffnet die eigene `Skills Training`-Ansicht im gleichen ContentPanel-System.
 - `Skills Training` nutzt dieselbe mobile Layout-Struktur wie Skills: zentrierter Titel, rechts ein `Skills`-Action-Button zurueck zur Uebersicht, darunter vier Header-Stats und im Content-Body dasselbe 3-Spalten-Skillgrid.
@@ -106,6 +107,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Account-Erstellung/Login, Cloud-Auth-Formular und lokalem Save-Status.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
 - `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
+- `public/skill-icons/`: generierte transparente `128x128` Skill-Icons fuer alle 30 Skills.
 - `public/unlock-icons/woodcutting/`: generierte transparente Woodcutting-Unlock-Icons; runde Badge-Hintergruende bleiben CSS.
 - `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.
 - `src/features/activities/activityData.js`: Activity-Defaults, Activity-Typen, Sortieroptionen und Storage-Keys.

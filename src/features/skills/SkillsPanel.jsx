@@ -418,7 +418,7 @@ export function SkillDetailPanel({ onBack, onStartUnlock, rap, skill, trainingSl
     >
       <div className="skill-detail-shell" style={{ "--skill-color": skill.color }}>
         <div className="skill-detail-sigil" aria-hidden="true">
-          {skill.short}
+          <SkillEmblem skill={skill} size={104} />
         </div>
         <div>
           <span>{skill.group} Skill</span>

@@ -81,6 +81,16 @@ try {
 
   const trainingCards = await page.locator(".skill-card.is-training-skill").count();
   let woodcuttingButton = page.getByRole("button", { name: /Woodcutting/i });
+  await page.waitForFunction(() => {
+    const images = Array.from(document.querySelectorAll(".skill-sprite img")).slice(0, 10);
+    return images.length >= 10 && images.every((image) => image.complete && image.naturalWidth > 0);
+  }, { timeout: 5000 });
+  const skillImageMetrics = await page.locator(".skill-sprite img").evaluateAll((images) => images.slice(0, 10).map((image) => ({
+    complete: image.complete,
+    naturalHeight: image.naturalHeight,
+    naturalWidth: image.naturalWidth,
+    src: image.getAttribute("src"),
+  })));
   const woodcuttingClass = await woodcuttingButton.getAttribute("class");
   const attackClass = await page.getByRole("button", { name: /Attack/i }).getAttribute("class");
   const woodcuttingCardText = await woodcuttingButton.innerText();
@@ -184,6 +194,7 @@ try {
     skillDetailActionText,
     skillDetailStatsText,
     skillDetailTopbar,
+    skillImageMetrics,
     normalLogsClass,
     unlockImageMetrics,
     oakLogsClassAfter,
@@ -217,6 +228,8 @@ try {
     skillDetailTopbar.backLeftOffset <= 12 &&
     Math.abs(skillDetailTopbar.titleAreaCenter - skillDetailTopbar.titleCenter) <= 2 &&
     skillDetailTopbar.titleFits &&
+    skillImageMetrics.length >= 10 &&
+    skillImageMetrics.every((image) => image.complete && image.naturalWidth === 128 && image.naturalHeight === 128) &&
     normalLogsClass?.includes("is-unlocked") &&
     unlockImageMetrics.length >= 6 &&
     unlockImageMetrics.every((image) => image.complete && image.naturalWidth === 128 && image.naturalHeight === 128) &&
