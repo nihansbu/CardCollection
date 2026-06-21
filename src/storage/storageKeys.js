@@ -7,6 +7,8 @@ export const localStorageKeys = {
   skills: "codex-collector-v1-skills",
   trainingLastTick: "codex-collector-v1-skill-training-last-tick",
   trainingSlots: "codex-collector-v1-skill-training-slots",
+  unlockLastTick: "codex-collector-v1-skill-unlock-last-tick",
+  unlocks: "codex-collector-v1-skill-unlocks",
 };
 
 export const LOCAL_SAVE_SCHEMA_VERSION = 1;

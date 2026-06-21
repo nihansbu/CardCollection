@@ -48,6 +48,14 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
+- Skill-Subpages zeigen in der Header-Stats-Bar aktuell `Level`, `Current XP`, `XP to Next Level` und `RAP`, weil Unlocks direkt RAP verbrauchen.
+- Woodcutting hat als erster Skill eine Unlock-Liste im Skill-Detail-Body. Unlocks werden nicht in Kategorien unterteilt, sondern als volle Zeilen untereinander dargestellt.
+- Unlock-Zeilen zeigen Level-Anforderung, Icon-/Item-Platzhalter, Unlock-Name, RAP-Kosten und Dauer. Die Zeilen nutzen die volle Breite und sind ungefaehr so hoch wie Skill-Kacheln.
+- Unlock-Statusfarben: rot = Level noch nicht erreicht, gelb = Level erreicht und kaufbar, tuerkis = Unlock laeuft gerade, gruen = freigeschaltet.
+- Level-1-Unlocks sind automatisch freigeschaltet. Ab Level 2 muessen Unlocks mit RAP gestartet und fertig abgerechnet werden.
+- Unlock-Kosten skalieren aktuell ab Level 2 linear mit `levelRequired * 100 RAP`. Level-1-Unlocks kosten 0 RAP. Beispiel: Level 5 kostet 500 RAP, Level 40 kostet 4000 RAP.
+- Unlocks verbrauchen pro laufendem Unlock bis zu 5000 RAP pro Stunde. Mehrere Unlocks koennen gleichzeitig laufen und sind grundsaetzlich unabhaengig; bei knapper RAP-Balance wird vorhandener RAP proportional auf laufende Unlocks verteilt.
+- Unlock-Fortschritt laeuft auch offline weiter: Beim naechsten App-Start wird die vergangene Zeit seit dem letzten Unlock-Tick nachgerechnet.
 - Long-Press auf einem Skill, Header-Stat oder Header-Action zeigt eine kompakte Quicklook-Info im gemeinsamen unteren Info-Panel des Skills-Bodys. Normaler Tap oeffnet weiterhin die Detailseite oder fuehrt die normale Button-Aktion aus.
 - Skill-Quicklook-Werte werden aus dem aktuellen Skill-State abgeleitet und aktualisieren sich live, solange Training tickt.
 - Skill-Quicklook und Skill-Detailseiten verwenden die Labels `Current XP` und `XP to Next Level`. `XP to Next Level` zeigt zusaetzlich eine ETA in Klammern, wenn der Skill aktuell trainiert wird, sonst `Idle`.
@@ -107,7 +115,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/components/CardListModal.jsx`: Kartenliste pro Pack.
 - `src/components/PullModal.jsx`: Ergebnis nach Pack-Oeffnung.
 - `src/utils/collection.js`: abgeleitete Collection-Statistiken.
-- `scripts/verify.mjs`: Mobile-Smoke-Test fuer aktuellen Skills-/Offline-Training-Flow.
+- `scripts/verify.mjs`: Mobile-Smoke-Test fuer aktuellen Skills-, Offline-Training- und Offline-Unlock-Flow.
 - `supabase/migrations/20260621235000_initial_cloud_save.sql`: erstes Cloud-Save-Schema mit RLS-Policies.
 - `vite.config.js`: Vite-Konfiguration, inklusive GitHub-Pages-kompatibler relativer Asset-Basis.
 - `.github/workflows/deploy-pages.yml`: GitHub-Actions-Workflow fuer Build und GitHub-Pages-Deployment.
@@ -133,7 +141,7 @@ Healthcheck 2026-06-21:
 - Activities ist funktional, soll bei einer spaeteren UI-Ueberarbeitung aber staerker dem Skills-Muster folgen: Header-Stats, Action-Zone, kompakter Body, keine abweichende Seitenlogik.
 - Legacy-Pack-/Collection-Dateien bleiben bewusst im Repo, weil Packs/Karten als spaeteres Modul nicht verworfen sind.
 - Die alte ungenutzte `src/storage.js` wurde entfernt, weil sie nur alte Pack-Shop-Keys enthielt und nicht mehr eingebunden war.
-- `scripts/verify.mjs` wurde vom alten Shop-Test auf den aktuellen mobile Skills-/Offline-Training-Flow umgestellt.
+- `scripts/verify.mjs` wurde vom alten Shop-Test auf den aktuellen mobile Skills-/Offline-Training-/Offline-Unlock-Flow umgestellt.
 
 ## Codex-UI-Regeln
 
@@ -156,6 +164,7 @@ Healthcheck 2026-06-21:
 - Skills nutzt die Header-Bar mit `Total Level`, `Average Level`, `Total XP` und dem `Training`-Action-Button.
 - Skills Training nutzt die Header-Bar mit `RAP`, `Slot 1`, `Slot 2`, `Slot 3` und dem `Skills`-Action-Button.
 - Skill-Detailseiten nutzen die gleiche Header-Bar mit Back-Button, Skill-Titel und skill-spezifischen Stats.
+- Skill-Detailseiten duerfen darunter skill-spezifische Listen wie Unlocks zeigen. Diese Listen sollen im Content-Body scrollen und keine eigene globale Seite scrollen lassen.
 - Activities nutzt die Header-Bar mit `RAP Balance`, `Activities` und `Logged`.
 - Activities hat Subscreens fuer `Create Activity`, `Activity Log` und `Activity Stats`, jeweils mit Back-Button.
 - Die Buttons `Sorts`, `Activity Log` und `Stats` leben in der Header-Action-Zone von Activities, nicht im Activity-Kartenraster.
@@ -242,6 +251,8 @@ Skills werden aktuell aus der statischen Skill-Liste normalisiert und mit gespei
 - Key `codex-collector-v1-skills`: aktueller XP- und Level-Stand aller Skills.
 - Key `codex-collector-v1-skill-training-slots`: drei Trainingsslots als Skillnamen oder `null`.
 - Key `codex-collector-v1-skill-training-last-tick`: letzter Zeitpunkt, bis zu dem Skilltraining abgerechnet wurde.
+- Key `codex-collector-v1-skill-unlocks`: Skill-Unlocks mit Status, RAP-Fortschritt und Timestamps.
+- Key `codex-collector-v1-skill-unlock-last-tick`: letzter Zeitpunkt, bis zu dem Unlock-Fortschritt abgerechnet wurde.
 
 Ein Skill enthaelt aktuell:
 
@@ -266,6 +277,45 @@ Training laeuft aktuell als Live- und Offline-Tick im `MainMenuView`:
 Skill-Detailseiten leiten den angezeigten Skill aus dem aktuellen Skill-State ab, nicht aus einer alten Objektkopie. Dadurch aktualisieren sich XP/Level auch dann live, wenn eine Skill-Detailseite offen ist.
 
 Skill-Quicklooks speichern ebenfalls nur den Skillnamen und leiten die Anzeige aus dem aktuellen Skill-State ab. Dadurch bleiben `Current XP`, `XP to Next Level` und ETA live. Stat- und Action-Quicklooks auf der Skills-Flaeche nutzen dasselbe untere Info-Panel statt eigener Header-Panels.
+
+### Skill Unlocks
+
+Woodcutting ist der erste Skill mit einem echten Unlock-Slice. Die Unlock-Definitionen liegen aktuell statisch in `src/features/skills/skillData.js` und werden beim Laden mit gespeichertem Fortschritt normalisiert.
+
+Ein Skill-Unlock enthaelt aktuell:
+
+- `id`: technische Unlock-ID.
+- `skill`: zugehoeriger Skillname, aktuell `Woodcutting`.
+- `levelRequired`: benoetigtes Skill-Level.
+- `name`: sichtbarer Unlock-Name.
+- `description`: kurze Beschreibung fuer spaetere Detail-/Quicklook-Nutzung.
+- `iconText`: temporarer Icon-/Item-Platzhalter.
+- `rapCost`: berechnete RAP-Kosten, aktuell 0 fuer Level 1 und sonst `levelRequired * 100`.
+- `progressRap`: bereits investierte RAP.
+- `status`: `available`, `unlocking` oder `unlocked`; `locked` wird in der UI aus Skill-Level und Unlock-Level abgeleitet.
+- `startedAt` und `completedAt`: Timestamps fuer laufende und abgeschlossene Unlocks.
+
+Aktuelle Woodcutting-Beispielunlocks:
+
+- Level 1: Normal Logs, automatisch unlocked.
+- Level 2: Oak Logs.
+- Level 5: Willow Logs.
+- Level 10: Maple Logs.
+- Level 15: Teak Logs.
+- Level 20: Mahogany Logs.
+- Level 30: Yew Logs.
+- Level 40: Magic Logs.
+- Level 60: Elder Logs.
+- Level 75: Crystal Trees.
+
+Unlock-Fortschritt laeuft live und offline:
+
+1. Tappbare gelbe Unlocks wechseln auf `unlocking`.
+2. Jeder aktive Unlock will bis zu `5000 / 3600` RAP pro Sekunde verbrauchen.
+3. Bei genug RAP laufen mehrere Unlocks parallel unabhaengig weiter.
+4. Bei zu wenig RAP wird der verfuegbare RAP proportional auf laufende Unlocks verteilt.
+5. Sobald `progressRap >= rapCost`, wird der Unlock auf `unlocked` gesetzt.
+6. Beim App-Start wird vergangene Zeit seit `codex-collector-v1-skill-unlock-last-tick` nachgerechnet.
 
 ## Cloud Save und Account-Plan
 

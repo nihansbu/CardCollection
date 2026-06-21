@@ -7,18 +7,24 @@ const browser = await chromium.launch({
   headless: true,
 });
 
-const page = await browser.newPage({ isMobile: true, viewport: { width: 393, height: 852 } });
 const messages = [];
 
-page.on("console", (message) => {
-  if (message.type() === "error") {
-    messages.push(`${message.type()}: ${message.text()}`);
-  }
-});
+const context = await browser.newContext({ isMobile: true, viewport: { width: 393, height: 852 } });
+let page = await context.newPage();
 
-page.on("pageerror", (error) => {
-  messages.push(`pageerror: ${error.message}`);
-});
+function watchPage(nextPage) {
+  nextPage.on("console", (message) => {
+    if (message.type() === "error") {
+      messages.push(`${message.type()}: ${message.text()}`);
+    }
+  });
+
+  nextPage.on("pageerror", (error) => {
+    messages.push(`pageerror: ${error.message}`);
+  });
+}
+
+watchPage(page);
 
 let ok = false;
 let failure = null;
@@ -32,6 +38,8 @@ try {
     localStorage.removeItem("codex-collector-v1-skills");
     localStorage.setItem("codex-collector-v1-skill-training-slots", JSON.stringify(["Woodcutting", null, null]));
     localStorage.setItem("codex-collector-v1-skill-training-last-tick", String(Date.now() - 60000));
+    localStorage.removeItem("codex-collector-v1-skill-unlocks");
+    localStorage.setItem("codex-collector-v1-skill-unlock-last-tick", String(Date.now()));
   });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
@@ -50,7 +58,7 @@ try {
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
 
   const trainingCards = await page.locator(".skill-card.is-training-skill").count();
-  const woodcuttingButton = page.getByRole("button", { name: /Woodcutting/i });
+  let woodcuttingButton = page.getByRole("button", { name: /Woodcutting/i });
   const woodcuttingClass = await woodcuttingButton.getAttribute("class");
   const attackClass = await page.getByRole("button", { name: /Attack/i }).getAttribute("class");
   const woodcuttingCardText = await woodcuttingButton.innerText();
@@ -58,6 +66,30 @@ try {
   await woodcuttingButton.click();
   await page.getByRole("heading", { name: /^Woodcutting$/i }).waitFor({ timeout: 5000 });
   const skillDetailActionText = await page.locator(".content-actions").innerText();
+  const skillDetailStatsText = await page.locator(".content-stats").innerText();
+  const normalLogsClass = await page.getByRole("button", { name: /Normal Logs/i }).getAttribute("class");
+  const oakLogsButton = page.getByRole("button", { name: /Oak Logs/i });
+  const oakLogsClassBefore = await oakLogsButton.getAttribute("class");
+  const willowLogsClass = await page.getByRole("button", { name: /Willow Logs/i }).getAttribute("class");
+  await oakLogsButton.click();
+  await page.waitForTimeout(1300);
+  const oakLogsClassAfter = await oakLogsButton.getAttribute("class");
+  const oakLogsTextAfter = await oakLogsButton.innerText();
+  const storedUnlocksAfterClick = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-skill-unlocks")));
+  const oakUnlockAfterClick = storedUnlocksAfterClick.find((unlock) => unlock.id === "woodcutting-oak-logs");
+  await page.evaluate(() => {
+    localStorage.setItem("codex-collector-v1-skill-unlock-last-tick", String(Date.now() - 10 * 60 * 1000));
+  });
+  await page.close();
+  page = await context.newPage();
+  watchPage(page);
+  await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page.locator(".bottom-nav-item[aria-label='Skills']").waitFor({ timeout: 5000 });
+  await page.getByRole("button", { name: /Woodcutting/i }).click();
+  await page.getByRole("heading", { name: /^Woodcutting$/i }).waitFor({ timeout: 5000 });
+  const oakLogsClassAfterOffline = await page.getByRole("button", { name: /Oak Logs/i }).getAttribute("class");
+  const storedUnlocksAfterOffline = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-skill-unlocks")));
+  const oakUnlockAfterOffline = storedUnlocksAfterOffline.find((unlock) => unlock.id === "woodcutting-oak-logs");
   const skillDetailTopbar = await page.locator(".content-title-box").evaluate((node) => {
     const box = node.getBoundingClientRect();
     const titleNode = node.querySelector("h1");
@@ -77,6 +109,7 @@ try {
   });
   await page.locator(".content-action-button", { hasText: "Skills" }).click();
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
+  woodcuttingButton = page.getByRole("button", { name: /Woodcutting/i });
 
   await woodcuttingButton.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
@@ -115,10 +148,19 @@ try {
     oldStatQuicklookCount,
     sharedQuicklookCount,
     skillDetailActionText,
+    skillDetailStatsText,
     skillDetailTopbar,
+    normalLogsClass,
+    oakLogsClassAfter,
+    oakLogsClassAfterOffline,
+    oakLogsClassBefore,
+    oakLogsTextAfter,
+    oakUnlockAfterClick,
+    oakUnlockAfterOffline,
     statQuicklookText,
     storedRap,
     trainingCards,
+    willowLogsClass,
     woodcuttingCardText,
     woodcuttingClass,
     woodcuttingLevel: woodcutting?.level,
@@ -130,10 +172,19 @@ try {
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
     skillDetailActionText.includes("SKILLS") &&
+    skillDetailStatsText.includes("RAP") &&
     skillDetailTopbar.backInsideTitle &&
     skillDetailTopbar.backLeftOffset <= 12 &&
     Math.abs(skillDetailTopbar.titleAreaCenter - skillDetailTopbar.titleCenter) <= 2 &&
     skillDetailTopbar.titleFits &&
+    normalLogsClass?.includes("is-unlocked") &&
+    oakLogsClassBefore?.includes("is-available") &&
+    oakLogsClassAfter?.includes("is-unlocking") &&
+    oakLogsClassAfterOffline?.includes("is-unlocked") &&
+    oakLogsTextAfter.toUpperCase().includes("RAP LEFT") &&
+    Number(oakUnlockAfterClick?.progressRap) > 0 &&
+    oakUnlockAfterOffline?.status === "unlocked" &&
+    willowLogsClass?.includes("is-locked") &&
     woodcuttingClass?.includes("is-training-skill") &&
     !attackClass?.includes("is-training-skill") &&
     woodcuttingCardText.includes("WOODCUTTING") &&

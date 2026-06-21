@@ -5,11 +5,15 @@ export const SKILL_MAX_LEVEL = 99;
 export const SKILL_STARTING_XP = 0;
 export const SKILL_TRAINING_RAP_PER_HOUR = 5000;
 export const SKILL_TRAINING_RAP_PER_SECOND = SKILL_TRAINING_RAP_PER_HOUR / 3600;
+export const SKILL_UNLOCK_RAP_PER_HOUR = 5000;
+export const SKILL_UNLOCK_RAP_PER_SECOND = SKILL_UNLOCK_RAP_PER_HOUR / 3600;
 
 export const skillStorageKeys = {
   skills: localStorageKeys.skills,
   trainingLastTick: localStorageKeys.trainingLastTick,
   trainingSlots: localStorageKeys.trainingSlots,
+  unlockLastTick: localStorageKeys.unlockLastTick,
+  unlocks: localStorageKeys.unlocks,
 };
 
 export const skillGroups = [
@@ -76,6 +80,89 @@ export const flatSkills = skillGroups.flatMap((group) => group.skills.map(([name
   short,
 })));
 
+export const skillUnlockDefinitions = [
+  {
+    description: "Basic trees and starting logs are available immediately.",
+    iconText: "LOG",
+    id: "woodcutting-normal-logs",
+    levelRequired: 1,
+    name: "Normal Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock oak trees as the first paid Woodcutting milestone.",
+    iconText: "OAK",
+    id: "woodcutting-oak-logs",
+    levelRequired: 2,
+    name: "Oak Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock willow trees for early gathering routes.",
+    iconText: "WIL",
+    id: "woodcutting-willow-logs",
+    levelRequired: 5,
+    name: "Willow Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock maple trees for mid-tier logs.",
+    iconText: "MAP",
+    id: "woodcutting-maple-logs",
+    levelRequired: 10,
+    name: "Maple Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock teak trees and faster material gathering.",
+    iconText: "TEK",
+    id: "woodcutting-teak-logs",
+    levelRequired: 15,
+    name: "Teak Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock mahogany trees for valuable hardwood.",
+    iconText: "MAH",
+    id: "woodcutting-mahogany-logs",
+    levelRequired: 20,
+    name: "Mahogany Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock yew trees and high-value long-term gathering.",
+    iconText: "YEW",
+    id: "woodcutting-yew-logs",
+    levelRequired: 30,
+    name: "Yew Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock magic trees for rare logs and late-game activities.",
+    iconText: "MAG",
+    id: "woodcutting-magic-logs",
+    levelRequired: 40,
+    name: "Magic Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock elder trees as a high-level Woodcutting target.",
+    iconText: "ELD",
+    id: "woodcutting-elder-logs",
+    levelRequired: 60,
+    name: "Elder Logs",
+    skill: "Woodcutting",
+  },
+  {
+    description: "Unlock crystal trees for future premium gathering rewards.",
+    iconText: "CRY",
+    id: "woodcutting-crystal-trees",
+    levelRequired: 75,
+    name: "Crystal Trees",
+    skill: "Woodcutting",
+  },
+];
+
 export function getSkillXpForLevel(level) {
   let points = 0;
 
@@ -120,6 +207,40 @@ export function normalizeTrainingSlots(savedSlots = []) {
     const skillName = slots[index];
     return knownSkillNames.has(skillName) ? skillName : null;
   });
+}
+
+export function getUnlockRapCost(unlock) {
+  if (unlock.levelRequired <= 1) return 0;
+
+  return Math.max(0, unlock.levelRequired * 100);
+}
+
+export function normalizeSkillUnlocks(savedUnlocks = []) {
+  const savedById = new Map((Array.isArray(savedUnlocks) ? savedUnlocks : []).map((unlock) => [unlock.id, unlock]));
+
+  return skillUnlockDefinitions.map((definition) => {
+    const savedUnlock = savedById.get(definition.id);
+    const rapCost = getUnlockRapCost(definition);
+    const progressRap = Math.min(rapCost, Math.max(0, Number(savedUnlock?.progressRap) || 0));
+    const isLevelOneUnlock = definition.levelRequired <= 1;
+    const isComplete = isLevelOneUnlock || savedUnlock?.status === "unlocked" || progressRap >= rapCost;
+
+    return {
+      ...definition,
+      completedAt: isComplete ? savedUnlock?.completedAt || new Date(0).toISOString() : null,
+      progressRap: isComplete ? rapCost : progressRap,
+      rapCost,
+      startedAt: isComplete ? null : savedUnlock?.startedAt || null,
+      status: isComplete ? "unlocked" : savedUnlock?.status === "unlocking" ? "unlocking" : "available",
+    };
+  });
+}
+
+export function getSkillUnlockStatus(unlock, skillLevel) {
+  if (unlock.status === "unlocked" || unlock.levelRequired <= 1) return "unlocked";
+  if (skillLevel < unlock.levelRequired) return "locked";
+  if (unlock.status === "unlocking") return "unlocking";
+  return "available";
 }
 
 export function getSkillTotals(skills) {
@@ -199,6 +320,10 @@ export function formatTrainingTime(seconds) {
   return `${remainingSeconds}s`;
 }
 
+export function formatUnlockDurationFromRap(rapCost) {
+  return formatTrainingTime((Math.max(0, Number(rapCost) || 0) / SKILL_UNLOCK_RAP_PER_HOUR) * 3600);
+}
+
 export function getSkillTimeToNextLevel(skill, trainingSlots) {
   const xpToNextLevel = getSkillXpToNextLevel(skill);
   const xpPerHour = getSkillTrainingRatePerHour(skill.name, trainingSlots);
@@ -251,5 +376,74 @@ export function applySkillTrainingProgress({ elapsedSeconds, rap, skills, traini
     rap: Math.max(0, availableRap - spentRap),
     skills: nextSkills,
     trainingSlots: spentRap >= availableRap ? trainingSlots.map(() => null) : trainingSlots,
+  };
+}
+
+export function startSkillUnlock({ skillLevel, unlockId, unlocks }) {
+  return unlocks.map((unlock) => {
+    if (unlock.id !== unlockId) return unlock;
+
+    const status = getSkillUnlockStatus(unlock, skillLevel);
+
+    if (status !== "available") return unlock;
+
+    return {
+      ...unlock,
+      startedAt: new Date().toISOString(),
+      status: "unlocking",
+    };
+  });
+}
+
+export function applySkillUnlockProgress({ elapsedSeconds, rap, unlocks }) {
+  const availableRap = Math.max(0, Number(rap) || 0);
+  const seconds = Math.max(0, Number(elapsedSeconds) || 0);
+  const activeUnlocks = unlocks.filter((unlock) => unlock.status === "unlocking");
+
+  if (activeUnlocks.length === 0) {
+    return { changed: false, rap: availableRap, unlocks };
+  }
+
+  if (availableRap <= 0 || seconds <= 0) {
+    return { changed: false, rap: availableRap, unlocks };
+  }
+
+  const requestedRapPerUnlock = SKILL_UNLOCK_RAP_PER_SECOND * seconds;
+  const requestedRap = activeUnlocks.reduce((sum, unlock) => {
+    const remainingRap = Math.max(0, unlock.rapCost - unlock.progressRap);
+    return sum + Math.min(remainingRap, requestedRapPerUnlock);
+  }, 0);
+
+  const spendScale = requestedRap > availableRap ? availableRap / requestedRap : 1;
+  let spentRap = 0;
+  let changed = false;
+
+  const nextUnlocks = unlocks.map((unlock) => {
+    if (unlock.status !== "unlocking") return unlock;
+
+    const remainingRap = Math.max(0, unlock.rapCost - unlock.progressRap);
+    const progressRap = Math.min(remainingRap, requestedRapPerUnlock) * spendScale;
+
+    if (progressRap <= 0) return unlock;
+
+    const nextProgressRap = Math.min(unlock.rapCost, unlock.progressRap + progressRap);
+    const isComplete = nextProgressRap >= unlock.rapCost - 0.0001;
+
+    spentRap += progressRap;
+    changed = true;
+
+    return {
+      ...unlock,
+      completedAt: isComplete ? new Date().toISOString() : unlock.completedAt,
+      progressRap: isComplete ? unlock.rapCost : nextProgressRap,
+      startedAt: isComplete ? null : unlock.startedAt,
+      status: isComplete ? "unlocked" : "unlocking",
+    };
+  });
+
+  return {
+    changed,
+    rap: Math.max(0, availableRap - spentRap),
+    unlocks: nextUnlocks,
   };
 }

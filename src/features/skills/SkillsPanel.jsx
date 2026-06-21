@@ -3,10 +3,12 @@ import { BarChart3, CircleDot, Coins, Grid3X3, Sigma, Swords } from "lucide-reac
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import {
   formatCompactSkillValue,
+  formatUnlockDurationFromRap,
   getSkillLevelProgress,
   getSkillTimeToNextLevel,
   getSkillXpToNextLevel,
   getSkillTotals,
+  getSkillUnlockStatus,
 } from "./skillData.js";
 import { skillIcons } from "./SkillIcons.jsx";
 
@@ -51,6 +53,16 @@ function getSkillNameSize(name) {
 
 function getXpToNextDisplay(skill, trainingSlots) {
   return `${formatCompactSkillValue(getSkillXpToNextLevel(skill))} (${getSkillTimeToNextLevel(skill, trainingSlots)})`;
+}
+
+function getUnlockProgressDisplay(unlock) {
+  if (unlock.status !== "unlocking") {
+    return `${formatCompactSkillValue(unlock.rapCost)} RAP (${formatUnlockDurationFromRap(unlock.rapCost)})`;
+  }
+
+  const remainingRap = Math.max(0, unlock.rapCost - unlock.progressRap);
+
+  return `${formatCompactSkillValue(remainingRap)} RAP left (${formatUnlockDurationFromRap(remainingRap)})`;
 }
 
 function InfoPanel({ action, onClose, skill, stat, trainingSlots }) {
@@ -314,7 +326,62 @@ export function SkillsTrainingPanel({
   );
 }
 
-export function SkillDetailPanel({ onBack, skill, trainingSlots }) {
+function SkillUnlockRow({ onStartUnlock, skill, unlock }) {
+  const status = getSkillUnlockStatus(unlock, skill.level);
+  const isActionable = status === "available";
+  const progressPercent = unlock.rapCost > 0 ? Math.floor((unlock.progressRap / unlock.rapCost) * 100) : 100;
+  const statusLabel = {
+    available: "Ready",
+    locked: "Locked",
+    unlocking: "Unlocking",
+    unlocked: "Unlocked",
+  }[status];
+
+  return (
+    <button
+      aria-label={`${unlock.name}. Level ${unlock.levelRequired}. ${statusLabel}. ${getUnlockProgressDisplay(unlock)}.`}
+      className={`skill-unlock-row is-${status}`}
+      disabled={!isActionable}
+      onClick={() => onStartUnlock(unlock)}
+      type="button"
+    >
+      <span className="skill-unlock-level">Lv {unlock.levelRequired}</span>
+      <span className="skill-unlock-icon" aria-hidden="true">
+        {unlock.iconText}
+      </span>
+      <span className="skill-unlock-copy">
+        <strong>{unlock.name}</strong>
+        <small>{statusLabel}</small>
+      </span>
+      <span className="skill-unlock-cost">
+        {getUnlockProgressDisplay(unlock)}
+        {status === "unlocking" ? <small>{progressPercent}%</small> : null}
+      </span>
+    </button>
+  );
+}
+
+function SkillUnlockList({ onStartUnlock, skill, unlocks }) {
+  const skillUnlocks = unlocks.filter((unlock) => unlock.skill === skill.name);
+
+  if (skillUnlocks.length === 0) {
+    return (
+      <div className="skill-unlock-list">
+        <div className="skill-unlock-empty">No unlocks defined for this skill yet.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="skill-unlock-list" aria-label={`${skill.name} unlocks`}>
+      {skillUnlocks.map((unlock) => (
+        <SkillUnlockRow key={unlock.id} onStartUnlock={onStartUnlock} skill={skill} unlock={unlock} />
+      ))}
+    </div>
+  );
+}
+
+export function SkillDetailPanel({ onBack, onStartUnlock, rap, skill, trainingSlots, unlocks }) {
   return (
     <ContentPanel
       actions={[
@@ -330,6 +397,7 @@ export function SkillDetailPanel({ onBack, skill, trainingSlots }) {
         { label: "Level", value: skill.level },
         { label: "Current XP", value: formatCompactSkillValue(skill.currentXp) },
         { label: "XP to Next Level", value: getXpToNextDisplay(skill, trainingSlots) },
+        { Icon: Coins, label: "RAP", value: formatCompactSkillValue(rap) },
       ]}
       title={skill.name}
     >
@@ -341,12 +409,9 @@ export function SkillDetailPanel({ onBack, skill, trainingSlots }) {
           <span>{skill.group} Skill</span>
           <h2>{skill.name} Training</h2>
           <p>{skill.description}</p>
-          <p>
-            This subpage is ready for future skill-specific actions, costs,
-            milestones, unlocks, rewards, and training logs.
-          </p>
         </div>
       </div>
+      <SkillUnlockList onStartUnlock={onStartUnlock} skill={skill} unlocks={unlocks} />
     </ContentPanel>
   );
 }

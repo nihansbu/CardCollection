@@ -413,9 +413,10 @@
 
 .skill-detail-shell {
   display: grid;
-  gap: 18px;
+  gap: 12px;
   min-height: 0;
-  padding: 16px;
+  margin-bottom: 7px;
+  padding: 12px;
   border: 2px solid #4f4438;
   background:
     radial-gradient(circle at 50% 0%, rgba(245, 207, 114, 0.08), transparent 40%),
@@ -427,26 +428,26 @@
 .skill-detail-shell span {
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-weight: 900;
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .skill-detail-shell h2 {
-  margin: 9px 0 0;
+  margin: 7px 0 0;
   color: #fff8e8;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(1.55rem, 10vw, 2.4rem);
+  font-size: clamp(1.32rem, 8vw, 2rem);
   line-height: 0.98;
   text-shadow: 3px 3px 0 #080605;
   text-transform: uppercase;
 }
 
 .skill-detail-shell p {
-  margin: 12px 0 0;
+  margin: 9px 0 0;
   color: #cfc2ae;
-  font-size: 0.98rem;
+  font-size: 0.88rem;
   line-height: 1.46;
 }
 
@@ -468,4 +469,138 @@
     inset 7px 7px 0 rgba(255, 255, 255, 0.12),
     0 9px 0 #080605;
   transform: rotate(-8deg);
+}
+
+.skill-unlock-list {
+  display: grid;
+  gap: 4px;
+  padding: 5px;
+  border: 2px solid #4f4438;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(230, 170, 80, 0.08), transparent 42%),
+    linear-gradient(180deg, rgba(255, 244, 209, 0.035), transparent 32%),
+    #15110d;
+  box-shadow: inset 0 0 0 2px #080605;
+}
+
+.skill-unlock-row {
+  display: grid;
+  grid-template-columns: 35px 31px minmax(0, 1fr) minmax(78px, auto);
+  align-items: center;
+  min-height: 43px;
+  gap: 5px;
+  padding: 4px 6px;
+  color: #fff2d3;
+  border: 2px solid #332b23;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 42%),
+    #1a1713;
+  cursor: pointer;
+  font-family: "Courier New", ui-monospace, monospace;
+  text-align: left;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.36),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.24);
+}
+
+.skill-unlock-row:disabled {
+  cursor: default;
+}
+
+.skill-unlock-row.is-locked {
+  border-color: #8f2f2f;
+}
+
+.skill-unlock-row.is-available {
+  border-color: #f4cf5a;
+  box-shadow:
+    inset 0 0 0 2px rgba(244, 207, 90, 0.18),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(244, 207, 90, 0.2);
+}
+
+.skill-unlock-row.is-unlocking {
+  border-color: #24f2ff;
+  box-shadow:
+    inset 0 0 0 2px rgba(36, 242, 255, 0.14),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(36, 242, 255, 0.18);
+}
+
+.skill-unlock-row.is-unlocked {
+  border-color: #47bd65;
+}
+
+.skill-unlock-level,
+.skill-unlock-copy strong,
+.skill-unlock-cost {
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 0 #050403;
+}
+
+.skill-unlock-level {
+  color: #d4bd88;
+  font-size: 0.58rem;
+}
+
+.skill-unlock-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: #080504;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), transparent 32%),
+    #47bd65;
+  box-shadow:
+    inset -5px -5px 0 rgba(0, 0, 0, 0.26),
+    inset 3px 3px 0 rgba(255, 255, 255, 0.14),
+    0 3px 0 #070504;
+  font-size: 0.52rem;
+  font-weight: 900;
+  transform: rotate(-5deg);
+}
+
+.skill-unlock-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.skill-unlock-copy strong {
+  overflow: hidden;
+  color: #fff2d3;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skill-unlock-copy small,
+.skill-unlock-cost small {
+  color: #b7aa91;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.skill-unlock-cost {
+  display: grid;
+  justify-items: end;
+  min-width: 0;
+  color: #24f2ff;
+  font-size: 0.58rem;
+  text-align: right;
+}
+
+.skill-unlock-empty {
+  padding: 12px;
+  color: #cfc2ae;
+  border: 1px solid rgba(213, 184, 130, 0.18);
+  background: rgba(0, 0, 0, 0.22);
+  font-size: 0.78rem;
 }
