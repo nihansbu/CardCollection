@@ -16,7 +16,7 @@
 .skill-card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 30px;
+  grid-template-columns: minmax(0, 1fr) 22px;
   align-items: center;
   width: 100%;
   min-height: 47px;
@@ -72,6 +72,15 @@
   transform: rotate(-5deg);
 }
 
+.skill-sprite svg {
+  width: 23px;
+  height: 23px;
+  color: #080504;
+  filter:
+    drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.18))
+    drop-shadow(-1px -1px 0 rgba(0, 0, 0, 0.16));
+}
+
 .skill-sprite span {
   font-family: "Courier New", ui-monospace, monospace;
   font-size: clamp(0.55rem, 2.6vw, 0.7rem);
@@ -83,7 +92,6 @@
 .skill-level-stack {
   display: grid;
   justify-items: end;
-  gap: 1px;
   font-family: "Courier New", ui-monospace, monospace;
   font-weight: 900;
   line-height: 1;
@@ -93,12 +101,8 @@
 .skill-level-stack strong,
 .skill-level-stack span {
   color: #f3d79a;
-  font-size: clamp(0.78rem, 3.5vw, 0.94rem);
+  font-size: clamp(0.86rem, 4vw, 1.05rem);
   letter-spacing: 0;
-}
-
-.skill-level-stack span {
-  color: #d8c184;
 }
 
 .skill-quicklook {

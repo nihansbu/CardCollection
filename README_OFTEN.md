@@ -31,6 +31,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Hauptseiten ohne Back-Button zeigen zuerst den Titel, dann Actions und Stats. Subpages mit Back-Button zeigen links vom Titel den Zurueck-Button.
 - Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als kompaktes mobile-only 3-Spalten-Skillpanel nach RuneScape-Anmutung. Die ehemalige untere RuneScape-Leiste mit Total Level/Combat/Quest Points wird nicht kopiert, weil diese Informationen in der vorhandenen Header-Stats-Bar leben.
 - Jeder Skill startet aktuell auf Level 1 und hat ein Max-Level von 99.
+- Die Skill-Kacheln zeigen nur das aktuelle Level, nicht `1/99`. Max-Level bleibt im Datenmodell erhalten.
+- Die ersten sechs Skills nutzen eigene fantasy/MMO-inspirierte Icons. Weitere Skill-Icons sollen schrittweise im gleichen Stil folgen.
 - Die Skills-Header-Stats zeigen `Total Skills`, die addierten `Skill Level` und das gerundete `Average Level`.
 - Sailing ist als eigener Skill enthalten.
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.

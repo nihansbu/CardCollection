@@ -1,4 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import {
+  Crosshair,
+  Dumbbell,
+  HandHeart,
+  Shield,
+  Swords,
+  WandSparkles,
+} from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import {
   averageSkillLevel,
@@ -9,10 +17,19 @@ import {
 } from "./skillData.js";
 
 const LONG_PRESS_MS = 520;
+const skillIcons = {
+  Attack: Swords,
+  Defence: Shield,
+  Magic: WandSparkles,
+  Prayer: HandHeart,
+  Ranged: Crosshair,
+  Strength: Dumbbell,
+};
 
 function SkillCard({ onPreview, onSelect, skill }) {
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
+  const SkillIcon = skillIcons[skill.name];
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -50,14 +67,13 @@ function SkillCard({ onPreview, onSelect, skill }) {
       onPointerUp={clearLongPress}
       style={{ "--skill-color": skill.color }}
       type="button"
-      aria-label={`${skill.name}. Level ${skill.level} of ${skill.maxLevel}. Long press for details.`}
+      aria-label={`${skill.name}. Level ${skill.level}. Long press for details.`}
     >
       <div className="skill-sprite" aria-hidden="true">
-        <span>{skill.short}</span>
+        {SkillIcon ? <SkillIcon size={22} strokeWidth={2.8} /> : <span>{skill.short}</span>}
       </div>
       <div className="skill-level-stack" aria-hidden="true">
         <strong>{skill.level}</strong>
-        <span>{skill.maxLevel}</span>
       </div>
     </button>
   );
@@ -100,7 +116,7 @@ export function SkillsPanel({ onSelectSkill }) {
             <dl>
               <div>
                 <dt>Level</dt>
-                <dd>{previewSkill.level}/{previewSkill.maxLevel}</dd>
+                <dd>{previewSkill.level}</dd>
               </div>
               <div>
                 <dt>XP</dt>
@@ -125,7 +141,7 @@ export function SkillDetailPanel({ onBack, skill }) {
       className="skill-detail-panel"
       onBack={onBack}
       stats={[
-        { label: "Level", value: `${skill.level}/${skill.maxLevel}` },
+        { label: "Level", value: skill.level },
         { label: "XP", value: "0" },
         { label: "Unlocks", value: "Soon" },
       ]}
