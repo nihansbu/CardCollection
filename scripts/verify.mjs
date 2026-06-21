@@ -55,6 +55,24 @@ try {
   const attackClass = await page.getByRole("button", { name: /Attack/i }).getAttribute("class");
   const woodcuttingCardText = await woodcuttingButton.innerText();
 
+  await woodcuttingButton.click();
+  await page.getByRole("heading", { name: /^Woodcutting$/i }).waitFor({ timeout: 5000 });
+  const skillDetailActionText = await page.locator(".content-actions").innerText();
+  const skillDetailTopbar = await page.locator(".content-title-box").evaluate((node) => {
+    const box = node.getBoundingClientRect();
+    const title = node.querySelector("h1").getBoundingClientRect();
+    const back = node.querySelector(".content-back-button").getBoundingClientRect();
+
+    return {
+      backInsideTitle: back.left >= box.left && back.right <= box.right,
+      backLeftOffset: Math.round(back.left - box.left),
+      boxCenter: Math.round(box.left + box.width / 2),
+      titleCenter: Math.round(title.left + title.width / 2),
+    };
+  });
+  await page.locator(".content-action-button", { hasText: "Skills" }).click();
+  await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
+
   await woodcuttingButton.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await woodcuttingButton.dispatchEvent("pointerup");
@@ -91,6 +109,8 @@ try {
     quicklookValuesBefore,
     oldStatQuicklookCount,
     sharedQuicklookCount,
+    skillDetailActionText,
+    skillDetailTopbar,
     statQuicklookText,
     storedRap,
     trainingCards,
@@ -104,6 +124,10 @@ try {
     trainingCards === 1 &&
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
+    skillDetailActionText.includes("SKILLS") &&
+    skillDetailTopbar.backInsideTitle &&
+    skillDetailTopbar.backLeftOffset <= 12 &&
+    Math.abs(skillDetailTopbar.boxCenter - skillDetailTopbar.titleCenter) <= 2 &&
     woodcuttingClass?.includes("is-training-skill") &&
     !attackClass?.includes("is-training-skill") &&
     woodcuttingCardText.includes("WOODCUTTING") &&

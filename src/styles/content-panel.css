@@ -101,21 +101,28 @@
   box-shadow: inset 0 0 0 2px #0b0807;
 }
 
+.content-header-no-back .content-title-box {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+
 .content-header h1 {
   max-width: 100%;
   margin: 0;
   color: #fff8e8;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(1.55rem, 9vw, min(var(--title-size, 2.35rem), 2.35rem));
+  font-size: min(var(--title-size, 2.35rem), 2.35rem);
   font-weight: 900;
   letter-spacing: 0.02em;
   line-height: 0.95;
   text-align: center;
+  white-space: nowrap;
   text-shadow:
     3px 3px 0 #080605,
     0 0 20px rgba(255, 237, 187, 0.14);
   text-transform: uppercase;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .content-actions {

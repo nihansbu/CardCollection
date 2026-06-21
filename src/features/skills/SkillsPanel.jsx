@@ -317,7 +317,14 @@ export function SkillsTrainingPanel({
 export function SkillDetailPanel({ onBack, skill, trainingSlots }) {
   return (
     <ContentPanel
-      className="skill-detail-panel"
+      actions={[
+        {
+          Icon: Grid3X3,
+          label: "Skills",
+          onClick: onBack,
+        },
+      ]}
+      className="skills-panel skill-detail-panel"
       onBack={onBack}
       stats={[
         { label: "Level", value: skill.level },

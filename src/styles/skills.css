@@ -10,7 +10,14 @@
 
 .skills-panel .content-title-box {
   min-height: 48px;
+}
+
+.skills-panel .content-header-no-back .content-title-box {
   padding: 6px 10px;
+}
+
+.skills-panel .content-header-with-back .content-title-box {
+  padding: 6px 48px;
 }
 
 .skills-panel .content-stats {
