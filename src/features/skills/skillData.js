@@ -160,8 +160,51 @@ export function getSkillLevelProgress(skill) {
   return Math.max(0, Math.min(99, Math.floor(progress)));
 }
 
+export function getSkillXpToNextLevel(skill) {
+  if (skill.level >= skill.maxLevel) return 0;
+
+  return Math.max(0, Math.ceil(getSkillXpForLevel(skill.level + 1) - skill.currentXp));
+}
+
 export function getActiveTrainingSkills(trainingSlots) {
   return [...new Set(trainingSlots.filter(Boolean))];
+}
+
+export function getSkillTrainingRatePerHour(skillName, trainingSlots) {
+  const activeTrainingSkills = getActiveTrainingSkills(trainingSlots);
+
+  if (!activeTrainingSkills.includes(skillName)) return 0;
+
+  return SKILL_TRAINING_RAP_PER_HOUR / activeTrainingSkills.length;
+}
+
+export function formatTrainingTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds <= 0) return "0s";
+
+  const totalSeconds = Math.ceil(seconds);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const remainingSeconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes}m ${remainingSeconds}s`;
+  }
+
+  return `${remainingSeconds}s`;
+}
+
+export function getSkillTimeToNextLevel(skill, trainingSlots) {
+  const xpToNextLevel = getSkillXpToNextLevel(skill);
+  const xpPerHour = getSkillTrainingRatePerHour(skill.name, trainingSlots);
+
+  if (xpToNextLevel <= 0) return "0s";
+  if (xpPerHour <= 0) return "Idle";
+
+  return formatTrainingTime((xpToNextLevel / xpPerHour) * 3600);
 }
 
 export function applySkillTrainingProgress({ elapsedSeconds, rap, skills, trainingSlots }) {

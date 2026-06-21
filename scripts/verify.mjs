@@ -37,8 +37,26 @@ try {
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
 
   const trainingCards = await page.locator(".skill-card.is-training-skill").count();
-  const woodcuttingClass = await page.getByRole("button", { name: /Woodcutting/i }).getAttribute("class");
+  const woodcuttingButton = page.getByRole("button", { name: /Woodcutting/i });
+  const woodcuttingClass = await woodcuttingButton.getAttribute("class");
   const attackClass = await page.getByRole("button", { name: /Attack/i }).getAttribute("class");
+  const woodcuttingCardText = await woodcuttingButton.innerText();
+
+  await woodcuttingButton.dispatchEvent("pointerdown");
+  await page.waitForTimeout(620);
+  await woodcuttingButton.dispatchEvent("pointerup");
+  await page.locator(".skill-quicklook").waitFor({ timeout: 5000 });
+  const quicklookLabels = await page.locator(".skill-quicklook dt").allTextContents();
+  const quicklookValuesBefore = await page.locator(".skill-quicklook dd").allTextContents();
+  await page.waitForTimeout(1200);
+  const quicklookValuesAfter = await page.locator(".skill-quicklook dd").allTextContents();
+
+  await page.locator(".content-stats > div").first().dispatchEvent("pointerdown");
+  await page.waitForTimeout(620);
+  await page.locator(".content-stats > div").first().dispatchEvent("pointerup");
+  await page.locator(".content-stat-quicklook").waitFor({ timeout: 5000 });
+  const statQuicklookText = await page.locator(".content-stat-quicklook").innerText();
+
   const storedRap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
   const storedSkills = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-skills")));
   const woodcutting = storedSkills.find((skill) => skill.name === "Woodcutting");
@@ -52,8 +70,13 @@ try {
   result = {
     attackClass,
     overflow,
+    quicklookLabels,
+    quicklookValuesAfter,
+    quicklookValuesBefore,
+    statQuicklookText,
     storedRap,
     trainingCards,
+    woodcuttingCardText,
     woodcuttingClass,
     woodcuttingLevel: woodcutting?.level,
     woodcuttingXp: woodcutting?.currentXp,
@@ -63,6 +86,12 @@ try {
     trainingCards === 1 &&
     woodcuttingClass?.includes("is-training-skill") &&
     !attackClass?.includes("is-training-skill") &&
+    woodcuttingCardText.includes("WOODCUTTING") &&
+    quicklookLabels.includes("Current XP") &&
+    quicklookLabels.includes("XP to Next Level") &&
+    quicklookValuesBefore[1] !== quicklookValuesAfter[1] &&
+    quicklookValuesAfter[2]?.includes("(") &&
+    statQuicklookText.includes("TOTAL LEVEL") &&
     storedRap < 10000 &&
     Number(woodcutting?.currentXp) > 0 &&
     overflow.bodyScrollWidth === overflow.clientWidth &&

@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
+
+const LONG_PRESS_MS = 520;
 
 function getTitleSize(title) {
   if (title.length <= 6) return "3.35rem";
@@ -11,8 +13,37 @@ function getTitleSize(title) {
 }
 
 export function ContentPanel({ actions = [], children, className = "", onBack, stats, title }) {
+  const [previewStatLabel, setPreviewStatLabel] = useState(null);
+  const longPressTimer = useRef(null);
+  const suppressClick = useRef(false);
   const headingId = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`;
   const headerClassName = onBack ? "content-header content-header-with-back" : "content-header content-header-no-back";
+  const previewStat = previewStatLabel ? stats.find((stat) => stat.label === previewStatLabel) : null;
+
+  const clearLongPress = () => {
+    window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = null;
+  };
+
+  const startStatLongPress = (stat) => {
+    clearLongPress();
+    suppressClick.current = false;
+    longPressTimer.current = window.setTimeout(() => {
+      suppressClick.current = true;
+      setPreviewStatLabel(stat.label);
+    }, LONG_PRESS_MS);
+  };
+
+  const handleStatClick = (stat) => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      return;
+    }
+
+    stat.onClick?.();
+  };
+
+  useEffect(() => () => window.clearTimeout(longPressTimer.current), []);
 
   return (
     <section className={`codex-content-panel ${className}`} aria-labelledby={headingId}>
@@ -60,13 +91,17 @@ export function ContentPanel({ actions = [], children, className = "", onBack, s
                 aria-pressed={isInteractive ? Boolean(stat.pressed) : undefined}
                 className={`${StatIcon ? "has-icon" : ""} ${isInteractive ? "is-interactive" : ""} ${stat.pressed ? "is-active" : ""}`.trim()}
                 key={stat.label}
-                onClick={stat.onClick}
+                onClick={() => handleStatClick(stat)}
                 onKeyDown={(event) => {
                   if (!isInteractive) return;
                   if (event.key !== "Enter" && event.key !== " ") return;
                   event.preventDefault();
-                  stat.onClick();
+                  stat.onClick?.();
                 }}
+                onPointerCancel={clearLongPress}
+                onPointerDown={() => startStatLongPress(stat)}
+                onPointerLeave={clearLongPress}
+                onPointerUp={clearLongPress}
                 role={isInteractive ? "button" : undefined}
                 tabIndex={isInteractive ? 0 : undefined}
               >
@@ -82,6 +117,23 @@ export function ContentPanel({ actions = [], children, className = "", onBack, s
               </div>
             );
           })}
+          {previewStat ? (
+            <div className="content-stat-quicklook" role="status">
+              <div>
+                <strong>{previewStat.label}</strong>
+                <button aria-label="Close stat preview" onClick={() => setPreviewStatLabel(null)} type="button">
+                  x
+                </button>
+              </div>
+              <dl>
+                <div>
+                  <dt>Value</dt>
+                  <dd>{previewStat.value}</dd>
+                </div>
+              </dl>
+              <p>{previewStat.description || `${previewStat.label}: ${previewStat.value}`}</p>
+            </div>
+          ) : null}
         </dl>
       </div>
       <div className="content-body">{children}</div>

@@ -171,7 +171,7 @@ export function MainMenuView({ activeView }) {
     const selectedSkill = selectedSkillName ? skills.find((skill) => skill.name === selectedSkillName) : null;
 
     if (selectedSkill) {
-      return <SkillDetailPanel onBack={() => setSelectedSkillName(null)} skill={selectedSkill} />;
+      return <SkillDetailPanel onBack={() => setSelectedSkillName(null)} skill={selectedSkill} trainingSlots={trainingSlots} />;
     }
 
     if (skillMode === "training") {

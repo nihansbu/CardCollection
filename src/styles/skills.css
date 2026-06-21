@@ -168,6 +168,23 @@
   box-shadow: 0 1px 0 #070504;
 }
 
+.skill-card-name {
+  position: absolute;
+  right: 25px;
+  bottom: 4px;
+  left: 39px;
+  color: #d4bd88;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: var(--skill-name-size, 0.45rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  overflow: hidden;
+  text-shadow: 1px 1px 0 #050403;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .skill-sprite {
   display: grid;
   width: 30px;
@@ -323,7 +340,7 @@
 .skill-quicklook dd {
   margin: 2px 0 0;
   color: #24f2ff;
-  font-size: 0.74rem;
+  font-size: 0.68rem;
   overflow-wrap: anywhere;
 }
 

@@ -38,6 +38,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Aktuell trainierte Skills werden im Grid gelb umrahmt und zeigen einen kleinen Slot-Badge.
 - Aktuell trainierte Skills werden sowohl in `Skills Training` als auch in der normalen Skills-Uebersicht gelb markiert.
 - Nur aktuell trainierte Skills zeigen in der Skill-Kachel zusaetzlich zum Level eine Prozentanzeige fuer den Fortschritt bis zum naechsten Level.
+- Skill-Kacheln zeigen jetzt auch den Skillnamen direkt in der Kachel. Lange Skillnamen werden kleiner gesetzt, ohne die Kachelhoehe zu vergroessern.
 - Skilltraining tauscht RAP 1:1 gegen Skill-XP. Insgesamt koennen maximal 5000 RAP/XP pro Stunde ausgegeben werden. Ein aktiver Slot bekommt 5000 XP/h, zwei aktive Slots je 2500 XP/h, drei aktive Slots je ein Drittel. RAP, Skill-XP und Level werden jede Sekunde aktualisiert und gespeichert.
 - Skilltraining laeuft auch offline weiter: Beim naechsten App-Start wird die vergangene Zeit seit dem letzten Trainings-Tick nachgerechnet.
 - Wenn RAP durch Training auf `0` faellt, werden alle Trainingsslots automatisch geleert.
@@ -47,6 +48,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
 - Long-Press auf einem Skill zeigt eine kompakte Quicklook-Info im Skills-Panel. Normaler Tap oeffnet weiterhin die Detailseite.
+- Skill-Quicklook-Werte werden aus dem aktuellen Skill-State abgeleitet und aktualisieren sich live, solange Training tickt.
+- Skill-Quicklook und Skill-Detailseiten verwenden die Labels `Current XP` und `XP to Next Level`. `XP to Next Level` zeigt zusaetzlich eine ETA in Klammern, wenn der Skill aktuell trainiert wird, sonst `Idle`.
 - Die Skill-XP-Werte nutzen aktuell eine RuneScape-artige XP-Kurve. Level 1 startet bei 0 XP, Level 2 liegt bei 83 XP.
 - Codex beschreibt die neue Grundidee: Train, Collect, Upgrade, Unlock.
 - Beastiary ist als geplantes Monster-/Creature-Modul angelegt.
@@ -155,6 +158,8 @@ Healthcheck 2026-06-21:
 - Codex nutzt die Header-Bar mit Projekt-/Loop-/Status-Informationen.
 - Beastiary nutzt die Header-Bar mit Entries, Kills und Mastery als geplante Felder.
 - Informationen muessen sichtbar, tappbar, per Long-Press-Quicklook oder ueber Detailseiten erreichbar sein. Hover-only Informationen sind nicht erlaubt.
+- Zahlen, die durch laufende Systeme veraendert werden koennen, sollen live aus dem aktuellen State gelesen werden. Fuer aktuelle Training-/RAP-Anzeigen ist ein etwa sekundenweiser Refresh ausreichend.
+- Header-Stats im `ContentPanel` unterstuetzen Long-Press-Quicklooks. Neue Stats sollen nach Moeglichkeit eine kurze `description` mitliefern, damit die Quicklook-Info nuetzlich ist.
 
 ## Pack-Design
 
@@ -252,6 +257,8 @@ Training laeuft aktuell als Live- und Offline-Tick im `MainMenuView`:
 6. Wenn nicht mehr genug RAP vorhanden ist, wird nur bis `0` ausgegeben und danach werden die Trainingsslots geleert.
 
 Skill-Detailseiten leiten den angezeigten Skill aus dem aktuellen Skill-State ab, nicht aus einer alten Objektkopie. Dadurch aktualisieren sich XP/Level auch dann live, wenn eine Skill-Detailseite offen ist.
+
+Skill-Quicklooks speichern ebenfalls nur den Skillnamen und leiten die Anzeige aus dem aktuellen Skill-State ab. Dadurch bleiben `Current XP`, `XP to Next Level` und ETA live.
 
 ## Cloud Save und Account-Plan
 

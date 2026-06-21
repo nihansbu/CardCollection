@@ -259,3 +259,85 @@
   text-shadow: 0 0 14px rgba(36, 242, 255, 0.28);
   overflow-wrap: normal;
 }
+
+.content-stat-quicklook {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 7px;
+  min-height: 0;
+  padding: 9px;
+  border: 2px solid #5c4d3f;
+  background:
+    linear-gradient(180deg, rgba(255, 244, 209, 0.05), transparent 38%),
+    rgba(18, 12, 10, 0.98);
+  box-shadow:
+    inset 0 0 0 2px #070504,
+    0 12px 22px rgba(0, 0, 0, 0.34);
+}
+
+.content-stat-quicklook > div:first-child {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 8px;
+}
+
+.content-stat-quicklook strong,
+.content-stat-quicklook dd {
+  color: #fff2d3;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 0.76rem;
+  font-weight: 900;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.content-stat-quicklook button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: #fff2d3;
+  border: 1px solid rgba(213, 184, 130, 0.26);
+  background: rgba(0, 0, 0, 0.24);
+  cursor: pointer;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.content-stat-quicklook dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.content-stat-quicklook dl div {
+  min-height: 0;
+  padding: 6px;
+  border: 1px solid rgba(213, 184, 130, 0.18);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.content-stat-quicklook dt {
+  color: #d4bd88;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 0.54rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.content-stat-quicklook dd {
+  margin: 2px 0 0;
+  color: #24f2ff;
+  overflow-wrap: anywhere;
+}
+
+.content-stat-quicklook p {
+  margin: 0;
+  color: #cfc2ae;
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
