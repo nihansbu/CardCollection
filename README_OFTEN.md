@@ -51,6 +51,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 Das Projekt wird ab jetzt ueber GitHub versioniert und soll regelmaessig dorthin gepusht werden.
 
 - GitHub-Repo: `nihansbu/CardCollection`.
+- GitHub-URL: `https://github.com/nihansbu/CardCollection`.
+- GitHub-Pages-URL: `https://nihansbu.github.io/CardCollection/`.
 - `main` ist der aktuelle Hauptbranch.
 - GitHub ist die zentrale Version-Control-Quelle fuer den Projektstand.
 - Relevante Aenderungen sollen nach erfolgreichem lokalen Build committed und gepusht werden.
