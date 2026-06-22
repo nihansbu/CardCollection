@@ -75,6 +75,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - RAP, Real Life Activity Points, ist als Hauptwaehrung eingefuehrt.
 - Activities ist als erstes RAP-Earning-Modul eingefuehrt.
 - Activities nutzt die Header-Action-Zone fuer `Sorts`, `Activity Log` und `Stats`.
+- Activities folgt jetzt staerker dem Skills-/Unlocks-Blueprint: gemeinsame ContentPanel-Topbar, darunter ein scrollender Body mit Full-Width-Activity-Zeilen statt grossen Karten.
+- Activity-Zeilen zeigen links ein kompaktes Sigil/Icon, in der Mitte Name und Typ/Unit, rechts RAP-Ertrag und Standardmenge. Normaler Tap loggt die Aktivitaet, Long-Press oeffnet ein gemeinsames unteres Quicklook-Info-Panel.
 - Aktivitaeten koennen RAP vergeben und schreiben einzelne Log-Eintraege fuer spaetere Metriken/Diagramme.
 - Das Activity Log gruppiert die Darstellung nach Aktivitaet und Einheit, summiert Quantity und RAP, behaelt intern aber die einzelnen Timestamps.
 - Activities haben einen `type`, zum Beispiel Exercise, Mind, Productivity, Creative, Social, Home, Recovery oder General.

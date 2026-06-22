@@ -102,6 +102,20 @@ try {
   await page.getByRole("menuitem", { name: /Account/i }).click();
   await page.getByRole("heading", { name: /^Account$/i }).waitFor({ timeout: 5000 });
   const accountStatsText = await page.locator(".content-stats").innerText();
+  await page.locator('.bottom-nav-item[aria-label="Activities"]').click();
+  await page.getByRole("heading", { name: /^Activities$/i }).waitFor({ timeout: 5000 });
+  const activityRows = await page.locator(".activity-card").count();
+  const walkingActivity = page.getByRole("button", { name: /Walking/i });
+  await walkingActivity.dispatchEvent("pointerdown");
+  await page.waitForTimeout(620);
+  await walkingActivity.dispatchEvent("pointerup");
+  await page.locator(".activity-quicklook", { hasText: /Walking/i }).waitFor({ timeout: 5000 });
+  const activityQuicklookText = await page.locator(".activity-quicklook").innerText();
+  await page.locator(".activity-quicklook button").click();
+  const rapBeforeActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
+  await page.getByRole("button", { name: /Running/i }).click();
+  const rapAfterActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
+  const activityLogAfterTap = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-activity-log")));
 
   await page.locator('.bottom-nav-item[aria-label="Skills"]').click();
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
@@ -214,6 +228,9 @@ try {
   result = {
     attackClass,
     accountStatsText,
+    activityLogAfterTap,
+    activityQuicklookText,
+    activityRows,
     bottomNavLabels,
     moreFlyoutLabels,
     overflow,
@@ -261,6 +278,12 @@ try {
     trainingCards === 1 &&
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
+    activityRows >= 6 &&
+    activityQuicklookText.toUpperCase().includes("WALKING") &&
+    activityQuicklookText.toUpperCase().includes("REWARD") &&
+    rapAfterActivityTap > rapBeforeActivityTap &&
+    Array.isArray(activityLogAfterTap) &&
+    activityLogAfterTap[0]?.title === "Running" &&
     bottomNavLabels.join("|") === "Char|Act|Skills|Inv|Slot1|Slot2|Slot3|More" &&
     moreFlyoutLabels.join("|") === "Beast|Codex" &&
     skillDetailActionText.includes("SKILLS") &&

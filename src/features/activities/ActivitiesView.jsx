@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import {
   ACTIVITY_HEATMAP_DAYS,
@@ -16,22 +16,104 @@ import {
   getSortedActivities,
 } from "./activityUtils.js";
 
-function ActivityCard({ activity, onComplete }) {
+const LONG_PRESS_MS = 520;
+
+function ActivityInfoPanel({ activity, onClose }) {
+  if (!activity) return null;
+
   const reward = getActivityReward(activity);
 
   return (
-    <button className="activity-card" onClick={() => onComplete(activity)} style={{ "--activity-color": activity.color }} type="button">
+    <div
+      className="activity-quicklook"
+      role="status"
+      onPointerDown={(event) => event.stopPropagation()}
+      style={{ "--activity-color": activity.color }}
+    >
+      <div className="activity-quicklook-head">
+        <span aria-hidden="true">{activity.title.slice(0, 2).toUpperCase()}</span>
+        <div>
+          <strong>{activity.title}</strong>
+          <small>{getActivityType(activity)} Activity</small>
+        </div>
+        <button aria-label="Close activity info" onClick={onClose} type="button">
+          x
+        </button>
+      </div>
+      <dl>
+        <div>
+          <dt>Unit</dt>
+          <dd>{activity.unit}</dd>
+        </div>
+        <div>
+          <dt>Quantity</dt>
+          <dd>{activity.defaultQuantity}</dd>
+        </div>
+        <div>
+          <dt>Reward</dt>
+          <dd>+{formatRap(reward)} RAP</dd>
+        </div>
+      </dl>
+      <p>{activity.description}</p>
+    </div>
+  );
+}
+
+function ActivityCard({ activity, onComplete, onPreview }) {
+  const longPressTimer = useRef(null);
+  const suppressClick = useRef(false);
+  const reward = getActivityReward(activity);
+
+  const clearLongPress = () => {
+    window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = null;
+  };
+
+  const startLongPress = () => {
+    clearLongPress();
+    suppressClick.current = false;
+    longPressTimer.current = window.setTimeout(() => {
+      suppressClick.current = true;
+      onPreview(activity);
+    }, LONG_PRESS_MS);
+  };
+
+  const handleClick = () => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      return;
+    }
+
+    onComplete(activity);
+  };
+
+  useEffect(() => () => window.clearTimeout(longPressTimer.current), []);
+
+  return (
+    <button
+      className="activity-card"
+      onClick={handleClick}
+      onContextMenu={(event) => event.preventDefault()}
+      onPointerCancel={clearLongPress}
+      onPointerDown={startLongPress}
+      onPointerLeave={clearLongPress}
+      onPointerUp={clearLongPress}
+      style={{ "--activity-color": activity.color }}
+      type="button"
+      aria-label={`${activity.title}. ${getActivityType(activity)}. ${activity.defaultQuantity} ${activity.unit}. Rewards ${formatRap(reward)} RAP. Long press for details.`}
+    >
       <div className="activity-sigil" aria-hidden="true">
         {activity.title.slice(0, 2).toUpperCase()}
       </div>
       <div className="activity-card-copy">
-        <span>{getActivityType(activity)} - {activity.unit}</span>
         <strong>{activity.title}</strong>
+        <span>{getActivityType(activity)} - {activity.unit}</span>
+      </div>
+      <div className="activity-card-reward" aria-hidden="true">
         <small>
           +{formatRap(reward)} RAP / {activity.defaultQuantity} {activity.unit}
         </small>
       </div>
-      <p>{activity.description}</p>
     </button>
   );
 }
@@ -39,8 +121,10 @@ function ActivityCard({ activity, onComplete }) {
 export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, onOpenCreate, onOpenLog, onOpenStats, rap }) {
   const [sortKey, setSortKey] = useState("default");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [previewActivityId, setPreviewActivityId] = useState(null);
   const sortedActivities = getSortedActivities(activities, sortKey);
   const activeSortLabel = activitySortOptions.find((option) => option.value === sortKey)?.label || "Default";
+  const previewActivity = previewActivityId ? activities.find((activity) => activity.id === previewActivityId) : null;
 
   return (
     <ContentPanel
@@ -68,7 +152,7 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
             </div>
           ) : null,
         },
-        { label: "Activity Log", onClick: onOpenLog },
+        { label: "Activity Log", shortLabel: "Log", onClick: onOpenLog },
         { label: "Stats", onClick: onOpenStats },
       ]}
       className="activities-panel"
@@ -79,20 +163,27 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
       ]}
       title="Activities"
     >
-      <div className="activity-board">
+      <div className="activity-board" onPointerDown={() => setPreviewActivityId(null)}>
         <button className="activity-card activity-system-card" onClick={onOpenCreate} type="button">
           <div className="activity-sigil" aria-hidden="true">+</div>
           <div className="activity-card-copy">
-            <span>Custom</span>
             <strong>Create Activity</strong>
+            <span>Custom - Setup</span>
+          </div>
+          <div className="activity-card-reward" aria-hidden="true">
             <small>Define unit, quantity, and RAP</small>
           </div>
-          <p>Create a new real-life activity that can award RAP when clicked.</p>
         </button>
 
         {sortedActivities.map((activity) => (
-          <ActivityCard activity={activity} key={activity.id} onComplete={onCompleteActivity} />
+          <ActivityCard
+            activity={activity}
+            key={activity.id}
+            onComplete={onCompleteActivity}
+            onPreview={(previewActivityEntry) => setPreviewActivityId(previewActivityEntry.id)}
+          />
         ))}
+        <ActivityInfoPanel activity={previewActivity} onClose={() => setPreviewActivityId(null)} />
       </div>
     </ContentPanel>
   );
