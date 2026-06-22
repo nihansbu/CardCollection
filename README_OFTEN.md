@@ -25,7 +25,9 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Der globale Screen selbst soll nicht vertikal scrollen. Nur die jeweilige Content-Body-Flaeche innerhalb des ContentPanel darf scrollen.
 - Der aktive Bottom-Navigation-Button wird rot markiert.
 - Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
-- Jedes Modul nutzt eine gemeinsame Header-Bar: zentrierter Titelcontainer, optionaler Back-Button links innerhalb dieses Titelcontainers, rechtsbuendige Action-Button-Zone in derselben Zeile und eigene Stats darunter.
+- Jedes Modul nutzt eine gemeinsame Header-Bar aus `ContentPanel`: zentrierter Titelcontainer, optionaler Back-Button links innerhalb dieses Titelcontainers, rechtsbuendige Action-Button-Zone in derselben Zeile und eigene Stats darunter.
+- Die Dimensionen der Header-Bar, Action-Zone und Stats-Bar sollen zentral in `src/styles/content-panel.css` definiert bleiben. Feature-CSS soll die Topbar nicht mehr nachbauen, sondern nur echte Sonderfaelle ueberschreiben.
+- Header-Actions teilen sich automatisch den gemeinsamen rechten Action-Bereich: ein Button nimmt die volle Action-Breite, mehrere Buttons werden gleichmaessig kleiner, bleiben aber in derselben Topbar-Struktur.
 - Hauptseiten ohne Back-Button zeigen den zentrierten Titel, rechts modulbezogene Actions und darunter kompakte Stats. Subpages mit Back-Button nutzen dieselbe Struktur; der Back-Button lebt links im Titelcontainer statt in einer separaten Spalte.
 - Der Skills-Screen zeigt aktuell 30 RuneScape-like Skills als kompaktes mobile-only 3-Spalten-Skillpanel nach RuneScape-Anmutung. Die ehemalige untere RuneScape-Leiste mit Total Level/Combat/Quest Points wird nicht kopiert, weil diese Informationen in der vorhandenen Header-Stats-Bar leben.
 - Das Skills-Panel muss auch im normalen mobilen Browser mit sichtbarer Chrome-/Android-Leiste kompakt bleiben. Aktuell sollen 30 Skills in die Hauptansicht passen; bei mehr Inhalt scrollt nur die interne Content-Body-Flaeche.
@@ -109,7 +111,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/App.jsx`: Aktive Codex-View und Routing zwischen Codex-Modulen.
 - `src/components/AppShell.jsx`: Fixierte Mobile-Bottom-Navigation mit 8 Slots und Character-Flyout.
 - `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Uebersicht/-Training/-Detail-State, RAP-Ausgabe durch Training und Activity-Subpage-State.
-- `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Button im Titelcontainer, festem Seitentitel, Action-Button-Zone und Stats-Bar.
+- `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Button im Titelcontainer, festem Seitentitel, responsiver Action-Button-Zone und Stats-Bar als gemeinsamer Topbar-Blueprint fuer alle Module.
 - `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Account-Erstellung/Login, Cloud-Auth-Formular und lokalem Save-Status.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
 - `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
@@ -167,6 +169,7 @@ Healthcheck 2026-06-21:
 - Keine Desktop-spezifischen Breakpoints, keine mehrspaltigen Desktop-Grids und keine Hover-only Interaktionen.
 - Grosse Screens duerfen die mobile App-Spalte nur zentrieren; Desktop ist kein eigenes Feature-Ziel mehr.
 - Wiederverwendbare Flaechen sollen bevorzugt ueber `AppShell`, `ContentPanel`, mobile Listenkarten, Header-Actions und Header-Stats laufen.
+- Neue Seiten sollen die Topbar ausschliesslich ueber `ContentPanel` befuellen: `title`, `actions`, `stats` und optional `onBack`. Gleiche Dimensionen kommen aus dem gemeinsamen Blueprint; Feature-spezifische CSS-Overrides fuer `.content-header`, `.content-title-box`, `.content-actions` oder `.content-stats` nur verwenden, wenn ein Screen wirklich eine begruendete Ausnahme braucht.
 - Die Modulnavigation bleibt eine kompakte Bottom-Bar mit 8 Touch-Slots. Keine horizontale Scrollbar in der Hauptnavigation.
 - Das Content Window besteht aus:
   - gemeinsamer Panel-Rahmen.

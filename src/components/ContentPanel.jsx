@@ -3,7 +3,10 @@ import { ArrowLeft } from "lucide-react";
 
 const LONG_PRESS_MS = 520;
 
-function getTitleSize(title, isCompact) {
+function getTitleSize(title, { actionCount, hasBack }) {
+  const isCompact = Boolean(hasBack || actionCount);
+  const isCrowded = actionCount > 1;
+
   if (!isCompact) {
     if (title.length <= 6) return "3rem";
     if (title.length <= 8) return "2.3rem";
@@ -11,6 +14,15 @@ function getTitleSize(title, isCompact) {
     if (title.length <= 12) return "1.55rem";
     if (title.length <= 16) return "1.28rem";
     return "1.08rem";
+  }
+
+  if (isCrowded) {
+    if (title.length <= 6) return "1.75rem";
+    if (title.length <= 8) return "1.5rem";
+    if (title.length <= 10) return "1.3rem";
+    if (title.length <= 12) return "1.05rem";
+    if (title.length <= 16) return "0.84rem";
+    return "0.66rem";
   }
 
   if (title.length <= 6) return "2rem";
@@ -34,8 +46,14 @@ export function ContentPanel({
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
   const headingId = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`;
-  const headerClassName = onBack ? "content-header content-header-with-back" : "content-header content-header-no-back";
-  const isCompactTitle = Boolean(onBack || actions.length);
+  const actionCount = actions.length;
+  const headerClassName = [
+    "content-header",
+    onBack ? "content-header-with-back" : "content-header-no-back",
+    actionCount ? "content-header-has-actions" : "content-header-no-actions",
+    actionCount > 1 ? "content-header-many-actions" : "",
+    stats.length > 3 ? "content-header-many-stats" : "",
+  ].filter(Boolean).join(" ");
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -78,7 +96,7 @@ export function ContentPanel({
       <div className={headerClassName}>
         <div
           className={`content-title-box ${onBack ? "has-back" : ""}`.trim()}
-          style={{ "--title-size": getTitleSize(title, isCompactTitle) }}
+          style={{ "--title-size": getTitleSize(title, { actionCount, hasBack: Boolean(onBack) }) }}
         >
           {onBack ? (
             <button className="content-back-button" onClick={onBack} type="button" aria-label="Back">
@@ -87,7 +105,11 @@ export function ContentPanel({
           ) : null}
           <h1 id={headingId}>{title}</h1>
         </div>
-        <div className="content-actions" aria-label={`${title} actions`}>
+        <div
+          className="content-actions"
+          aria-label={`${title} actions`}
+          style={{ gridTemplateColumns: `repeat(${Math.max(1, actionCount)}, minmax(0, 1fr))` }}
+        >
           {actions.map((action) => {
             const ActionIcon = action.Icon;
 

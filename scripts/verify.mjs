@@ -30,6 +30,29 @@ function watchPage(nextPage) {
   });
 }
 
+async function readContentHeaderMetrics(nextPage) {
+  return nextPage.evaluate(() => {
+    const readRect = (selector) => {
+      const node = document.querySelector(selector);
+      const rect = node.getBoundingClientRect();
+
+      return {
+        height: Math.round(rect.height),
+        width: Math.round(rect.width),
+        x: Math.round(rect.x),
+        y: Math.round(rect.y),
+      };
+    };
+
+    return {
+      actions: readRect(".content-actions"),
+      header: readRect(".content-header"),
+      stats: readRect(".content-stats"),
+      title: readRect(".content-title-box"),
+    };
+  });
+}
+
 watchPage(page);
 
 let ok = false;
@@ -116,9 +139,11 @@ try {
   await page.getByRole("button", { name: /Running/i }).click();
   const rapAfterActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
   const activityLogAfterTap = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-activity-log")));
+  const activityHeaderMetrics = await readContentHeaderMetrics(page);
 
   await page.locator('.bottom-nav-item[aria-label="Skills"]').click();
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
+  const skillsHeaderMetrics = await readContentHeaderMetrics(page);
 
   const trainingCards = await page.locator(".skill-card.is-training-skill").count();
   let woodcuttingButton = page.getByRole("button", { name: /Woodcutting/i });
@@ -229,6 +254,7 @@ try {
     attackClass,
     accountStatsText,
     activityLogAfterTap,
+    activityHeaderMetrics,
     activityQuicklookText,
     activityRows,
     bottomNavLabels,
@@ -239,6 +265,7 @@ try {
     quicklookValuesBefore,
     oldStatQuicklookCount,
     sharedQuicklookCount,
+    skillsHeaderMetrics,
     skillDetailActionText,
     skillDetailHeroCount,
     skillDetailStatLabels,
@@ -284,6 +311,11 @@ try {
     rapAfterActivityTap > rapBeforeActivityTap &&
     Array.isArray(activityLogAfterTap) &&
     activityLogAfterTap[0]?.title === "Running" &&
+    activityHeaderMetrics.header.height === skillsHeaderMetrics.header.height &&
+    activityHeaderMetrics.title.width === skillsHeaderMetrics.title.width &&
+    activityHeaderMetrics.actions.width === skillsHeaderMetrics.actions.width &&
+    activityHeaderMetrics.stats.y === skillsHeaderMetrics.stats.y &&
+    activityHeaderMetrics.stats.height === skillsHeaderMetrics.stats.height &&
     bottomNavLabels.join("|") === "Char|Act|Skills|Inv|Slot1|Slot2|Slot3|More" &&
     moreFlyoutLabels.join("|") === "Beast|Codex" &&
     skillDetailActionText.includes("SKILLS") &&

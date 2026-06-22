@@ -16,18 +16,6 @@
     0 16px 26px rgba(0, 0, 0, 0.46);
 }
 
-.activities-panel .content-header {
-  grid-template-columns: minmax(112px, 0.42fr) minmax(0, 1fr);
-}
-
-.activities-panel .content-actions {
-  width: 100%;
-}
-
-.activities-panel .content-title-box h1 {
-  font-size: min(var(--title-size, 0.86rem), 0.86rem);
-}
-
 .activity-sort-menu span {
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
