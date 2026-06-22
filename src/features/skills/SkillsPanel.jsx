@@ -409,23 +409,13 @@ export function SkillDetailPanel({ onBack, onStartUnlock, rap, skill, trainingSl
       className="skills-panel skill-detail-panel"
       onBack={onBack}
       stats={[
+        { Icon: Coins, label: "RAP", value: formatCompactSkillValue(rap) },
         { label: "Level", value: skill.level },
         { label: "Current XP", value: formatCompactSkillValue(skill.currentXp) },
         { label: "XP to Next Level", value: getXpToNextDisplay(skill, trainingSlots) },
-        { Icon: Coins, label: "RAP", value: formatCompactSkillValue(rap) },
       ]}
       title={skill.name}
     >
-      <div className="skill-detail-shell" style={{ "--skill-color": skill.color }}>
-        <div className="skill-detail-sigil" aria-hidden="true">
-          <SkillEmblem skill={skill} size={104} />
-        </div>
-        <div>
-          <span>{skill.group} Skill</span>
-          <h2>{skill.name} Training</h2>
-          <p>{skill.description}</p>
-        </div>
-      </div>
       <SkillUnlockList onStartUnlock={onStartUnlock} skill={skill} unlocks={unlocks} />
     </ContentPanel>
   );

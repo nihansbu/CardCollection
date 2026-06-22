@@ -99,6 +99,8 @@ try {
   await page.getByRole("heading", { name: /^Woodcutting$/i }).waitFor({ timeout: 5000 });
   const skillDetailActionText = await page.locator(".content-actions").innerText();
   const skillDetailStatsText = await page.locator(".content-stats").innerText();
+  const skillDetailStatLabels = await page.locator(".skill-detail-panel .content-stats dt").allTextContents();
+  const skillDetailHeroCount = await page.locator(".skill-detail-shell").count();
   const normalLogsClass = await page.getByRole("button", { name: /Normal Logs/i }).getAttribute("class");
   await page.waitForFunction(() => {
     const images = Array.from(document.querySelectorAll(".skill-unlock-icon img")).slice(0, 6);
@@ -192,6 +194,8 @@ try {
     oldStatQuicklookCount,
     sharedQuicklookCount,
     skillDetailActionText,
+    skillDetailHeroCount,
+    skillDetailStatLabels,
     skillDetailStatsText,
     skillDetailTopbar,
     skillImageMetrics,
@@ -224,6 +228,8 @@ try {
     accountStatsText.includes("Account") &&
     skillDetailActionText.includes("SKILLS") &&
     skillDetailStatsText.includes("RAP") &&
+    skillDetailStatLabels.join("|") === "RAP|Level|Current XP|XP to Next Level" &&
+    skillDetailHeroCount === 0 &&
     skillDetailTopbar.backInsideTitle &&
     skillDetailTopbar.backLeftOffset <= 12 &&
     Math.abs(skillDetailTopbar.titleAreaCenter - skillDetailTopbar.titleCenter) <= 2 &&

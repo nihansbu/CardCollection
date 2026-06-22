@@ -50,8 +50,9 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Skills sind antippbar und oeffnen eine Skill-Subpage im gleichen ContentPanel-System.
 - Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
-- Skill-Subpages zeigen in der Header-Stats-Bar aktuell `Level`, `Current XP`, `XP to Next Level` und `RAP`, weil Unlocks direkt RAP verbrauchen.
+- Skill-Subpages zeigen in der Header-Stats-Bar aktuell `RAP`, `Level`, `Current XP` und `XP to Next Level`, weil Unlocks direkt RAP verbrauchen. RAP steht auf Skill-Subpages bewusst links wie in anderen Ressourcenscreens.
 - Woodcutting hat als erster Skill eine Unlock-Liste im Skill-Detail-Body. Unlocks werden nicht in Kategorien unterteilt, sondern als volle Zeilen untereinander dargestellt.
+- Skill-Detailseiten zeigen keinen grossen Skill-Hero zwischen Header und Content mehr. Nach der gemeinsamen Topbar/Stats-Bar beginnt direkt die Unlock-Liste bzw. der skill-spezifische Content.
 - Unlock-Zeilen zeigen Level-Anforderung, Icon-/Item-Platzhalter, Unlock-Name, RAP-Kosten und Dauer. Die Zeilen nutzen die volle Breite und sind ungefaehr so hoch wie Skill-Kacheln.
 - Woodcutting-Unlocks nutzen generierte transparente PNG-Icons unter `public/unlock-icons/woodcutting/`. Der runde beige Icon-Hintergrund ist bewusst CSS/UI und nicht in den PNGs gebacken.
 - Unlock-Icons sollen als einfache, gut lesbare Pixel-/Fantasy-Items angelegt werden. Aehnliche Item-Familien, zum Beispiel Logs oder spaeter Aexte, sollen eine gemeinsame Silhouette nutzen und sich primaer durch Material/Farbe unterscheiden.

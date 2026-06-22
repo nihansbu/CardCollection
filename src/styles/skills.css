@@ -242,8 +242,7 @@
 
 .skill-icon-image,
 .skill-sprite img,
-.skill-quicklook-head > span img,
-.skill-detail-sigil img {
+.skill-quicklook-head > span img {
   display: block;
   object-fit: contain;
   image-rendering: pixelated;
@@ -456,72 +455,6 @@
   color: #cfc2ae;
   font-size: 0.82rem;
   line-height: 1.35;
-}
-
-.skill-detail-shell {
-  display: grid;
-  gap: 12px;
-  min-height: 0;
-  margin-bottom: 7px;
-  padding: 12px;
-  border: 2px solid #4f4438;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(245, 207, 114, 0.08), transparent 40%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34%),
-    #120c0b;
-  box-shadow: inset 0 0 0 2px #080605;
-}
-
-.skill-detail-shell span {
-  color: #d4bd88;
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.62rem;
-  font-weight: 900;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-.skill-detail-shell h2 {
-  margin: 7px 0 0;
-  color: #fff8e8;
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(1.32rem, 8vw, 2rem);
-  line-height: 0.98;
-  text-shadow: 3px 3px 0 #080605;
-  text-transform: uppercase;
-}
-
-.skill-detail-shell p {
-  margin: 9px 0 0;
-  color: #cfc2ae;
-  font-size: 0.88rem;
-  line-height: 1.46;
-}
-
-.skill-detail-sigil {
-  display: grid;
-  width: min(42vw, 138px);
-  aspect-ratio: 1;
-  place-items: center;
-  color: #0b0705;
-  border: 2px solid #6e5730;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.6), transparent 24%),
-    radial-gradient(circle at 50% 58%, #ffe3a8 0 48%, #d5a95d 68%, #7b5628 100%);
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(1.6rem, 11vw, 2.2rem);
-  font-weight: 900;
-  box-shadow:
-    inset -10px -10px 0 rgba(80, 48, 18, 0.34),
-    inset 6px 6px 0 rgba(255, 255, 255, 0.18),
-    0 9px 0 #080605;
-  transform: rotate(-8deg);
-}
-
-.skill-detail-sigil img {
-  width: min(32vw, 106px);
-  height: min(32vw, 106px);
 }
 
 .skill-unlock-list {
