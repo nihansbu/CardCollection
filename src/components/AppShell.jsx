@@ -8,19 +8,18 @@ const characterItems = [
 ];
 
 const moreItems = [
-  { id: "activities", label: "Activities", shortLabel: "Act", Icon: uiIcons.activities, tone: "green" },
   { id: "beastiary", label: "Beastiary", shortLabel: "Beast", Icon: uiIcons.beastiary, tone: "red" },
   { id: "codex", label: "Codex", Icon: uiIcons.codex, tone: "blue" },
 ];
 
 const bottomNavItems = [
   { id: "character", label: "Character", shortLabel: "Char", Icon: uiIcons.character, tone: "cyan", type: "character-flyout" },
+  { id: "activities", label: "Activities", shortLabel: "Act", Icon: uiIcons.activities, tone: "green" },
   { id: "skills", label: "Skills", Icon: uiIcons.skills, tone: "teal" },
   { id: "placeholder-4", label: "Inventory", shortLabel: "Inv", Icon: uiIcons.inventory, tone: "amber" },
   { id: "placeholder-1", label: "Slot 1", shortLabel: "Slot1", Icon: uiIcons.placeholder, tone: "steel" },
   { id: "placeholder-2", label: "Slot 2", shortLabel: "Slot2", Icon: uiIcons.explore, tone: "lime" },
   { id: "placeholder-3", label: "Slot 3", shortLabel: "Slot3", Icon: uiIcons.gear, tone: "silver" },
-  { id: "placeholder-5", label: "Slot 4", shortLabel: "Slot4", Icon: uiIcons.stats, tone: "gold" },
   { id: "more", label: "More", Icon: uiIcons.more, tone: "violet", type: "more-flyout" },
 ];
 

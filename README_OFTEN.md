@@ -17,9 +17,9 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Mobile-only Layout mit kompaktem Codex-Rahmen.
 - Desktop wird nicht mehr gezielt designed oder unterstuetzt. Grosse Screens zeigen nur die mobile App-Spalte zentriert.
 - Die App-Shell nutzt eine dauerhaft sichtbare Bottom-Navigation statt einer Topbar.
-- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Skills, Inventory, vier Placeholder-Slots und More.
+- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Activities, Skills, Inventory, drei Placeholder-Slots und More.
 - Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Account, Gear und Stats als vorbereiteten Sub-Buttons.
-- More ist ein Flyout-Button: Tap oeffnet ausgelagerte Module wie Activities, Beastiary und Codex.
+- More ist ein Flyout-Button: Tap oeffnet ausgelagerte Module wie Beastiary und Codex.
 - Account ist der Startpunkt fuer verpflichtende lokale Account-Erstellung und spaeter Cloud Login.
 - Die Bottom-Navigation bleibt fixiert sichtbar. Flyouts duerfen die Content Section leicht ueberlappen.
 - Der globale Screen selbst soll nicht vertikal scrollen. Nur die jeweilige Content-Body-Flaeche innerhalb des ContentPanel darf scrollen.

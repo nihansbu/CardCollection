@@ -233,8 +233,8 @@ try {
     trainingCards === 1 &&
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
-    bottomNavLabels.join("|") === "Char|Skills|Inv|Slot1|Slot2|Slot3|Slot4|More" &&
-    moreFlyoutLabels.join("|") === "Act|Beast|Codex" &&
+    bottomNavLabels.join("|") === "Char|Act|Skills|Inv|Slot1|Slot2|Slot3|More" &&
+    moreFlyoutLabels.join("|") === "Beast|Codex" &&
     skillDetailActionText.includes("SKILLS") &&
     skillDetailStatsText.includes("RAP") &&
     skillDetailStatLabels.join("|") === "RAP|Level|Current XP|XP to Next Level" &&
