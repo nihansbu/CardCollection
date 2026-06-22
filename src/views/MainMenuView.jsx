@@ -17,6 +17,7 @@ import { SkillDetailPanel, SkillsPanel, SkillsTrainingPanel } from "../features/
 import {
   applySkillUnlockProgress,
   applySkillTrainingProgress,
+  resolveTrainingSlotSelection,
   startSkillUnlock,
   skillStorageKeys,
 } from "../features/skills/skillData.js";
@@ -71,6 +72,7 @@ export function MainMenuView({ activeView, onAccountChange }) {
   const skillsRef = useRef(skills);
   const trainingSlotsRef = useRef(trainingSlots);
   const unlocksRef = useRef(unlocks);
+  const manualTrainingSlotSelectionRef = useRef(false);
 
   useEffect(() => {
     rapRef.current = rap;
@@ -176,17 +178,23 @@ export function MainMenuView({ activeView, onAccountChange }) {
     });
   };
 
+  const selectTrainingSlot = (slotIndex) => {
+    manualTrainingSlotSelectionRef.current = true;
+    setSelectedTrainingSlot(slotIndex);
+  };
+
   const selectTrainingSkill = (skill) => {
     setTrainingSlots((currentSlots) => {
-      const currentSkillName = currentSlots[selectedTrainingSlot];
-      const nextSlots = currentSlots.map((slotSkillName, slotIndex) => {
-        if (slotIndex === selectedTrainingSlot) {
-          return currentSkillName === skill.name ? null : skill.name;
-        }
-
-        return slotSkillName === skill.name ? null : slotSkillName;
+      const nextTrainingSelection = resolveTrainingSlotSelection({
+        isManualSlotSelection: manualTrainingSlotSelectionRef.current,
+        selectedSlot: selectedTrainingSlot,
+        skillName: skill.name,
+        slots: currentSlots,
       });
+      const nextSlots = nextTrainingSelection.slots;
 
+      manualTrainingSlotSelectionRef.current = false;
+      setSelectedTrainingSlot(nextTrainingSelection.nextSelectedSlot);
       writeJson(skillStorageKeys.trainingSlots, nextSlots);
       writeJson(skillStorageKeys.trainingLastTick, Date.now());
       return nextSlots;
@@ -240,7 +248,7 @@ export function MainMenuView({ activeView, onAccountChange }) {
         <SkillsTrainingPanel
           onBackToSkills={() => setSkillMode("overview")}
           onSelectSkill={selectTrainingSkill}
-          onSelectTrainingSlot={setSelectedTrainingSlot}
+          onSelectTrainingSlot={selectTrainingSlot}
           rap={rap}
           selectedTrainingSlot={selectedTrainingSlot}
           skills={skills}

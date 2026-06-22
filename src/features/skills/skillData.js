@@ -223,6 +223,42 @@ export function normalizeTrainingSlots(savedSlots = []) {
   });
 }
 
+export function getNextOpenTrainingSlot(slots) {
+  const nextOpenSlot = slots.findIndex((slotSkillName) => !slotSkillName);
+
+  return nextOpenSlot >= 0 ? nextOpenSlot : 0;
+}
+
+export function resolveTrainingSlotSelection({
+  isManualSlotSelection = false,
+  selectedSlot = 0,
+  skillName,
+  slots,
+}) {
+  const currentSlots = normalizeTrainingSlots(slots);
+  const safeSelectedSlot = selectedSlot >= 0 && selectedSlot < currentSlots.length ? selectedSlot : 0;
+  const currentSkillSlot = currentSlots.indexOf(skillName);
+
+  if (currentSkillSlot >= 0) {
+    const nextSlots = currentSlots.map((slotSkillName, slotIndex) => (slotIndex === currentSkillSlot ? null : slotSkillName));
+
+    return {
+      nextSelectedSlot: getNextOpenTrainingSlot(nextSlots),
+      slots: nextSlots,
+    };
+  }
+
+  const shouldUseSelectedSlot = !currentSlots[safeSelectedSlot] || isManualSlotSelection;
+  const openSlot = currentSlots.findIndex((slotSkillName) => !slotSkillName);
+  const targetSlot = shouldUseSelectedSlot ? safeSelectedSlot : openSlot >= 0 ? openSlot : safeSelectedSlot;
+  const nextSlots = currentSlots.map((slotSkillName, slotIndex) => (slotIndex === targetSlot ? skillName : slotSkillName));
+
+  return {
+    nextSelectedSlot: getNextOpenTrainingSlot(nextSlots),
+    slots: nextSlots,
+  };
+}
+
 export function getUnlockRapCost(unlock) {
   if (unlock.levelRequired <= 1) return 0;
 

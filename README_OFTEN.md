@@ -37,7 +37,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Skills hat rechts neben dem Titel einen `Training`-Action-Button mit Icon. Tap oeffnet die eigene `Skills Training`-Ansicht im gleichen ContentPanel-System.
 - `Skills Training` nutzt dieselbe mobile Layout-Struktur wie Skills: zentrierter Titel, rechts ein `Skills`-Action-Button zurueck zur Uebersicht, darunter vier Header-Stats und im Content-Body dasselbe 3-Spalten-Skillgrid.
 - Die vier Header-Stats im Training sind `RAP`, `Slot 1`, `Slot 2` und `Slot 3`. Die Slots sind tappbar; der aktive Slot wird gelb markiert.
-- In `Skills Training` weist ein Tap auf einen Skill den Skill dem aktiven Slot zu. Wenn derselbe Skill im aktiven Slot erneut getappt wird, wird er entfernt. Wenn der Skill in einem anderen Slot liegt, wandert er in den aktiven Slot.
+- In `Skills Training` sind Skill-Taps der Hauptweg fuer Slot-Steuerung. Ein Tap auf einen noch nicht trainierten Skill fuellt automatisch den ausgewaehlten freien Slot oder sonst den ersten freien Slot in Reihenfolge Slot 1, Slot 2, Slot 3. Nach jeder Auswahl springt die Slot-Auswahl automatisch auf den naechsten freien Slot.
+- Ein Tap auf einen bereits trainierten Skill entfernt ihn aus seinem Slot und waehlt danach automatisch den naechsten freien Slot. Manuelles Antippen eines Slot-Stats bleibt als Override erhalten und ersetzt beim naechsten Skill-Tap bewusst genau diesen Slot.
 - Aktuell trainierte Skills werden im Grid gelb umrahmt und zeigen einen kleinen Slot-Badge.
 - Aktuell trainierte Skills werden sowohl in `Skills Training` als auch in der normalen Skills-Uebersicht gelb markiert.
 - Nur aktuell trainierte Skills zeigen in der Skill-Kachel zusaetzlich zum Level eine Prozentanzeige fuer den Fortschritt bis zum naechsten Level.

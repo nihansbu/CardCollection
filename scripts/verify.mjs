@@ -2,6 +2,7 @@ import { chromium } from "playwright-core";
 import {
   applySkillUnlockProgress,
   normalizeSkillUnlocks,
+  resolveTrainingSlotSelection,
   startSkillUnlock,
 } from "./../src/features/skills/skillData.js";
 
@@ -52,6 +53,27 @@ try {
   });
   const lowRapOakUnlock = lowRapUnlockState.unlocks.find((unlock) => unlock.id === "woodcutting-oak-logs");
   const lowRapWillowUnlock = lowRapUnlockState.unlocks.find((unlock) => unlock.id === "woodcutting-willow-logs");
+  const autoFillSlot2 = resolveTrainingSlotSelection({
+    selectedSlot: 0,
+    skillName: "Summoning",
+    slots: ["Woodcutting", null, null],
+  });
+  const autoFillSlot3 = resolveTrainingSlotSelection({
+    selectedSlot: autoFillSlot2.nextSelectedSlot,
+    skillName: "Cooking",
+    slots: autoFillSlot2.slots,
+  });
+  const autoRemoveSlot2 = resolveTrainingSlotSelection({
+    selectedSlot: autoFillSlot3.nextSelectedSlot,
+    skillName: "Summoning",
+    slots: autoFillSlot3.slots,
+  });
+  const manualReplaceSlot1 = resolveTrainingSlotSelection({
+    isManualSlotSelection: true,
+    selectedSlot: 0,
+    skillName: "Strength",
+    slots: ["Woodcutting", null, null],
+  });
 
   await page.addInitScript(() => {
     localStorage.setItem("codex-collector-v1-rap", "10000");
@@ -219,6 +241,12 @@ try {
     lowRapOakUnlock,
     lowRapRemainingRap: lowRapUnlockState.rap,
     lowRapWillowUnlock,
+    slotAutomation: {
+      autoFillSlot2,
+      autoFillSlot3,
+      autoRemoveSlot2,
+      manualReplaceSlot1,
+    },
     statQuicklookText,
     storedRap,
     trainingCards,
@@ -261,6 +289,14 @@ try {
     lowRapWillowUnlock?.status === "unlocking" &&
     Number(lowRapOakUnlock?.progressRap) > 0 &&
     Number(lowRapWillowUnlock?.progressRap) > 0 &&
+    autoFillSlot2.slots.join("|") === "Woodcutting|Summoning|" &&
+    autoFillSlot2.nextSelectedSlot === 2 &&
+    autoFillSlot3.slots.join("|") === "Woodcutting|Summoning|Cooking" &&
+    autoFillSlot3.nextSelectedSlot === 0 &&
+    autoRemoveSlot2.slots.join("|") === "Woodcutting||Cooking" &&
+    autoRemoveSlot2.nextSelectedSlot === 1 &&
+    manualReplaceSlot1.slots.join("|") === "Strength||" &&
+    manualReplaceSlot1.nextSelectedSlot === 1 &&
     willowLogsClass?.includes("is-locked") &&
     woodcuttingClass?.includes("is-training-skill") &&
     !attackClass?.includes("is-training-skill") &&
