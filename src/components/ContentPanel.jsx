@@ -122,7 +122,7 @@ export function ContentPanel({
               <div
                 aria-label={stat.ariaLabel || stat.label}
                 aria-pressed={isInteractive ? Boolean(stat.pressed) : undefined}
-                className={`${StatIcon ? "has-icon" : ""} ${isInteractive ? "is-interactive" : ""} ${stat.pressed ? "is-active" : ""}`.trim()}
+                className={`${StatIcon ? "has-icon" : ""} ${stat.iconOnly ? "is-icon-only" : ""} ${isInteractive ? "is-interactive" : ""} ${stat.pressed ? "is-active" : ""}`.trim()}
                 key={stat.label}
                 onClick={() => handleStatClick(stat)}
                 onKeyDown={(event) => {
@@ -140,7 +140,7 @@ export function ContentPanel({
               >
                 {StatIcon ? (
                   <span className="content-stat-icon" aria-hidden="true">
-                    <StatIcon size={19} strokeWidth={2.8} />
+                    <StatIcon size={stat.iconOnly ? 26 : 19} strokeWidth={2.8} />
                   </span>
                 ) : null}
                 <div className="content-stat-copy">

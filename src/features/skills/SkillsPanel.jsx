@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BarChart3, CircleDot, Coins, Grid3X3, Sigma, Swords } from "lucide-react";
+import { CircleDot, Grid3X3, Sigma, Swords } from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
+import { uiIcons } from "../../components/UiIcon.jsx";
 import {
   formatCompactSkillValue,
   formatUnlockDurationFromRap,
@@ -13,26 +14,6 @@ import {
 import { skillIcons } from "./SkillIcons.jsx";
 
 const LONG_PRESS_MS = 520;
-
-function XpIcon({ size = 19, strokeWidth = 2.8 }) {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      height={size}
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={strokeWidth}
-      viewBox="0 0 24 24"
-      width={size}
-    >
-      <path d="m4 7 6 10" />
-      <path d="m10 7-6 10" />
-      <path d="M14 17V7h4.2a3 3 0 0 1 0 6H14" />
-    </svg>
-  );
-}
 
 function SkillEmblem({ skill, size = 22 }) {
   const SkillIcon = skillIcons[skill.name];
@@ -231,9 +212,9 @@ function getSkillStats(skills) {
   const { averageSkillLevel, totalSkillLevel, totalSkillXp } = getSkillTotals(skills);
 
   return [
-    { Icon: BarChart3, description: "Sum of all current skill levels.", label: "Total Level", value: totalSkillLevel },
+    { Icon: uiIcons.level, description: "Sum of all current skill levels.", label: "Total Level", value: totalSkillLevel },
     { Icon: Sigma, description: "Average level across all skills.", label: "Average Level", value: averageSkillLevel },
-    { Icon: XpIcon, description: "Total current XP across all skills.", label: "Total XP", value: formatCompactSkillValue(totalSkillXp) },
+    { Icon: uiIcons.currentXp, description: "Total current XP across all skills.", label: "Total XP", value: formatCompactSkillValue(totalSkillXp) },
   ];
 }
 
@@ -295,7 +276,7 @@ export function SkillsTrainingPanel({
     },
   ];
   const stats = [
-    { Icon: Coins, description: "Current Real Life Activity Points available for spending.", label: "RAP", value: formatCompactSkillValue(rap) },
+    { Icon: uiIcons.rap, description: "Current Real Life Activity Points available for spending.", label: "RAP", value: formatCompactSkillValue(rap) },
     ...trainingSlots.map((skillName, index) => {
       const trainingSkill = skillName ? skillsByName.get(skillName) : null;
       const SlotIcon = trainingSkill ? skillIcons[trainingSkill.name] : CircleDot;
@@ -409,10 +390,10 @@ export function SkillDetailPanel({ onBack, onStartUnlock, rap, skill, trainingSl
       className="skills-panel skill-detail-panel"
       onBack={onBack}
       stats={[
-        { Icon: Coins, label: "RAP", value: formatCompactSkillValue(rap) },
-        { label: "Level", value: skill.level },
-        { label: "Current XP", value: formatCompactSkillValue(skill.currentXp) },
-        { label: "XP to Next Level", value: getXpToNextDisplay(skill, trainingSlots) },
+        { Icon: uiIcons.rap, iconOnly: true, label: "RAP", value: formatCompactSkillValue(rap) },
+        { Icon: uiIcons.level, iconOnly: true, label: "Level", value: skill.level },
+        { Icon: uiIcons.currentXp, iconOnly: true, label: "Current XP", value: formatCompactSkillValue(skill.currentXp) },
+        { Icon: uiIcons.xpToNext, iconOnly: true, label: "XP to Next Level", value: getXpToNextDisplay(skill, trainingSlots) },
       ]}
       title={skill.name}
     >

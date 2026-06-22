@@ -49,7 +49,8 @@
   height: 23px;
 }
 
-.skills-training-panel .content-stat-icon svg {
+.skills-training-panel .content-stat-icon svg,
+.skills-training-panel .content-stat-icon img {
   width: 16px;
   height: 16px;
 }
@@ -77,9 +78,15 @@
   height: 26px;
 }
 
-.skills-panel .content-stat-icon svg {
+.skills-panel .content-stat-icon svg,
+.skills-panel .content-stat-icon img {
   width: 18px;
   height: 18px;
+}
+
+.skills-panel .content-stats > div.is-icon-only .content-stat-icon img {
+  width: 31px;
+  height: 31px;
 }
 
 .skill-board {

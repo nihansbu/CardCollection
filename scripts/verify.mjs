@@ -71,6 +71,11 @@ try {
   await page.getByLabel("Repeat Password").fill("secure-test-password");
   await page.getByRole("button", { name: /Create Account/i }).click();
   await page.locator(".bottom-nav-item[aria-label='Skills']").waitFor({ timeout: 5000 });
+  const bottomNavLabels = await page.locator(".bottom-nav-label").allTextContents();
+  await page.locator('.bottom-nav-item[aria-label="More"]').click();
+  await page.getByRole("menuitem", { name: /Codex/i }).waitFor({ timeout: 5000 });
+  const moreFlyoutLabels = await page.locator(".more-flyout .bottom-nav-flyout-item span").allTextContents();
+  await page.locator('.bottom-nav-item[aria-label="More"]').click();
   await page.locator('.bottom-nav-item[aria-label="Character"]').click();
   await page.getByRole("menuitem", { name: /Account/i }).click();
   await page.getByRole("heading", { name: /^Account$/i }).waitFor({ timeout: 5000 });
@@ -187,6 +192,8 @@ try {
   result = {
     attackClass,
     accountStatsText,
+    bottomNavLabels,
+    moreFlyoutLabels,
     overflow,
     quicklookLabels,
     quicklookValuesAfter,
@@ -226,6 +233,8 @@ try {
     trainingCards === 1 &&
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
+    bottomNavLabels.join("|") === "Char|Skills|Inv|Slot1|Slot2|Slot3|Slot4|More" &&
+    moreFlyoutLabels.join("|") === "Act|Beast|Codex" &&
     skillDetailActionText.includes("SKILLS") &&
     skillDetailStatsText.includes("RAP") &&
     skillDetailStatLabels.join("|") === "RAP|Level|Current XP|XP to Next Level" &&

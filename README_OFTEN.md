@@ -17,8 +17,9 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Mobile-only Layout mit kompaktem Codex-Rahmen.
 - Desktop wird nicht mehr gezielt designed oder unterstuetzt. Grosse Screens zeigen nur die mobile App-Spalte zentriert.
 - Die App-Shell nutzt eine dauerhaft sichtbare Bottom-Navigation statt einer Topbar.
-- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Inventory, Skills, Activities, Beastiary, Codex, Slot 7 und More.
-- Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Account, Codex, Gear und Stats als vorbereiteten Sub-Buttons.
+- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Skills, Inventory, vier Placeholder-Slots und More.
+- Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Account, Gear und Stats als vorbereiteten Sub-Buttons.
+- More ist ein Flyout-Button: Tap oeffnet ausgelagerte Module wie Activities, Beastiary und Codex.
 - Account ist der Startpunkt fuer verpflichtende lokale Account-Erstellung und spaeter Cloud Login.
 - Die Bottom-Navigation bleibt fixiert sichtbar. Flyouts duerfen die Content Section leicht ueberlappen.
 - Der globale Screen selbst soll nicht vertikal scrollen. Nur die jeweilige Content-Body-Flaeche innerhalb des ContentPanel darf scrollen.
@@ -51,6 +52,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Skill-Subpages behalten die globale Bottom-Navigation bei, ersetzen aber den ContentPanel-Titel durch den Skillnamen und zeigen skill-spezifische Placeholder-Stats.
 - Skill-Subpages haben links neben dem Titel einen Back-Button zurueck zur Skill-Uebersicht.
 - Skill-Subpages zeigen in der Header-Stats-Bar aktuell `RAP`, `Level`, `Current XP` und `XP to Next Level`, weil Unlocks direkt RAP verbrauchen. RAP steht auf Skill-Subpages bewusst links wie in anderen Ressourcenscreens.
+- Skill-Subpage-Stats nutzen icon-only Kacheln: Icon oben, Wert darunter, Label nur noch fuer Accessibility und Long-Press-Quicklook.
 - Woodcutting hat als erster Skill eine Unlock-Liste im Skill-Detail-Body. Unlocks werden nicht in Kategorien unterteilt, sondern als volle Zeilen untereinander dargestellt.
 - Skill-Detailseiten zeigen keinen grossen Skill-Hero zwischen Header und Content mehr. Nach der gemeinsamen Topbar/Stats-Bar beginnt direkt die Unlock-Liste bzw. der skill-spezifische Content.
 - Unlock-Zeilen zeigen Level-Anforderung, Icon-/Item-Platzhalter, Unlock-Name, RAP-Kosten und Dauer. Die Zeilen nutzen die volle Breite und sind ungefaehr so hoch wie Skill-Kacheln.
@@ -108,6 +110,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Account-Erstellung/Login, Cloud-Auth-Formular und lokalem Save-Status.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
 - `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
+- `public/ui-icons/`: generierte transparente `128x128` UI-Icons fuer Header-Stats, Bottom-Navigation und Flyouts.
 - `public/skill-icons/`: generierte transparente `128x128` Skill-Icons fuer alle 30 Skills.
 - `public/unlock-icons/woodcutting/`: generierte transparente Woodcutting-Unlock-Icons; runde Badge-Hintergruende bleiben CSS.
 - `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.

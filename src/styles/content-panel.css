@@ -179,6 +179,13 @@
   flex: 0 0 auto;
 }
 
+.content-action-button img {
+  flex: 0 0 auto;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
 .content-stats {
   display: grid;
   grid-column: 1 / -1;
@@ -228,6 +235,15 @@
   grid-template-columns: 30px minmax(0, 1fr);
 }
 
+.content-stats > div.is-icon-only {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  padding: 6px 5px;
+  text-align: center;
+}
+
 .content-stat-icon {
   display: grid;
   width: 28px;
@@ -242,6 +258,30 @@
     inset 3px 3px 0 rgba(255, 255, 255, 0.14),
     0 3px 0 #070504;
   transform: rotate(-5deg);
+}
+
+.content-stat-icon img {
+  display: block;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter:
+    drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.12))
+    drop-shadow(-1px -1px 0 rgba(0, 0, 0, 0.18));
+}
+
+.content-stats > div.is-icon-only .content-stat-icon {
+  width: 31px;
+  height: 31px;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.content-stats > div.is-icon-only .content-stat-icon img {
+  width: 30px;
+  height: 30px;
 }
 
 .content-stat-copy {
@@ -259,6 +299,18 @@
   overflow-wrap: normal;
 }
 
+.content-stats > div.is-icon-only dt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .content-stats dd {
   margin: 4px 0 0;
   color: #24f2ff;
@@ -268,4 +320,10 @@
   line-height: 1.05;
   text-shadow: 0 0 14px rgba(36, 242, 255, 0.28);
   overflow-wrap: normal;
+}
+
+.content-stats > div.is-icon-only dd {
+  margin-top: 2px;
+  font-size: clamp(0.76rem, 3.4vw, 0.92rem);
+  text-align: center;
 }
