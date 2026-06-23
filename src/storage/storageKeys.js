@@ -3,6 +3,8 @@ export const localStorageKeys = {
   activityLog: "codex-collector-v1-activity-log",
   localAccountCredentials: "codex-collector-v1-local-account-credentials",
   localAccountSession: "codex-collector-v1-local-account-session",
+  questLastTick: "codex-collector-v1-quest-last-tick",
+  quests: "codex-collector-v1-quests",
   rap: "codex-collector-v1-rap",
   skills: "codex-collector-v1-skills",
   trainingLastTick: "codex-collector-v1-skill-training-last-tick",

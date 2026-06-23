@@ -8,6 +8,7 @@ import "./styles/codex-panels.css";
 import "./styles/account.css";
 import "./styles/skills.css";
 import "./styles/activities.css";
+import "./styles/quests.css";
 import "./styles/shop.css";
 import "./styles/collection.css";
 import "./styles/modals.css";

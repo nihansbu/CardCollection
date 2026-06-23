@@ -17,7 +17,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Mobile-only Layout mit kompaktem Codex-Rahmen.
 - Desktop wird nicht mehr gezielt designed oder unterstuetzt. Grosse Screens zeigen nur die mobile App-Spalte zentriert.
 - Die App-Shell nutzt eine dauerhaft sichtbare Bottom-Navigation statt einer Topbar.
-- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Activities, Skills, Inventory, drei Placeholder-Slots und More.
+- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Activities, Skills, Inventory, Quests, zwei Placeholder-Slots und More.
 - Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Account, Gear und Stats als vorbereiteten Sub-Buttons.
 - More ist ein Flyout-Button: Tap oeffnet ausgelagerte Module wie Beastiary und Codex.
 - Account ist der Startpunkt fuer verpflichtende lokale Account-Erstellung und spaeter Cloud Login.
@@ -84,6 +84,13 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Activities haben einen `type`, zum Beispiel Exercise, Mind, Productivity, Creative, Social, Home, Recovery oder General.
 - Activities koennen im Hauptscreen ueber ein kleines `Sorts` Popover nach Default, Name, RAP Reward, Type oder Unit sortiert werden.
 - Activity Stats ist als Subpage angelegt und zeigt All Activities oder eine einzelne Activity mit Kennzahlen, Longest Streak und rollender 365-Tage-Heatmap.
+- Quests ist als eigenes Bottom-Navigation-Modul eingefuehrt und ersetzt den ersten Placeholder-Slot.
+- Quests nutzt denselben `ContentPanel`-Topbar-Blueprint wie Skills und Activities.
+- Der Quests-Body zeigt kompakte quadratische Quest-Kacheln in einem 5-Spalten-Grid. Der Body ist intern scrollbar; die globale Bottom-Navigation bleibt sichtbar.
+- Quest-Kacheln nutzen Statusfarben: rot = Skill-Anforderungen fehlen, gelb = Anforderungen erfuellt und startbar, tuerkis = Quest laeuft/freischaltet, gruen = abgeschlossen.
+- Long-Press auf einer Quest oeffnet ein unteres Quicklook-Panel mit Questname, Status, RAP-Kosten, Dauer, Fortschritt, Skill-Anforderungen und Beschreibung.
+- Quests sind aktuell Skill- und RAP-Checks: Die Voraussetzungen pruefen aktuelle Skill-Level; startbare Quests verbrauchen RAP ueber Zeit mit derselben 5000-RAP-pro-Stunde-Rate wie Skill-Unlocks.
+- Quest-Fortschritt laeuft live und offline weiter. Teilfortschritt bleibt gespeichert, wenn RAP ausgeht.
 - Der alte Pack-Shop, Pack-Kauf, Collection-Progress und Pull-Modals existieren im Code noch, sind aber aktuell nicht der sichtbare Hauptscreen.
 - Activities nutzt ebenfalls mobile Listenkarten, damit Aktivitaeten direkt antippbar bleiben. Die Actions `Sorts`, `Activity Log` und `Stats` bleiben im gemeinsamen Header-System.
 
@@ -121,6 +128,8 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.
 - `src/features/activities/activityData.js`: Activity-Defaults, Activity-Typen, Sortieroptionen und Storage-Keys.
 - `src/features/activities/activityUtils.js`: Activity-Berechnungen, Storage-Helfer, Log-Gruppierung, Stats und Heatmap-Daten.
+- `src/features/quests/QuestsPanel.jsx`: Quest-Uebersicht, 5-Spalten-Questgrid und Long-Press-Quicklook.
+- `src/features/quests/questData.js`: Quest-Definitionen, Skill-Anforderungen, Quest-Status, RAP-Kosten, Progress- und Offline-Tick-Helfer.
 - `src/features/codex/CodexPanels.jsx`: Codex-, Beastiary- und Placeholder-Panels.
 - `src/storage/`: zentrale lokale Save-Schicht, Supabase-Client-Konfiguration und erste Cloud-Save-Operationen.
 - `src/views/ShopView.jsx`: Legacy-Shop-Raster, Collection Progress und Roll Odds.
@@ -146,6 +155,7 @@ CSS ist nach Flaechen getrennt:
 - `src/styles/account.css`
 - `src/styles/skills.css`
 - `src/styles/activities.css`
+- `src/styles/quests.css`
 - `src/styles/shop.css`
 - `src/styles/collection.css`
 - `src/styles/modals.css`
@@ -187,6 +197,8 @@ Healthcheck 2026-06-21:
 - Activities hat Subscreens fuer `Create Activity`, `Activity Log` und `Activity Stats`, jeweils mit Back-Button.
 - Die Buttons `Sorts`, `Activity Log` und `Stats` leben in der Header-Action-Zone von Activities, nicht im Activity-Kartenraster.
 - `Sorts` oeffnet ein kleines Popover direkt am Button und sortiert die Activity-Karten ohne Seitenwechsel.
+- Quests nutzt die Header-Bar mit `RAP`, `Ready` und `Done` sowie einem vorbereiteten `Log`-Action-Slot.
+- Quest-Kacheln sollen moeglichst viele Eintraege auf einem Bildschirm zeigen. Aktuell sind es fuenf quadratische Kacheln pro Reihe; echte Quest-Icons koennen spaeter die aktuellen Kuerzel ersetzen.
 - Der Back-Button wird nur auf ContentPanel-Seiten mit echter Ruecknavigation genutzt und lebt links innerhalb des Titelcontainers. Hauptseiten ohne Back-Button behalten den Titel zentriert.
 - Codex nutzt die Header-Bar mit Projekt-/Loop-/Status-Informationen.
 - Account nutzt die Header-Bar mit `User`, `Cloud` und `Mode`. Beim ersten App-Start wird ein lokaler Account mit frei gewaehltem Username/Passwort erzwungen. Das lokale Passwort wird mit PBKDF2 und Salt gehasht gespeichert. Das ist fuer den privaten Prototyp ausreichend als lokaler Zugriffsschutz, ersetzt aber keine Cloud-Sicherheit.
@@ -335,6 +347,51 @@ Unlock-Fortschritt laeuft live und offline:
 5. Wenn RAP auf 0 faellt, bleiben Teilfortschritt und `unlocking`-Status gespeichert.
 6. Sobald `progressRap >= rapCost`, wird der Unlock auf `unlocked` gesetzt.
 7. Beim App-Start wird vergangene Zeit seit `codex-collector-v1-skill-unlock-last-tick` nachgerechnet.
+
+### Quests
+
+Quests sind aktuell statische Definitionen plus gespeicherter Fortschritt:
+
+- Key `codex-collector-v1-quests`: Quest-Status, RAP-Fortschritt und Timestamps.
+- Key `codex-collector-v1-quest-last-tick`: letzter Zeitpunkt, bis zu dem Quest-Fortschritt abgerechnet wurde.
+
+Eine Quest enthaelt aktuell:
+
+- `id`: technische Quest-ID.
+- `name`: sichtbarer Questname.
+- `description`: Quicklook-Beschreibung.
+- `iconText`: temporaeres Quest-Kuerzel fuer die quadratische Kachel.
+- `color`: UI-Akzentfarbe.
+- `requirements`: Liste aus Skillname und benoetigtem Level.
+- `rapCost`: RAP-Kosten fuer das Freischalten.
+- `progressRap`: bereits investierte RAP.
+- `status`: `available`, `unlocking` oder `completed`; `locked` wird in der UI aus den Skill-Anforderungen abgeleitet.
+- `startedAt` und `completedAt`: Timestamps fuer laufende und abgeschlossene Quests.
+
+Aktuelle Beispielquests:
+
+- First Steps.
+- Cook's Assistant.
+- Village Gathering.
+- Rusted Tools.
+- Arcane Runes.
+- Hillside Camp.
+- Rooftop Route.
+- Wild Hunt.
+- Relic Recovery.
+- Ein Kleiner Gefallen.
+- Familiar Contract.
+- Sea Voyage.
+
+Quest-Fortschritt:
+
+1. Eine Quest ist startbar, wenn alle Skill-Anforderungen erfuellt sind.
+2. Beim Tap auf eine startbare Quest wechselt sie auf `unlocking`.
+3. Jede aktive Quest verbraucht bis zu 5000 RAP pro Stunde.
+4. Mehrere laufende Quests teilen sich bei knapper RAP-Balance proportional den vorhandenen RAP, wie Skill-Unlocks.
+5. Wenn RAP auf 0 faellt, bleibt der Teilfortschritt erhalten.
+6. Sobald `progressRap >= rapCost`, wird die Quest auf `completed` gesetzt.
+7. Beim App-Start wird vergangene Zeit seit `codex-collector-v1-quest-last-tick` nachgerechnet.
 
 ## Cloud Save und Account-Plan
 

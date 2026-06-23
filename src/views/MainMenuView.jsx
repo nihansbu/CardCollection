@@ -13,6 +13,12 @@ import {
   normalizeActivities,
 } from "../features/activities/activityUtils.js";
 import { BeastiaryPanel, CodexPanel, PlaceholderPanel } from "../features/codex/CodexPanels.jsx";
+import { QuestsPanel } from "../features/quests/QuestsPanel.jsx";
+import {
+  applyQuestProgress,
+  questStorageKeys,
+  startQuestUnlock,
+} from "../features/quests/questData.js";
 import { SkillDetailPanel, SkillsPanel, SkillsTrainingPanel } from "../features/skills/SkillsPanel.jsx";
 import {
   applySkillUnlockProgress,
@@ -31,6 +37,7 @@ export function MainMenuView({ activeView, onAccountChange }) {
     const localSave = loadLocalGameSave(now);
     const trainingElapsedSeconds = Math.max(0, (now - localSave.trainingLastTick) / 1000);
     const unlockElapsedSeconds = Math.max(0, (now - localSave.unlockLastTick) / 1000);
+    const questElapsedSeconds = Math.max(0, (now - localSave.questLastTick) / 1000);
     const nextTrainingState = applySkillTrainingProgress({
       elapsedSeconds: trainingElapsedSeconds,
       rap: localSave.rap,
@@ -42,17 +49,26 @@ export function MainMenuView({ activeView, onAccountChange }) {
       rap: nextTrainingState.rap,
       unlocks: localSave.unlocks,
     });
+    const nextQuestState = applyQuestProgress({
+      elapsedSeconds: questElapsedSeconds,
+      quests: localSave.quests,
+      rap: nextUnlockState.rap,
+    });
 
-    writeJson(activityStorageKeys.rap, nextUnlockState.rap);
+    writeJson(activityStorageKeys.rap, nextQuestState.rap);
     writeJson(skillStorageKeys.skills, nextTrainingState.skills);
     writeJson(skillStorageKeys.trainingSlots, nextTrainingState.trainingSlots);
     writeJson(skillStorageKeys.trainingLastTick, now);
     writeJson(skillStorageKeys.unlockLastTick, now);
     writeJson(skillStorageKeys.unlocks, nextUnlockState.unlocks);
+    writeJson(questStorageKeys.lastTick, now);
+    writeJson(questStorageKeys.quests, nextQuestState.quests);
     initialTrainingState.current = {
       ...localSave,
       ...nextTrainingState,
       ...nextUnlockState,
+      ...nextQuestState,
+      questLastTick: now,
       trainingLastTick: now,
       unlockLastTick: now,
     };
@@ -66,12 +82,14 @@ export function MainMenuView({ activeView, onAccountChange }) {
   const [activityMode, setActivityMode] = useState("list");
   const [activities, setActivities] = useState(() => normalizeActivities(initialTrainingState.current.activities || defaultActivities));
   const [activityLog, setActivityLog] = useState(() => initialTrainingState.current.activityLog || []);
+  const [quests, setQuests] = useState(initialTrainingState.current.quests);
   const [rap, setRap] = useState(initialTrainingState.current.rap);
   const [unlocks, setUnlocks] = useState(initialTrainingState.current.unlocks);
   const rapRef = useRef(rap);
   const skillsRef = useRef(skills);
   const trainingSlotsRef = useRef(trainingSlots);
   const unlocksRef = useRef(unlocks);
+  const questsRef = useRef(quests);
   const manualTrainingSlotSelectionRef = useRef(false);
 
   useEffect(() => {
@@ -89,6 +107,10 @@ export function MainMenuView({ activeView, onAccountChange }) {
   useEffect(() => {
     unlocksRef.current = unlocks;
   }, [unlocks]);
+
+  useEffect(() => {
+    questsRef.current = quests;
+  }, [quests]);
 
   useEffect(() => {
     if (activeView !== "skills") {
@@ -114,17 +136,24 @@ export function MainMenuView({ activeView, onAccountChange }) {
         rap: nextTrainingState.rap,
         unlocks: unlocksRef.current,
       });
+      const nextQuestState = applyQuestProgress({
+        elapsedSeconds: 1,
+        quests: questsRef.current,
+        rap: nextUnlockState.rap,
+      });
 
       writeJson(skillStorageKeys.trainingLastTick, Date.now());
       writeJson(skillStorageKeys.unlockLastTick, Date.now());
+      writeJson(questStorageKeys.lastTick, Date.now());
 
-      if (!nextTrainingState.changed && !nextUnlockState.changed) return;
+      if (!nextTrainingState.changed && !nextUnlockState.changed && !nextQuestState.changed) return;
 
-      rapRef.current = nextUnlockState.rap;
+      rapRef.current = nextQuestState.rap;
       skillsRef.current = nextTrainingState.skills;
       trainingSlotsRef.current = nextTrainingState.trainingSlots;
       unlocksRef.current = nextUnlockState.unlocks;
-      setRap(nextUnlockState.rap);
+      questsRef.current = nextQuestState.quests;
+      setRap(nextQuestState.rap);
       if (nextTrainingState.changed) {
         setSkills(nextTrainingState.skills);
         setTrainingSlots(nextTrainingState.trainingSlots);
@@ -135,7 +164,11 @@ export function MainMenuView({ activeView, onAccountChange }) {
         setUnlocks(nextUnlockState.unlocks);
         writeJson(skillStorageKeys.unlocks, nextUnlockState.unlocks);
       }
-      writeJson(activityStorageKeys.rap, nextUnlockState.rap);
+      if (nextQuestState.changed) {
+        setQuests(nextQuestState.quests);
+        writeJson(questStorageKeys.quests, nextQuestState.quests);
+      }
+      writeJson(activityStorageKeys.rap, nextQuestState.rap);
     }, 1000);
 
     return () => window.clearInterval(intervalId);
@@ -219,6 +252,23 @@ export function MainMenuView({ activeView, onAccountChange }) {
     });
   };
 
+  const startQuest = (quest) => {
+    if (rapRef.current <= 0) return;
+
+    setQuests((currentQuests) => {
+      const nextQuests = startQuestUnlock({
+        questId: quest.id,
+        quests: currentQuests,
+        skills: skillsRef.current,
+      });
+
+      questsRef.current = nextQuests;
+      writeJson(questStorageKeys.quests, nextQuests);
+      writeJson(questStorageKeys.lastTick, Date.now());
+      return nextQuests;
+    });
+  };
+
   if (activeView === "codex") {
     return <CodexPanel />;
   }
@@ -289,6 +339,17 @@ export function MainMenuView({ activeView, onAccountChange }) {
         onOpenLog={() => setActivityMode("log")}
         onOpenStats={() => setActivityMode("stats")}
         rap={rap}
+      />
+    );
+  }
+
+  if (activeView === "quests") {
+    return (
+      <QuestsPanel
+        onStartQuest={startQuest}
+        quests={quests}
+        rap={rap}
+        skills={skills}
       />
     );
   }

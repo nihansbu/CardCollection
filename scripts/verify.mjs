@@ -103,6 +103,8 @@ try {
     localStorage.removeItem("codex-collector-v1-local-account-credentials");
     localStorage.removeItem("codex-collector-v1-local-account-session");
     localStorage.removeItem("codex-collector-v1-skills");
+    localStorage.removeItem("codex-collector-v1-quests");
+    localStorage.setItem("codex-collector-v1-quest-last-tick", String(Date.now()));
     localStorage.setItem("codex-collector-v1-skill-training-slots", JSON.stringify(["Woodcutting", null, null]));
     localStorage.setItem("codex-collector-v1-skill-training-last-tick", String(Date.now() - 60000));
     localStorage.removeItem("codex-collector-v1-skill-unlocks");
@@ -140,6 +142,25 @@ try {
   const rapAfterActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
   const activityLogAfterTap = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-activity-log")));
   const activityHeaderMetrics = await readContentHeaderMetrics(page);
+
+  await page.locator('.bottom-nav-item[aria-label="Quests"]').click();
+  await page.getByRole("heading", { name: /^Quests$/i }).waitFor({ timeout: 5000 });
+  const questRows = await page.locator(".quest-tile").count();
+  const firstStepsQuest = page.getByRole("button", { name: /First Steps/i });
+  await firstStepsQuest.dispatchEvent("pointerdown");
+  await page.waitForTimeout(620);
+  await firstStepsQuest.dispatchEvent("pointerup");
+  await page.locator(".quest-quicklook", { hasText: /First Steps/i }).waitFor({ timeout: 5000 });
+  const questQuicklookText = await page.locator(".quest-quicklook").innerText();
+  await page.locator(".quest-quicklook button").click();
+  const cooksAssistantClassBefore = await page.getByRole("button", { name: /Cook's Assistant/i }).getAttribute("class");
+  await page.getByRole("button", { name: /Cook's Assistant/i }).click();
+  await page.waitForTimeout(1200);
+  const cooksAssistantClassAfter = await page.getByRole("button", { name: /Cook's Assistant/i }).getAttribute("class");
+  const storedQuestsAfterClick = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-quests")));
+  const cooksAssistantQuestAfterClick = storedQuestsAfterClick.find((quest) => quest.id === "cooks-assistant");
+  const questBoardColumns = await page.locator(".quest-board").evaluate((node) => window.getComputedStyle(node).gridTemplateColumns.split(" ").length);
+  const questHeaderMetrics = await readContentHeaderMetrics(page);
 
   await page.locator('.bottom-nav-item[aria-label="Skills"]').click();
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
@@ -258,11 +279,18 @@ try {
     activityQuicklookText,
     activityRows,
     bottomNavLabels,
+    cooksAssistantClassAfter,
+    cooksAssistantClassBefore,
+    cooksAssistantQuestAfterClick,
     moreFlyoutLabels,
     overflow,
     quicklookLabels,
     quicklookValuesAfter,
     quicklookValuesBefore,
+    questBoardColumns,
+    questHeaderMetrics,
+    questQuicklookText,
+    questRows,
     oldStatQuicklookCount,
     sharedQuicklookCount,
     skillsHeaderMetrics,
@@ -316,7 +344,17 @@ try {
     activityHeaderMetrics.actions.width === skillsHeaderMetrics.actions.width &&
     activityHeaderMetrics.stats.y === skillsHeaderMetrics.stats.y &&
     activityHeaderMetrics.stats.height === skillsHeaderMetrics.stats.height &&
-    bottomNavLabels.join("|") === "Char|Act|Skills|Inv|Slot1|Slot2|Slot3|More" &&
+    bottomNavLabels.join("|") === "Char|Act|Skills|Inv|Quest|Slot2|Slot3|More" &&
+    questRows >= 12 &&
+    questBoardColumns === 5 &&
+    questQuicklookText.toUpperCase().includes("FIRST STEPS") &&
+    questQuicklookText.toUpperCase().includes("RAP COST") &&
+    cooksAssistantClassBefore?.includes("is-available") &&
+    cooksAssistantClassAfter?.includes("is-unlocking") &&
+    Number(cooksAssistantQuestAfterClick?.progressRap) > 0 &&
+    questHeaderMetrics.header.height === skillsHeaderMetrics.header.height &&
+    questHeaderMetrics.title.width === skillsHeaderMetrics.title.width &&
+    questHeaderMetrics.actions.width === skillsHeaderMetrics.actions.width &&
     moreFlyoutLabels.join("|") === "Beast|Codex" &&
     skillDetailActionText.includes("SKILLS") &&
     skillDetailStatsText.includes("RAP") &&
