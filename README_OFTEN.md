@@ -572,6 +572,43 @@ Der Shop zeigt zwischen Pack-Raster und Roll Odds eine kompakte Collection Progr
 - Packs sollen spaeter nach Universe, Genre, Preis, Rarity-Policy und Aktivitaetsbezug unterscheidbar werden.
 - Karten, Skills, Monster, Items und weitere Codex-Eintraege sollen stark erweiterbar sein.
 
+## Icon-Pipeline
+
+Finale Spiel-Icons sollen als generierte Raster-Assets entstehen, nicht als handgebaute SVG-/Code-Platzhalter. Fuer schnelle Layout-Prototypen sind Kuerzel oder einfache Platzhalter erlaubt, aber finale Skill-, Quest-, Unlock-, Item-, Navigations- und Topbar-Stat-Icons sollen mit dem Bildgenerierungstool erstellt, lokal nachbearbeitet und als wiederverwendbare transparente PNGs gespeichert werden.
+
+Grundregeln:
+
+- Zielgroesse fuer finale Icons ist aktuell `128x128` PNG mit transparentem Hintergrund.
+- Das Icon-Bild enthaelt nur das Objekt oder Symbol selbst. Badge-Hintergruende, runde beige Flaechen, Statusfarben, Rahmen, Glow und Kachelformen kommen aus CSS/UI.
+- Keine eingebrannte Schrift, keine Buchstaben, keine Zahlen und keine UI-Labels im Icon, ausser der Nutzer fordert es ausdruecklich.
+- Icons muessen bei kleinen Groessen, etwa 24-32px, lesbar bleiben: klare Silhouette, wenige Details, dunkle Kontur, hoher Kontrast.
+- Zusammengehoerige Item-Familien sollen dieselbe Silhouette nutzen und hauptsaechlich ueber Material, Farbe oder kleine Details variieren. Beispiele: Logs, Aexte, Pickaxes, Keys, Runes.
+- Generierte Icons sollen stilistisch zu den genehmigten Skill- und Woodcutting-Unlock-Icons passen: Fantasy-RPG, pixel-art-inspiriert, sauber zentriert, einfache lesbare Objekte.
+- Vor dem Einbau muessen neue Icons visuell geprueft werden. Wenn sie nicht eindeutig lesbar sind oder stilistisch abweichen, werden sie ersetzt statt im UI zurechtgebogen.
+
+Standard-Prompt-Richtung fuer neue Icons:
+
+```text
+Fantasy RPG game icon, pixel-art inspired but polished, single centered object, readable at 32px, strong dark outline, simple high-contrast silhouette, subtle hand-painted shading, no text, no letters, no numbers, no UI badge, no circular background, no frame, no shadow, flat chroma-key background for transparent cutout.
+```
+
+Asset-Ablage:
+
+- `public/ui-icons/`: globale UI-, Topbar- und Bottom-Navigation-Icons.
+- `public/skill-icons/`: Skill-Icons.
+- `public/unlock-icons/<skill>/`: Skill-Unlock- und milestone-nahe Item-Icons.
+- `public/quest-icons/`: Quest-Icons.
+- `public/item-icons/`: spaetere Inventar-/Drop-/Reward-Icons.
+
+Technischer Ablauf:
+
+1. Icon-Spec definieren: `id`, sichtbarer Name, Kategorie, Motiv, Icon-Familie, Zielordner und Prompt.
+2. Mit dem Bildgenerierungstool ein Raster-Icon erzeugen. Fuer transparente Assets zuerst einen flachen Chroma-Key-Hintergrund verwenden.
+3. Chroma-Key lokal entfernen und als transparente PNG speichern.
+4. Auf `128x128` normalisieren und im passenden `public/...` Ordner ablegen.
+5. Im Feature-Datenmodell nur den Asset-Pfad referenzieren; visuelle Hintergruende bleiben CSS.
+6. Build, Smoke-Test und bei relevanten UI-Icons visuellen Screenshot pruefen.
+
 ## Wahrscheinliche naechste Systeme
 
 - Datenmodell fuer Skills: Level, XP, Kosten, Unlocks und Training-Aktionen. Aktueller Startwert fuer alle Skills ist Level 1/99.
