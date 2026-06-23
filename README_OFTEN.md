@@ -26,6 +26,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Der aktive Bottom-Navigation-Button wird rot markiert.
 - Das grosse Content Window unter der Navigation bleibt zwischen Modulen strukturell gleich, ist aber mobil zuerst als gestapeltes Panel aufgebaut.
 - Jedes Modul nutzt eine gemeinsame Header-Bar aus `ContentPanel`: zentrierter Titelcontainer, optionaler Back-Button links innerhalb dieses Titelcontainers, rechtsbuendige Action-Button-Zone in derselben Zeile und eigene Stats darunter.
+- Long-Press-/Quicklook-Informationen nutzen moduluebergreifend das gemeinsame `InfoPanel`-Overlay aus `ContentPanel`. Es sitzt zentral am unteren Rand des ContentPanels direkt oberhalb der Bottom-Navigation; Feature-Seiten liefern nur Titel, Badge, Metrics, Beschreibung und optionale Zusatzinhalte.
 - Die Dimensionen der Header-Bar, Action-Zone und Stats-Bar sollen zentral in `src/styles/content-panel.css` definiert bleiben. Feature-CSS soll die Topbar nicht mehr nachbauen, sondern nur echte Sonderfaelle ueberschreiben.
 - Header-Actions teilen sich automatisch den gemeinsamen rechten Action-Bereich: ein Button nimmt die volle Action-Breite, mehrere Buttons werden gleichmaessig kleiner, bleiben aber in derselben Topbar-Struktur.
 - Hauptseiten ohne Back-Button zeigen den zentrierten Titel, rechts modulbezogene Actions und darunter kompakte Stats. Subpages mit Back-Button nutzen dieselbe Struktur; der Back-Button lebt links im Titelcontainer statt in einer separaten Spalte.
@@ -68,7 +69,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Unlocks verbrauchen pro laufendem Unlock bis zu 5000 RAP pro Stunde. Mehrere Unlocks koennen gleichzeitig laufen und sind grundsaetzlich unabhaengig; bei knapper RAP-Balance wird vorhandener RAP proportional auf laufende Unlocks verteilt.
 - Wenn RAP ausgeht, bleiben laufende Unlocks auf `unlocking` und behalten ihren gespeicherten `progressRap`. Sobald wieder RAP vorhanden ist, koennen sie ab diesem Teilfortschritt weiterlaufen.
 - Unlock-Fortschritt laeuft auch offline weiter: Beim naechsten App-Start wird die vergangene Zeit seit dem letzten Unlock-Tick nachgerechnet.
-- Long-Press auf einem Skill, Header-Stat oder Header-Action zeigt eine kompakte Quicklook-Info im gemeinsamen unteren Info-Panel des Skills-Bodys. Normaler Tap oeffnet weiterhin die Detailseite oder fuehrt die normale Button-Aktion aus.
+- Long-Press auf einem Skill, Header-Stat oder Header-Action zeigt eine kompakte Quicklook-Info im gemeinsamen unteren InfoPanel-Overlay. Normaler Tap oeffnet weiterhin die Detailseite oder fuehrt die normale Button-Aktion aus.
 - Skill-Quicklook-Werte werden aus dem aktuellen Skill-State abgeleitet und aktualisieren sich live, solange Training tickt.
 - Skill-Quicklook und Skill-Detailseiten verwenden die Labels `Current XP` und `XP to Next Level`. `XP to Next Level` zeigt zusaetzlich eine ETA in Klammern, wenn der Skill aktuell trainiert wird, sonst `Idle`.
 - Die Skill-XP-Werte nutzen aktuell eine RuneScape-artige XP-Kurve. Level 1 startet bei 0 XP, Level 2 liegt bei 83 XP.
@@ -87,7 +88,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Quests ist als eigenes Bottom-Navigation-Modul eingefuehrt und ersetzt den ersten Placeholder-Slot.
 - Quests nutzt denselben `ContentPanel`-Topbar-Blueprint wie Skills und Activities.
 - Der Quests-Body zeigt kompakte quadratische Quest-Kacheln in einem 5-Spalten-Grid. Der Body ist intern scrollbar; die globale Bottom-Navigation bleibt sichtbar.
-- Quest-Kacheln nutzen Statusfarben: rot = Skill-Anforderungen fehlen, gelb = Anforderungen erfuellt und startbar, tuerkis = Quest laeuft/freischaltet, gruen = abgeschlossen.
+- Quest-Kacheln nutzen Statusfarben: rot = Skill-Anforderungen fehlen, gelb = Anforderungen erfuellt und startbar, tuerkis = Quest laeuft/freischaltet oder abgeschlossen. Abgeschlossene Quests sollen den tuerkisen/blauen Hintergrund prominent fuellen, damit Completion im Grid schnell sichtbar ist.
 - Long-Press auf einer Quest oeffnet ein unteres Quicklook-Panel mit Questname, Status, RAP-Kosten, Dauer, Fortschritt, Skill-Anforderungen und Beschreibung.
 - Quests sind aktuell Skill- und RAP-Checks: Die Voraussetzungen pruefen aktuelle Skill-Level; startbare Quests verbrauchen RAP ueber Zeit mit derselben 5000-RAP-pro-Stunde-Rate wie Skill-Unlocks.
 - Quest-Fortschritt laeuft live und offline weiter. Teilfortschritt bleibt gespeichert, wenn RAP ausgeht.
@@ -119,6 +120,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `src/components/AppShell.jsx`: Fixierte Mobile-Bottom-Navigation mit 8 Slots und Character-Flyout.
 - `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Uebersicht/-Training/-Detail-State, RAP-Ausgabe durch Training und Activity-Subpage-State.
 - `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Button im Titelcontainer, festem Seitentitel, responsiver Action-Button-Zone und Stats-Bar als gemeinsamer Topbar-Blueprint fuer alle Module.
+- `src/components/InfoPanel.jsx`: gemeinsames unteres Quicklook-/Infopanel fuer Skills, Activities, Quests und spaetere Module.
 - `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Account-Erstellung/Login, Cloud-Auth-Formular und lokalem Save-Status.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
 - `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
@@ -151,6 +153,7 @@ CSS ist nach Flaechen getrennt:
 - `src/styles/base.css`
 - `src/styles/app-shell.css`
 - `src/styles/content-panel.css`
+- `src/styles/info-panel.css`
 - `src/styles/codex-panels.css`
 - `src/styles/account.css`
 - `src/styles/skills.css`

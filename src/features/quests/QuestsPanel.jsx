@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ScrollText } from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
+import { InfoPanel } from "../../components/InfoPanel.jsx";
 import { uiIcons } from "../../components/UiIcon.jsx";
 import { formatRap } from "../activities/activityUtils.js";
 import {
@@ -29,36 +30,20 @@ function QuestInfoPanel({ onClose, quest, skills }) {
   const remainingRap = Math.max(0, quest.rapCost - quest.progressRap);
 
   return (
-    <div
-      className="quest-quicklook"
-      role="status"
-      onPointerDown={(event) => event.stopPropagation()}
-      style={{ "--quest-color": quest.color }}
+    <InfoPanel
+      accent={quest.color}
+      badge={quest.iconText}
+      className="content-info-panel--quest"
+      description={quest.description}
+      metrics={[
+        { label: "RAP Cost", value: formatRap(quest.rapCost) },
+        { label: "Time", value: formatQuestDurationFromRap(remainingRap || quest.rapCost) },
+        { label: "Progress", value: `${Math.floor(getQuestProgressPercent(quest))}%` },
+      ]}
+      onClose={onClose}
+      subtitle={`${status} quest`}
+      title={quest.name}
     >
-      <div className="quest-quicklook-head">
-        <span aria-hidden="true">{quest.iconText}</span>
-        <div>
-          <strong>{quest.name}</strong>
-          <small>{status} quest</small>
-        </div>
-        <button aria-label="Close quest info" onClick={onClose} type="button">
-          x
-        </button>
-      </div>
-      <dl>
-        <div>
-          <dt>RAP Cost</dt>
-          <dd>{formatRap(quest.rapCost)}</dd>
-        </div>
-        <div>
-          <dt>Time</dt>
-          <dd>{formatQuestDurationFromRap(remainingRap || quest.rapCost)}</dd>
-        </div>
-        <div>
-          <dt>Progress</dt>
-          <dd>{Math.floor(getQuestProgressPercent(quest))}%</dd>
-        </div>
-      </dl>
       <div className="quest-requirements" aria-label={`${quest.name} requirements`}>
         {sortedRequirements.length ? sortedRequirements.map((requirement) => {
           const skill = skillsByName.get(requirement.skill);
@@ -71,8 +56,7 @@ function QuestInfoPanel({ onClose, quest, skills }) {
           );
         }) : <span className="is-met">No skill requirements</span>}
       </div>
-      <p>{quest.description}</p>
-    </div>
+    </InfoPanel>
   );
 }
 
@@ -142,6 +126,7 @@ export function QuestsPanel({ onStartQuest, quests, rap, skills }) {
         },
       ]}
       className="quests-panel"
+      infoPanel={<QuestInfoPanel onClose={() => setPreviewQuestId(null)} quest={previewQuest} skills={skills} />}
       stats={[
         { Icon: uiIcons.rap, description: "Current Real Life Activity Points available for quests.", label: "RAP", value: formatRap(rap) },
         { Icon: uiIcons.skills, description: "Quests whose skill requirements are met and can be started.", label: "Ready", value: summary.available },
@@ -159,7 +144,6 @@ export function QuestsPanel({ onStartQuest, quests, rap, skills }) {
             skills={skills}
           />
         ))}
-        <QuestInfoPanel onClose={() => setPreviewQuestId(null)} quest={previewQuest} skills={skills} />
       </div>
     </ContentPanel>
   );

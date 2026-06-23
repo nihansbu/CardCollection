@@ -4,6 +4,7 @@ import { App } from "./App.jsx";
 import "./styles/base.css";
 import "./styles/app-shell.css";
 import "./styles/content-panel.css";
+import "./styles/info-panel.css";
 import "./styles/codex-panels.css";
 import "./styles/account.css";
 import "./styles/skills.css";

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
+import { InfoPanel } from "../../components/InfoPanel.jsx";
 import {
   ACTIVITY_HEATMAP_DAYS,
   ACTIVITY_LOG_LIMIT,
@@ -24,38 +25,20 @@ function ActivityInfoPanel({ activity, onClose }) {
   const reward = getActivityReward(activity);
 
   return (
-    <div
-      className="activity-quicklook"
-      role="status"
-      onPointerDown={(event) => event.stopPropagation()}
-      style={{ "--activity-color": activity.color }}
-    >
-      <div className="activity-quicklook-head">
-        <span aria-hidden="true">{activity.title.slice(0, 2).toUpperCase()}</span>
-        <div>
-          <strong>{activity.title}</strong>
-          <small>{getActivityType(activity)} Activity</small>
-        </div>
-        <button aria-label="Close activity info" onClick={onClose} type="button">
-          x
-        </button>
-      </div>
-      <dl>
-        <div>
-          <dt>Unit</dt>
-          <dd>{activity.unit}</dd>
-        </div>
-        <div>
-          <dt>Quantity</dt>
-          <dd>{activity.defaultQuantity}</dd>
-        </div>
-        <div>
-          <dt>Reward</dt>
-          <dd>+{formatRap(reward)} RAP</dd>
-        </div>
-      </dl>
-      <p>{activity.description}</p>
-    </div>
+    <InfoPanel
+      accent={activity.color}
+      badge={activity.title.slice(0, 2).toUpperCase()}
+      className="content-info-panel--activity"
+      description={activity.description}
+      metrics={[
+        { label: "Unit", value: activity.unit },
+        { label: "Quantity", value: activity.defaultQuantity },
+        { label: "Reward", value: `+${formatRap(reward)} RAP` },
+      ]}
+      onClose={onClose}
+      subtitle={`${getActivityType(activity)} Activity`}
+      title={activity.title}
+    />
   );
 }
 
@@ -156,6 +139,7 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
         { label: "Stats", onClick: onOpenStats },
       ]}
       className="activities-panel"
+      infoPanel={<ActivityInfoPanel activity={previewActivity} onClose={() => setPreviewActivityId(null)} />}
       stats={[
         { label: "RAP Balance", value: formatRap(rap) },
         { label: "Activities", value: activities.length },
@@ -183,7 +167,6 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
             onPreview={(previewActivityEntry) => setPreviewActivityId(previewActivityEntry.id)}
           />
         ))}
-        <ActivityInfoPanel activity={previewActivity} onClose={() => setPreviewActivityId(null)} />
       </div>
     </ContentPanel>
   );

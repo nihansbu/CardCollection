@@ -37,6 +37,7 @@ export function ContentPanel({
   actions = [],
   children,
   className = "",
+  infoPanel,
   onActionPreview,
   onBack,
   onStatPreview,
@@ -175,6 +176,7 @@ export function ContentPanel({
         </dl>
       </div>
       <div className="content-body">{children}</div>
+      {infoPanel}
     </section>
   );
 }

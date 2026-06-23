@@ -161,8 +161,7 @@
 }
 
 .skill-icon-image,
-.skill-sprite img,
-.skill-quicklook-head > span img {
+.skill-sprite img {
   display: block;
   object-fit: contain;
   image-rendering: pixelated;
@@ -174,11 +173,6 @@
 .skill-sprite img {
   width: 27px;
   height: 27px;
-}
-
-.skill-quicklook-head > span img {
-  width: 29px;
-  height: 29px;
 }
 
 .skill-sprite span {
@@ -211,117 +205,6 @@
   color: #f4cf5a;
   font-size: 0.54rem;
   text-shadow: 1px 1px 0 #050403;
-}
-
-.skill-quicklook {
-  position: sticky;
-  right: 6px;
-  bottom: 6px;
-  left: 6px;
-  grid-column: 1 / -1;
-  z-index: 8;
-  display: grid;
-  gap: 8px;
-  margin-top: -112px;
-  padding: 10px;
-  border: 2px solid #5c4d3f;
-  background:
-    linear-gradient(180deg, rgba(255, 244, 209, 0.05), transparent 38%),
-    rgba(18, 12, 10, 0.98);
-  box-shadow:
-    inset 0 0 0 2px #070504,
-    0 16px 30px rgba(0, 0, 0, 0.5);
-}
-
-.skill-quicklook-head {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) 30px;
-  align-items: center;
-  gap: 9px;
-}
-
-.skill-quicklook-head > span {
-  display: grid;
-  width: 32px;
-  height: 32px;
-  place-items: center;
-  color: #090605;
-  border: 1px solid #6e5730;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.6), transparent 24%),
-    radial-gradient(circle at 50% 58%, #ffe3a8 0 48%, #d5a95d 68%, #7b5628 100%);
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.6rem;
-  font-weight: 900;
-  box-shadow:
-    inset -3px -3px 0 rgba(80, 48, 18, 0.42),
-    inset 2px 2px 0 rgba(255, 255, 255, 0.25),
-    0 3px 0 #070504;
-}
-
-.skill-quicklook-head strong,
-.skill-quicklook dd {
-  color: #fff2d3;
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.82rem;
-  font-weight: 900;
-  line-height: 1.05;
-  text-transform: uppercase;
-}
-
-.skill-quicklook-head small,
-.skill-quicklook dt {
-  display: block;
-  color: #d4bd88;
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.56rem;
-  font-weight: 900;
-  letter-spacing: 0.07em;
-  line-height: 1.1;
-  text-transform: uppercase;
-}
-
-.skill-quicklook-head button {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  color: #fff2d3;
-  border: 1px solid rgba(213, 184, 130, 0.26);
-  background: rgba(0, 0, 0, 0.24);
-  cursor: pointer;
-  font-family: "Courier New", ui-monospace, monospace;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.skill-quicklook dl {
-  display: grid;
-  grid-template-columns: repeat(var(--quicklook-stat-count, 3), minmax(0, 1fr));
-  gap: 6px;
-  margin: 0;
-}
-
-.skill-quicklook dl div {
-  min-width: 0;
-  padding: 7px;
-  border: 1px solid rgba(213, 184, 130, 0.18);
-  background: rgba(0, 0, 0, 0.22);
-}
-
-.skill-quicklook dd {
-  margin: 2px 0 0;
-  color: #24f2ff;
-  font-size: 0.68rem;
-  overflow-wrap: anywhere;
-}
-
-.skill-quicklook p {
-  margin: 0;
-  color: #cfc2ae;
-  font-size: 0.78rem;
-  line-height: 1.3;
 }
 
 .skill-training-menu {

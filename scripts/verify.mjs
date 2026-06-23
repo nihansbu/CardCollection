@@ -134,9 +134,9 @@ try {
   await walkingActivity.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await walkingActivity.dispatchEvent("pointerup");
-  await page.locator(".activity-quicklook", { hasText: /Walking/i }).waitFor({ timeout: 5000 });
-  const activityQuicklookText = await page.locator(".activity-quicklook").innerText();
-  await page.locator(".activity-quicklook button").click();
+  await page.locator(".content-info-panel", { hasText: /Walking/i }).waitFor({ timeout: 5000 });
+  const activityQuicklookText = await page.locator(".content-info-panel").innerText();
+  await page.locator(".content-info-panel button").click();
   const rapBeforeActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
   await page.getByRole("button", { name: /Running/i }).click();
   const rapAfterActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
@@ -150,9 +150,9 @@ try {
   await firstStepsQuest.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await firstStepsQuest.dispatchEvent("pointerup");
-  await page.locator(".quest-quicklook", { hasText: /First Steps/i }).waitFor({ timeout: 5000 });
-  const questQuicklookText = await page.locator(".quest-quicklook").innerText();
-  await page.locator(".quest-quicklook button").click();
+  await page.locator(".content-info-panel", { hasText: /First Steps/i }).waitFor({ timeout: 5000 });
+  const questQuicklookText = await page.locator(".content-info-panel").innerText();
+  await page.locator(".content-info-panel button").click();
   const cooksAssistantClassBefore = await page.getByRole("button", { name: /Cook's Assistant/i }).getAttribute("class");
   await page.getByRole("button", { name: /Cook's Assistant/i }).click();
   await page.waitForTimeout(1200);
@@ -247,19 +247,19 @@ try {
   await woodcuttingButton.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await woodcuttingButton.dispatchEvent("pointerup");
-  await page.locator(".skill-quicklook").waitFor({ timeout: 5000 });
-  const quicklookLabels = await page.locator(".skill-quicklook dt").allTextContents();
-  const quicklookValuesBefore = await page.locator(".skill-quicklook dd").allTextContents();
+  await page.locator(".content-info-panel").waitFor({ timeout: 5000 });
+  const quicklookLabels = await page.locator(".content-info-panel dt").allTextContents();
+  const quicklookValuesBefore = await page.locator(".content-info-panel dd").allTextContents();
   await page.waitForTimeout(1200);
-  const quicklookValuesAfter = await page.locator(".skill-quicklook dd").allTextContents();
+  const quicklookValuesAfter = await page.locator(".content-info-panel dd").allTextContents();
 
   await page.locator(".content-stats > div").first().dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await page.locator(".content-stats > div").first().dispatchEvent("pointerup");
-  await page.locator(".skill-quicklook").filter({ hasText: "TOTAL LEVEL" }).waitFor({ timeout: 5000 });
-  const statQuicklookText = await page.locator(".skill-quicklook").innerText();
+  await page.locator(".content-info-panel").filter({ hasText: "TOTAL LEVEL" }).waitFor({ timeout: 5000 });
+  const statQuicklookText = await page.locator(".content-info-panel").innerText();
   const oldStatQuicklookCount = await page.locator(".content-stat-quicklook").count();
-  const sharedQuicklookCount = await page.locator(".skill-quicklook").count();
+  const sharedQuicklookCount = await page.locator(".content-info-panel").count();
 
   const storedRap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
   const storedSkills = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-skills")));
