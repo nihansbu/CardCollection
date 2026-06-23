@@ -147,12 +147,19 @@ try {
   await page.getByRole("heading", { name: /^Quests$/i }).waitFor({ timeout: 5000 });
   const questRows = await page.locator(".quest-tile").count();
   const firstStepsQuest = page.getByRole("button", { name: /First Steps/i });
+  const firstQuestTilePseudoContent = await page.locator(".quest-tile").first().evaluate((node) => window.getComputedStyle(node, "::after").content);
+  const firstQuestTileBackground = await page.locator(".quest-tile").first().evaluate((node) => window.getComputedStyle(node).backgroundImage);
   await firstStepsQuest.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await firstStepsQuest.dispatchEvent("pointerup");
   await page.locator(".content-info-panel", { hasText: /First Steps/i }).waitFor({ timeout: 5000 });
   const questQuicklookText = await page.locator(".content-info-panel").innerText();
   await page.locator(".content-info-panel button").click();
+  await page.locator(".content-action-button", { hasText: "Sort" }).click();
+  await page.locator(".quest-sort-menu").waitFor({ timeout: 5000 });
+  const questSortOptions = await page.locator(".quest-sort-menu button").allTextContents();
+  await page.locator(".quest-sort-menu button", { hasText: "Highest Quest Points" }).click();
+  const firstQuestAfterQuestPointSort = await page.locator(".quest-tile").first().getAttribute("aria-label");
   const cooksAssistantClassBefore = await page.getByRole("button", { name: /Cook's Assistant/i }).getAttribute("class");
   await page.getByRole("button", { name: /Cook's Assistant/i }).click();
   await page.waitForTimeout(1200);
@@ -287,10 +294,14 @@ try {
     quicklookLabels,
     quicklookValuesAfter,
     quicklookValuesBefore,
+    firstQuestAfterQuestPointSort,
+    firstQuestTileBackground,
+    firstQuestTilePseudoContent,
     questBoardColumns,
     questHeaderMetrics,
     questQuicklookText,
     questRows,
+    questSortOptions,
     oldStatQuicklookCount,
     sharedQuicklookCount,
     skillsHeaderMetrics,
@@ -349,6 +360,12 @@ try {
     questBoardColumns === 5 &&
     questQuicklookText.toUpperCase().includes("FIRST STEPS") &&
     questQuicklookText.toUpperCase().includes("RAP COST") &&
+    questQuicklookText.toUpperCase().includes("QUEST POINTS") &&
+    firstQuestTilePseudoContent === "none" &&
+    !firstQuestTileBackground.includes("radial-gradient") &&
+    questSortOptions.includes("Highest Quest Points") &&
+    questSortOptions.includes("Locked") &&
+    firstQuestAfterQuestPointSort?.includes("Ein Kleiner Gefallen") &&
     cooksAssistantClassBefore?.includes("is-available") &&
     cooksAssistantClassAfter?.includes("is-unlocking") &&
     Number(cooksAssistantQuestAfterClick?.progressRap) > 0 &&

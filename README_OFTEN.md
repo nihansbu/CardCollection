@@ -89,6 +89,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Quests nutzt denselben `ContentPanel`-Topbar-Blueprint wie Skills und Activities.
 - Der Quests-Body zeigt kompakte quadratische Quest-Kacheln in einem 5-Spalten-Grid. Der Body ist intern scrollbar; die globale Bottom-Navigation bleibt sichtbar.
 - Quest-Kacheln nutzen Statusfarben: rot = Skill-Anforderungen fehlen, gelb = Anforderungen erfuellt und startbar, tuerkis = Quest laeuft/freischaltet oder abgeschlossen. Abgeschlossene Quests sollen den tuerkisen/blauen Hintergrund prominent fuellen, damit Completion im Grid schnell sichtbar ist.
+- Quest-Kacheln verwenden flache farbige Status-Quadrate ohne zusaetzlichen runden Innenhintergrund. Spaetere echte Quest-Icons sollen direkt auf diesen Statusflaechen liegen.
+- Quests haben einen `Sort`-Header-Button mit Popover fuer Default, Alphabetical, Highest/Lowest Skill Requirement, Highest/Lowest Quest Points sowie Unlocked, Available und Locked.
 - Long-Press auf einer Quest oeffnet ein unteres Quicklook-Panel mit Questname, Status, RAP-Kosten, Dauer, Fortschritt, Skill-Anforderungen und Beschreibung.
 - Quests sind aktuell Skill- und RAP-Checks: Die Voraussetzungen pruefen aktuelle Skill-Level; startbare Quests verbrauchen RAP ueber Zeit mit derselben 5000-RAP-pro-Stunde-Rate wie Skill-Unlocks.
 - Quest-Fortschritt laeuft live und offline weiter. Teilfortschritt bleibt gespeichert, wenn RAP ausgeht.
@@ -366,6 +368,7 @@ Eine Quest enthaelt aktuell:
 - `iconText`: temporaeres Quest-Kuerzel fuer die quadratische Kachel.
 - `color`: UI-Akzentfarbe.
 - `requirements`: Liste aus Skillname und benoetigtem Level.
+- `questPoints`: Questpunkt-Belohnung, aktuell meist 1-2 Punkte, hoehere Questketten bis 5 Punkte.
 - `rapCost`: RAP-Kosten fuer das Freischalten.
 - `progressRap`: bereits investierte RAP.
 - `status`: `available`, `unlocking` oder `completed`; `locked` wird in der UI aus den Skill-Anforderungen abgeleitet.

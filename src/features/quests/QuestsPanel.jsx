@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollText } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import { InfoPanel } from "../../components/InfoPanel.jsx";
 import { uiIcons } from "../../components/UiIcon.jsx";
@@ -12,6 +12,47 @@ import {
 } from "./questData.js";
 
 const LONG_PRESS_MS = 520;
+
+const questSortOptions = [
+  { label: "Default", value: "default" },
+  { label: "Alphabetical", value: "alphabetical" },
+  { label: "Highest Skill Requirement", value: "highest-requirement" },
+  { label: "Lowest Skill Requirement", value: "lowest-requirement" },
+  { label: "Highest Quest Points", value: "highest-quest-points" },
+  { label: "Lowest Quest Points", value: "lowest-quest-points" },
+  { label: "Unlocked", value: "unlocked" },
+  { label: "Available", value: "available" },
+  { label: "Locked", value: "locked" },
+];
+
+function getQuestMaxRequirement(quest) {
+  return quest.requirements.reduce((highest, requirement) => Math.max(highest, requirement.level), 0);
+}
+
+function getQuestSortStatusRank(quest, skills, preferredStatus) {
+  const status = getQuestStatus(quest, skills);
+
+  if (preferredStatus === "unlocked") return status === "completed" ? 0 : status === "unlocking" ? 1 : 2;
+  if (preferredStatus === "available") return status === "available" ? 0 : status === "unlocking" ? 1 : status === "completed" ? 2 : 3;
+  if (preferredStatus === "locked") return status === "locked" ? 0 : status === "available" ? 1 : status === "unlocking" ? 2 : 3;
+
+  return 0;
+}
+
+function sortQuests(quests, skills, sortKey) {
+  return [...quests].sort((a, b) => {
+    if (sortKey === "alphabetical") return a.name.localeCompare(b.name);
+    if (sortKey === "highest-requirement") return getQuestMaxRequirement(b) - getQuestMaxRequirement(a) || a.name.localeCompare(b.name);
+    if (sortKey === "lowest-requirement") return getQuestMaxRequirement(a) - getQuestMaxRequirement(b) || a.name.localeCompare(b.name);
+    if (sortKey === "highest-quest-points") return (b.questPoints || 0) - (a.questPoints || 0) || a.name.localeCompare(b.name);
+    if (sortKey === "lowest-quest-points") return (a.questPoints || 0) - (b.questPoints || 0) || a.name.localeCompare(b.name);
+    if (sortKey === "unlocked" || sortKey === "available" || sortKey === "locked") {
+      return getQuestSortStatusRank(a, skills, sortKey) - getQuestSortStatusRank(b, skills, sortKey) || a.name.localeCompare(b.name);
+    }
+
+    return quests.indexOf(a) - quests.indexOf(b);
+  });
+}
 
 function QuestInfoPanel({ onClose, quest, skills }) {
   if (!quest) return null;
@@ -37,6 +78,7 @@ function QuestInfoPanel({ onClose, quest, skills }) {
       description={quest.description}
       metrics={[
         { label: "RAP Cost", value: formatRap(quest.rapCost) },
+        { label: "Quest Points", value: quest.questPoints || 0 },
         { label: "Time", value: formatQuestDurationFromRap(remainingRap || quest.rapCost) },
         { label: "Progress", value: `${Math.floor(getQuestProgressPercent(quest))}%` },
       ]}
@@ -112,7 +154,11 @@ function QuestTile({ onPreview, onStartQuest, quest, skills }) {
 }
 
 export function QuestsPanel({ onStartQuest, quests, rap, skills }) {
+  const [sortKey, setSortKey] = useState("default");
+  const [isSortOpen, setIsSortOpen] = useState(false);
   const [previewQuestId, setPreviewQuestId] = useState(null);
+  const sortedQuests = sortQuests(quests, skills, sortKey);
+  const activeSortLabel = questSortOptions.find((option) => option.value === sortKey)?.label || "Default";
   const previewQuest = previewQuestId ? quests.find((quest) => quest.id === previewQuestId) : null;
   const summary = getQuestSummary(quests, skills);
 
@@ -120,9 +166,30 @@ export function QuestsPanel({ onStartQuest, quests, rap, skills }) {
     <ContentPanel
       actions={[
         {
-          Icon: ScrollText,
-          description: "Quest list. Tap available quests to start spending RAP, or long-press a quest for requirements.",
-          label: "Log",
+          Icon: ArrowUpDown,
+          description: "Sort the quest grid by name, requirements, quest points, or unlock state.",
+          expanded: isSortOpen,
+          label: "Sort",
+          onClick: () => setIsSortOpen((isOpen) => !isOpen),
+          panel: isSortOpen ? (
+            <div className="quest-sort-menu" role="menu">
+              <span>Sort By - {activeSortLabel}</span>
+              {questSortOptions.map((option) => (
+                <button
+                  className={option.value === sortKey ? "is-active" : ""}
+                  key={option.value}
+                  onClick={() => {
+                    setSortKey(option.value);
+                    setIsSortOpen(false);
+                    setPreviewQuestId(null);
+                  }}
+                  type="button"
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          ) : null,
         },
       ]}
       className="quests-panel"
@@ -135,7 +202,7 @@ export function QuestsPanel({ onStartQuest, quests, rap, skills }) {
       title="Quests"
     >
       <div className="quest-board" onPointerDown={() => setPreviewQuestId(null)}>
-        {quests.map((quest) => (
+        {sortedQuests.map((quest) => (
           <QuestTile
             key={quest.id}
             onPreview={(previewQuest) => setPreviewQuestId(previewQuest.id)}

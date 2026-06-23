@@ -28,8 +28,9 @@
   color: #080504;
   border: 2px solid #332b23;
   background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.62), transparent 24%),
-    radial-gradient(circle at 50% 58%, #ffe3a8 0 48%, #d5a95d 68%, #7b5628 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 48%),
+    #d5a95d;
   cursor: pointer;
   box-shadow:
     inset -4px -4px 0 rgba(80, 48, 18, 0.42),
@@ -43,15 +44,6 @@
 
 .quest-tile[aria-disabled="true"] {
   cursor: default;
-}
-
-.quest-tile::after {
-  position: absolute;
-  inset: 5px;
-  content: "";
-  border: 1px solid rgba(0, 0, 0, 0.24);
-  border-radius: 999px;
-  pointer-events: none;
 }
 
 .quest-tile-progress {
@@ -91,16 +83,18 @@
 .quest-tile.is-locked {
   border-color: #8f2f2f;
   background:
-    radial-gradient(circle at 35% 28%, rgba(255, 210, 210, 0.32), transparent 24%),
-    radial-gradient(circle at 50% 58%, #4f2928 0 48%, #2b1514 68%, #120908 100%);
+    linear-gradient(135deg, rgba(255, 210, 210, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 48%),
+    #301717;
   filter: grayscale(0.18) brightness(0.72);
 }
 
 .quest-tile.is-available {
   border-color: #f4cf5a;
   background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.62), transparent 24%),
-    radial-gradient(circle at 50% 58%, #fff0a8 0 48%, #d8aa38 68%, #7d5c17 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 48%),
+    #d8aa38;
   box-shadow:
     inset -4px -4px 0 rgba(80, 48, 18, 0.42),
     inset 2px 2px 0 rgba(255, 255, 255, 0.25),
@@ -111,8 +105,9 @@
 .quest-tile.is-unlocking {
   border-color: #24f2ff;
   background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.6), transparent 24%),
-    radial-gradient(circle at 50% 58%, #c8fbff 0 48%, #46d8e4 68%, #167c88 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 48%),
+    #37cdd8;
   box-shadow:
     inset -4px -4px 0 rgba(80, 48, 18, 0.42),
     inset 2px 2px 0 rgba(255, 255, 255, 0.25),
@@ -123,14 +118,67 @@
 .quest-tile.is-completed {
   border-color: #24f2ff;
   background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.68), transparent 24%),
-    radial-gradient(circle at 50% 58%, #ddfcff 0 42%, #57deeb 64%, #128896 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 48%),
+    #37d8e6;
   box-shadow:
     inset -4px -4px 0 rgba(13, 86, 96, 0.42),
     inset 2px 2px 0 rgba(255, 255, 255, 0.25),
     0 0 0 2px rgba(36, 242, 255, 0.3),
     0 0 16px rgba(36, 242, 255, 0.18),
     0 3px 0 #070504;
+}
+
+.quest-sort-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 16;
+  display: grid;
+  width: min(252px, 84vw);
+  max-height: min(430px, 66vh);
+  overflow-y: auto;
+  gap: 6px;
+  padding: 10px;
+  border: 2px solid #5c4d3f;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34%),
+    #100b0a;
+  box-shadow:
+    inset 0 0 0 2px #070504,
+    0 16px 26px rgba(0, 0, 0, 0.46);
+}
+
+.quest-sort-menu span {
+  color: #d4bd88;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.quest-sort-menu button {
+  min-height: 38px;
+  color: #fff2d3;
+  border: 1px solid rgba(213, 184, 130, 0.2);
+  background: rgba(0, 0, 0, 0.24);
+  cursor: pointer;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.quest-sort-menu button:hover,
+.quest-sort-menu button:focus-visible,
+.quest-sort-menu button.is-active {
+  color: #090605;
+  border-color: #24f2ff;
+  background: #24f2ff;
 }
 
 .quest-requirements {

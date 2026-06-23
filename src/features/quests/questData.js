@@ -16,6 +16,7 @@ export const questDefinitions = [
     iconText: "Q1",
     id: "first-steps",
     name: "First Steps",
+    questPoints: 1,
     rapCost: 0,
     requirements: [],
   },
@@ -25,6 +26,7 @@ export const questDefinitions = [
     iconText: "CA",
     id: "cooks-assistant",
     name: "Cook's Assistant",
+    questPoints: 1,
     rapCost: 200,
     requirements: [{ level: 1, skill: "Cooking" }],
   },
@@ -34,6 +36,7 @@ export const questDefinitions = [
     iconText: "VG",
     id: "village-gathering",
     name: "Village Gathering",
+    questPoints: 1,
     rapCost: 350,
     requirements: [
       { level: 3, skill: "Fishing" },
@@ -46,6 +49,7 @@ export const questDefinitions = [
     iconText: "RT",
     id: "rusted-tools",
     name: "Rusted Tools",
+    questPoints: 1,
     rapCost: 600,
     requirements: [
       { level: 5, skill: "Mining" },
@@ -58,6 +62,7 @@ export const questDefinitions = [
     iconText: "AR",
     id: "arcane-runes",
     name: "Arcane Runes",
+    questPoints: 1,
     rapCost: 900,
     requirements: [
       { level: 7, skill: "Magic" },
@@ -70,6 +75,7 @@ export const questDefinitions = [
     iconText: "HC",
     id: "hillside-camp",
     name: "Hillside Camp",
+    questPoints: 2,
     rapCost: 1200,
     requirements: [
       { level: 8, skill: "Cooking" },
@@ -83,6 +89,7 @@ export const questDefinitions = [
     iconText: "RR",
     id: "rooftop-route",
     name: "Rooftop Route",
+    questPoints: 2,
     rapCost: 1800,
     requirements: [
       { level: 12, skill: "Agility" },
@@ -95,6 +102,7 @@ export const questDefinitions = [
     iconText: "WH",
     id: "wild-hunt",
     name: "Wild Hunt",
+    questPoints: 2,
     rapCost: 2400,
     requirements: [
       { level: 15, skill: "Hunter" },
@@ -107,6 +115,7 @@ export const questDefinitions = [
     iconText: "RR",
     id: "relic-recovery",
     name: "Relic Recovery",
+    questPoints: 3,
     rapCost: 3200,
     requirements: [
       { level: 18, skill: "Archaeology" },
@@ -119,6 +128,7 @@ export const questDefinitions = [
     iconText: "OSF",
     id: "one-small-favour",
     name: "Ein Kleiner Gefallen",
+    questPoints: 5,
     rapCost: 5000,
     requirements: [
       { level: 45, skill: "Prayer" },
@@ -132,6 +142,7 @@ export const questDefinitions = [
     iconText: "FC",
     id: "familiar-contract",
     name: "Familiar Contract",
+    questPoints: 4,
     rapCost: 6200,
     requirements: [
       { level: 50, skill: "Summoning" },
@@ -144,6 +155,7 @@ export const questDefinitions = [
     iconText: "SV",
     id: "sea-voyage",
     name: "Sea Voyage",
+    questPoints: 4,
     rapCost: 7600,
     requirements: [
       { level: 55, skill: "Sailing" },
