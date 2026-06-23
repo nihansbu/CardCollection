@@ -54,6 +54,24 @@ function sortQuests(quests, skills, sortKey) {
   });
 }
 
+function QuestIcon({ quest }) {
+  if (quest.iconSrc) {
+    return <img alt="" draggable="false" src={quest.iconSrc} />;
+  }
+
+  return quest.iconText;
+}
+
+function QuestCompletionValue({ completed, total }) {
+  return (
+    <span aria-label={`${completed} of ${total}`} className="quest-completion-fraction">
+      <span className="quest-completion-current">{completed}</span>
+      <span aria-hidden="true" className="quest-completion-slash">/</span>
+      <span className="quest-completion-total">{total}</span>
+    </span>
+  );
+}
+
 function QuestInfoPanel({ onClose, quest, skills }) {
   if (!quest) return null;
 
@@ -73,7 +91,7 @@ function QuestInfoPanel({ onClose, quest, skills }) {
   return (
     <InfoPanel
       accent={quest.color}
-      badge={quest.iconText}
+      badge={<QuestIcon quest={quest} />}
       className="content-info-panel--quest"
       description={quest.description}
       metrics={[
@@ -148,7 +166,9 @@ function QuestTile({ onPreview, onStartQuest, quest, skills }) {
       type="button"
     >
       <span className="quest-tile-progress" aria-hidden="true" />
-      <span className="quest-tile-icon" aria-hidden="true">{quest.iconText}</span>
+      <span className={`quest-tile-icon${quest.iconSrc ? " has-image" : ""}`} aria-hidden="true">
+        <QuestIcon quest={quest} />
+      </span>
     </button>
   );
 }
@@ -196,8 +216,14 @@ export function QuestsPanel({ onStartQuest, quests, rap, skills }) {
       infoPanel={<QuestInfoPanel onClose={() => setPreviewQuestId(null)} quest={previewQuest} skills={skills} />}
       stats={[
         { Icon: uiIcons.rap, description: "Current Real Life Activity Points available for quests.", label: "RAP", value: formatRap(rap) },
-        { Icon: uiIcons.skills, description: "Quests whose skill requirements are met and can be started.", label: "Ready", value: summary.available },
-        { Icon: uiIcons.stats, description: "Completed quests.", label: "Done", value: summary.completed },
+        {
+          Icon: uiIcons.stats,
+          description: "Completed quests compared to all known quests.",
+          label: "Unlocked",
+          value: <QuestCompletionValue completed={summary.completed} total={summary.total} />,
+        },
+        { Icon: uiIcons.skills, description: "Quests whose skill requirements are met and can be started.", label: "Available", value: summary.available },
+        { Icon: uiIcons.inventory, description: "Quest Points earned from completed quests.", label: "Quest Points", value: summary.questPoints },
       ]}
       title="Quests"
     >

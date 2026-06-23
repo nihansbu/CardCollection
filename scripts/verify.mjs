@@ -149,6 +149,18 @@ try {
   const firstStepsQuest = page.getByRole("button", { name: /First Steps/i });
   const firstQuestTilePseudoContent = await page.locator(".quest-tile").first().evaluate((node) => window.getComputedStyle(node, "::after").content);
   const firstQuestTileBackground = await page.locator(".quest-tile").first().evaluate((node) => window.getComputedStyle(node).backgroundImage);
+  const questHeaderLabels = await page.locator(".quests-panel .content-stats dt").allTextContents();
+  const questHeaderText = await page.locator(".quests-panel .content-stats").innerText();
+  await page.waitForFunction(() => {
+    const images = Array.from(document.querySelectorAll(".quest-tile-icon img")).slice(0, 5);
+    return images.length >= 5 && images.every((image) => image.complete && image.naturalWidth > 0);
+  }, { timeout: 5000 });
+  const questImageMetrics = await page.locator(".quest-tile-icon img").evaluateAll((images) => images.slice(0, 5).map((image) => ({
+    complete: image.complete,
+    naturalHeight: image.naturalHeight,
+    naturalWidth: image.naturalWidth,
+    src: image.getAttribute("src"),
+  })));
   await firstStepsQuest.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await firstStepsQuest.dispatchEvent("pointerup");
@@ -297,6 +309,9 @@ try {
     firstQuestAfterQuestPointSort,
     firstQuestTileBackground,
     firstQuestTilePseudoContent,
+    questHeaderLabels,
+    questHeaderText,
+    questImageMetrics,
     questBoardColumns,
     questHeaderMetrics,
     questQuicklookText,
@@ -358,6 +373,10 @@ try {
     bottomNavLabels.join("|") === "Char|Act|Skills|Inv|Quest|Slot2|Slot3|More" &&
     questRows >= 12 &&
     questBoardColumns === 5 &&
+    questHeaderLabels.join("|") === "RAP|Unlocked|Available|Quest Points" &&
+    questHeaderText.includes("/") &&
+    questImageMetrics.length >= 5 &&
+    questImageMetrics.every((image) => image.complete && image.naturalWidth === 128 && image.naturalHeight === 128) &&
     questQuicklookText.toUpperCase().includes("FIRST STEPS") &&
     questQuicklookText.toUpperCase().includes("RAP COST") &&
     questQuicklookText.toUpperCase().includes("QUEST POINTS") &&

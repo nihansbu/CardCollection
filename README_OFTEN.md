@@ -87,9 +87,11 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Activity Stats ist als Subpage angelegt und zeigt All Activities oder eine einzelne Activity mit Kennzahlen, Longest Streak und rollender 365-Tage-Heatmap.
 - Quests ist als eigenes Bottom-Navigation-Modul eingefuehrt und ersetzt den ersten Placeholder-Slot.
 - Quests nutzt denselben `ContentPanel`-Topbar-Blueprint wie Skills und Activities.
+- Die Quests-Header-Stats zeigen aktuell `RAP`, `Unlocked` als RuneScape-artige `X / Y`-Darstellung, `Available` und `Quest Points`.
 - Der Quests-Body zeigt kompakte quadratische Quest-Kacheln in einem 5-Spalten-Grid. Der Body ist intern scrollbar; die globale Bottom-Navigation bleibt sichtbar.
 - Quest-Kacheln nutzen Statusfarben: rot = Skill-Anforderungen fehlen, gelb = Anforderungen erfuellt und startbar, tuerkis = Quest laeuft/freischaltet oder abgeschlossen. Abgeschlossene Quests sollen den tuerkisen/blauen Hintergrund prominent fuellen, damit Completion im Grid schnell sichtbar ist.
 - Quest-Kacheln verwenden flache farbige Status-Quadrate ohne zusaetzlichen runden Innenhintergrund. Spaetere echte Quest-Icons sollen direkt auf diesen Statusflaechen liegen.
+- Die ersten Quest-Kacheln nutzen echte transparente `128x128` PNG-Icons unter `public/quest-icons/`; der farbige Status-Hintergrund bleibt CSS/UI.
 - Quests haben einen `Sort`-Header-Button mit Popover fuer Default, Alphabetical, Highest/Lowest Skill Requirement, Highest/Lowest Quest Points sowie Unlocked, Available und Locked.
 - Long-Press auf einer Quest oeffnet ein unteres Quicklook-Panel mit Questname, Status, RAP-Kosten, Dauer, Fortschritt, Skill-Anforderungen und Beschreibung.
 - Quests sind aktuell Skill- und RAP-Checks: Die Voraussetzungen pruefen aktuelle Skill-Level; startbare Quests verbrauchen RAP ueber Zeit mit derselben 5000-RAP-pro-Stunde-Rate wie Skill-Unlocks.
@@ -129,6 +131,7 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `public/ui-icons/`: generierte transparente `128x128` UI-Icons fuer Header-Stats, Bottom-Navigation und Flyouts.
 - `public/skill-icons/`: generierte transparente `128x128` Skill-Icons fuer alle 30 Skills.
 - `public/unlock-icons/woodcutting/`: generierte transparente Woodcutting-Unlock-Icons; runde Badge-Hintergruende bleiben CSS.
+- `public/quest-icons/`: transparente `128x128` Quest-Icons fuer Quest-Kacheln und Quicklooks.
 - `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.
 - `src/features/activities/activityData.js`: Activity-Defaults, Activity-Typen, Sortieroptionen und Storage-Keys.
 - `src/features/activities/activityUtils.js`: Activity-Berechnungen, Storage-Helfer, Log-Gruppierung, Stats und Heatmap-Daten.
@@ -365,6 +368,7 @@ Eine Quest enthaelt aktuell:
 - `id`: technische Quest-ID.
 - `name`: sichtbarer Questname.
 - `description`: Quicklook-Beschreibung.
+- `iconSrc`: optionales transparentes Quest-Icon-Asset fuer echte Icons im Questgrid.
 - `iconText`: temporaeres Quest-Kuerzel fuer die quadratische Kachel.
 - `color`: UI-Akzentfarbe.
 - `requirements`: Liste aus Skillname und benoetigtem Level.
@@ -388,6 +392,14 @@ Aktuelle Beispielquests:
 - Ein Kleiner Gefallen.
 - Familiar Contract.
 - Sea Voyage.
+
+Aktuelle Quest-Icons existieren fuer:
+
+- First Steps.
+- Cook's Assistant.
+- Village Gathering.
+- Rusted Tools.
+- Arcane Runes.
 
 Quest-Fortschritt:
 

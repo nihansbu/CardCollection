@@ -9,10 +9,15 @@ export const questStorageKeys = {
   quests: localStorageKeys.quests,
 };
 
+function publicAsset(path) {
+  return `${import.meta.env?.DEV ? "/" : "./"}${path}`;
+}
+
 export const questDefinitions = [
   {
     color: "#61d6ff",
     description: "A small starter errand chain for learning how quest checks work.",
+    iconSrc: publicAsset("quest-icons/first-steps.png"),
     iconText: "Q1",
     id: "first-steps",
     name: "First Steps",
@@ -23,6 +28,7 @@ export const questDefinitions = [
   {
     color: "#f2cf5a",
     description: "Help in the kitchen and prove basic Cooking discipline.",
+    iconSrc: publicAsset("quest-icons/cooks-assistant.png"),
     iconText: "CA",
     id: "cooks-assistant",
     name: "Cook's Assistant",
@@ -33,6 +39,7 @@ export const questDefinitions = [
   {
     color: "#7ad36b",
     description: "A short village task that checks early Woodcutting and Fishing.",
+    iconSrc: publicAsset("quest-icons/village-gathering.png"),
     iconText: "VG",
     id: "village-gathering",
     name: "Village Gathering",
@@ -46,6 +53,7 @@ export const questDefinitions = [
   {
     color: "#f07a2c",
     description: "Repair tools, carry supplies, and pass a light Smithing gate.",
+    iconSrc: publicAsset("quest-icons/rusted-tools.png"),
     iconText: "RT",
     id: "rusted-tools",
     name: "Rusted Tools",
@@ -59,6 +67,7 @@ export const questDefinitions = [
   {
     color: "#8d6dff",
     description: "Trace basic runes and unlock a small magical favour.",
+    iconSrc: publicAsset("quest-icons/arcane-runes.png"),
     iconText: "AR",
     id: "arcane-runes",
     name: "Arcane Runes",
@@ -213,9 +222,10 @@ export function getQuestSummary(quests, skills) {
   const summary = quests.reduce((totals, quest) => {
     const status = getQuestStatus(quest, skills);
     totals[status] = (totals[status] || 0) + 1;
+    if (status === "completed") totals.questPoints += Number(quest.questPoints) || 0;
     totals.total += 1;
     return totals;
-  }, { available: 0, completed: 0, locked: 0, total: 0, unlocking: 0 });
+  }, { available: 0, completed: 0, locked: 0, questPoints: 0, total: 0, unlocking: 0 });
 
   return summary;
 }
