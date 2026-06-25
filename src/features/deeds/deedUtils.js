@@ -1,15 +1,15 @@
 import {
-  ACTIVITY_HEATMAP_DAYS,
-  ACTIVITY_LOG_LIMIT,
+  DEED_HEATMAP_DAYS,
+  DEED_LOG_LIMIT,
   DAY_MS,
-  defaultActivities,
-} from "./activityData.js";
+  defaultDeeds,
+} from "./deedData.js";
 import { getSkillLevelForXp, getSkillXpForLevel } from "../skills/skillData.js";
 export { readJson, writeJson } from "../../storage/jsonStorage.js";
 
-const DEFAULT_ACTIVITY_GOAL_BONUS_RATE = 0.3;
-const DEFAULT_ACTIVITY_SOFT_CAP_BASE_RATE = 0.5;
-const DEFAULT_ACTIVITY_SOFT_CAP_GOAL_RATE = 0.33;
+const DEFAULT_DEED_GOAL_BONUS_RATE = 0.3;
+const DEFAULT_DEED_SOFT_CAP_BASE_RATE = 0.5;
+const DEFAULT_DEED_SOFT_CAP_GOAL_RATE = 0.33;
 const DEFAULT_MAX_QUANTITY_PER_LOG = 10000;
 
 export function formatRap(value) {
@@ -34,65 +34,65 @@ export function formatInteger(value) {
   return new Intl.NumberFormat("de-DE").format(Math.round(Number(value) || 0));
 }
 
-export function getActivityReward(activity) {
-  return Number(activity.defaultQuantity) * Number(activity.rapPerUnit);
+export function getDeedReward(deed) {
+  return Number(deed.defaultQuantity) * Number(deed.rapPerUnit);
 }
 
-export function formatActivityQuantity(value, unit) {
+export function formatDeedQuantity(value, unit) {
   return `${formatInteger(value)} ${unit || "units"}`;
 }
 
-export function normalizeActivity(activity) {
-  const defaultMatch = defaultActivities.find((defaultActivity) => defaultActivity.id === activity.id);
+export function normalizeDeed(deed) {
+  const defaultMatch = defaultDeeds.find((defaultDeed) => defaultDeed.id === deed.id);
 
   return {
-    ...activity,
-    goals: Array.isArray(activity.goals) ? activity.goals : defaultMatch?.goals || [],
-    maxQuantityPerLog: Number(activity.maxQuantityPerLog) || defaultMatch?.maxQuantityPerLog || DEFAULT_MAX_QUANTITY_PER_LOG,
-    presetQuantities: Array.isArray(activity.presetQuantities) && activity.presetQuantities.length
-      ? activity.presetQuantities
-      : defaultMatch?.presetQuantities || [activity.defaultQuantity || 1],
-    softCapBaseRate: Number(activity.softCapBaseRate) || defaultMatch?.softCapBaseRate || DEFAULT_ACTIVITY_SOFT_CAP_BASE_RATE,
-    softCapDailyQuantity: Number(activity.softCapDailyQuantity) || defaultMatch?.softCapDailyQuantity || null,
-    softCapGoalBonusRate: Number(activity.softCapGoalBonusRate) || defaultMatch?.softCapGoalBonusRate || DEFAULT_ACTIVITY_SOFT_CAP_GOAL_RATE,
-    type: activity.type || defaultMatch?.type || "General",
+    ...deed,
+    goals: Array.isArray(deed.goals) ? deed.goals : defaultMatch?.goals || [],
+    maxQuantityPerLog: Number(deed.maxQuantityPerLog) || defaultMatch?.maxQuantityPerLog || DEFAULT_MAX_QUANTITY_PER_LOG,
+    presetQuantities: Array.isArray(deed.presetQuantities) && deed.presetQuantities.length
+      ? deed.presetQuantities
+      : defaultMatch?.presetQuantities || [deed.defaultQuantity || 1],
+    softCapBaseRate: Number(deed.softCapBaseRate) || defaultMatch?.softCapBaseRate || DEFAULT_DEED_SOFT_CAP_BASE_RATE,
+    softCapDailyQuantity: Number(deed.softCapDailyQuantity) || defaultMatch?.softCapDailyQuantity || null,
+    softCapGoalBonusRate: Number(deed.softCapGoalBonusRate) || defaultMatch?.softCapGoalBonusRate || DEFAULT_DEED_SOFT_CAP_GOAL_RATE,
+    type: deed.type || defaultMatch?.type || "General",
   };
 }
 
-export function normalizeActivities(activities) {
-  const normalizedActivities = activities.map(normalizeActivity);
-  const existingIds = new Set(normalizedActivities.map((activity) => activity.id));
-  const missingDefaults = defaultActivities
-    .filter((activity) => !existingIds.has(activity.id))
-    .map(normalizeActivity);
+export function normalizeDeeds(deeds) {
+  const normalizedDeeds = deeds.map(normalizeDeed);
+  const existingIds = new Set(normalizedDeeds.map((deed) => deed.id));
+  const missingDefaults = defaultDeeds
+    .filter((deed) => !existingIds.has(deed.id))
+    .map(normalizeDeed);
 
-  return [...normalizedActivities, ...missingDefaults];
+  return [...normalizedDeeds, ...missingDefaults];
 }
 
-export function getActivityType(activity) {
-  return activity.type || "General";
+export function getDeedType(deed) {
+  return deed.type || "General";
 }
 
-export function getSortedActivities(activities, sortKey) {
-  const sortedActivities = [...activities];
+export function getSortedDeeds(deeds, sortKey) {
+  const sortedDeeds = [...deeds];
 
   if (sortKey === "name") {
-    return sortedActivities.sort((a, b) => a.title.localeCompare(b.title));
+    return sortedDeeds.sort((a, b) => a.title.localeCompare(b.title));
   }
 
   if (sortKey === "rap") {
-    return sortedActivities.sort((a, b) => getActivityReward(b) - getActivityReward(a));
+    return sortedDeeds.sort((a, b) => getDeedReward(b) - getDeedReward(a));
   }
 
   if (sortKey === "type") {
-    return sortedActivities.sort((a, b) => getActivityType(a).localeCompare(getActivityType(b)) || a.title.localeCompare(b.title));
+    return sortedDeeds.sort((a, b) => getDeedType(a).localeCompare(getDeedType(b)) || a.title.localeCompare(b.title));
   }
 
   if (sortKey === "unit") {
-    return sortedActivities.sort((a, b) => a.unit.localeCompare(b.unit) || a.title.localeCompare(b.title));
+    return sortedDeeds.sort((a, b) => a.unit.localeCompare(b.unit) || a.title.localeCompare(b.title));
   }
 
-  return sortedActivities;
+  return sortedDeeds;
 }
 
 export function startOfLocalDay(date) {
@@ -133,37 +133,37 @@ export function getPeriodRange(period, date = new Date()) {
   return { end, start };
 }
 
-export function getActivityEntries(activityLog, activityId) {
-  return activityLog.filter((entry) => entry.activityId === activityId);
+export function getDeedEntries(deedLog, deedId) {
+  return deedLog.filter((entry) => entry.deedId === deedId);
 }
 
-export function getActivityEntriesForPeriod(activityLog, activityId, period, date = new Date()) {
+export function getDeedEntriesForPeriod(deedLog, deedId, period, date = new Date()) {
   const { end, start } = getPeriodRange(period, date);
 
-  return getActivityEntries(activityLog, activityId).filter((entry) => {
+  return getDeedEntries(deedLog, deedId).filter((entry) => {
     const timestamp = new Date(entry.timestamp);
     return timestamp >= start && timestamp < end;
   });
 }
 
-export function getActivityQuantityForPeriod(activityLog, activityId, period, date = new Date()) {
-  return getActivityEntriesForPeriod(activityLog, activityId, period, date)
+export function getDeedQuantityForPeriod(deedLog, deedId, period, date = new Date()) {
+  return getDeedEntriesForPeriod(deedLog, deedId, period, date)
     .reduce((sum, entry) => sum + Number(entry.quantity || 0), 0);
 }
 
-export function getActivityPresets(activity) {
-  const presets = Array.isArray(activity.presetQuantities) ? activity.presetQuantities : [];
-  return [...new Set([activity.defaultQuantity, ...presets].map((value) => Math.max(1, Math.round(Number(value) || 1))))].sort((a, b) => a - b);
+export function getDeedPresets(deed) {
+  const presets = Array.isArray(deed.presetQuantities) ? deed.presetQuantities : [];
+  return [...new Set([deed.defaultQuantity, ...presets].map((value) => Math.max(1, Math.round(Number(value) || 1))))].sort((a, b) => a - b);
 }
 
-export function clampActivityQuantity(activity, quantity) {
-  const maxQuantity = Math.max(1, Number(activity.maxQuantityPerLog) || DEFAULT_MAX_QUANTITY_PER_LOG);
-  return Math.max(1, Math.min(maxQuantity, Math.round(Number(quantity) || Number(activity.defaultQuantity) || 1)));
+export function clampDeedQuantity(deed, quantity) {
+  const maxQuantity = Math.max(1, Number(deed.maxQuantityPerLog) || DEFAULT_MAX_QUANTITY_PER_LOG);
+  return Math.max(1, Math.min(maxQuantity, Math.round(Number(quantity) || Number(deed.defaultQuantity) || 1)));
 }
 
-export function getActivityGoalProgress(activity, activityLog, period, date = new Date()) {
-  const goal = (activity.goals || []).find((entry) => entry.period === period);
-  const quantity = getActivityQuantityForPeriod(activityLog, activity.id, period, date);
+export function getDeedGoalProgress(deed, deedLog, period, date = new Date()) {
+  const goal = (deed.goals || []).find((entry) => entry.period === period);
+  const quantity = getDeedQuantityForPeriod(deedLog, deed.id, period, date);
 
   if (!goal) {
     return {
@@ -178,7 +178,7 @@ export function getActivityGoalProgress(activity, activityLog, period, date = ne
   const target = Math.max(0, Number(goal.targetQuantity) || 0);
 
   return {
-    bonusRate: Number(goal.bonusRate) || DEFAULT_ACTIVITY_GOAL_BONUS_RATE,
+    bonusRate: Number(goal.bonusRate) || DEFAULT_DEED_GOAL_BONUS_RATE,
     period,
     progress: Math.min(target, quantity),
     remaining: Math.max(0, target - quantity),
@@ -186,8 +186,8 @@ export function getActivityGoalProgress(activity, activityLog, period, date = ne
   };
 }
 
-export function getActivityTotals(activity, activityLog) {
-  const entries = getActivityEntries(activityLog, activity.id);
+export function getDeedTotals(deed, deedLog) {
+  const entries = getDeedEntries(deedLog, deed.id);
 
   return entries.reduce((totals, entry) => {
     totals.logs += 1;
@@ -198,8 +198,8 @@ export function getActivityTotals(activity, activityLog) {
   }, { bonusRap: 0, logs: 0, quantity: 0, rap: 0 });
 }
 
-export function getActivityMastery(activity, activityLog) {
-  const totals = getActivityTotals(activity, activityLog);
+export function getDeedMastery(deed, deedLog) {
+  const totals = getDeedTotals(deed, deedLog);
   const currentXp = Math.floor(totals.rap);
   const level = getSkillLevelForXp(currentXp);
   const nextLevel = Math.min(99, level + 1);
@@ -216,22 +216,22 @@ export function getActivityMastery(activity, activityLog) {
   };
 }
 
-export function calculateActivityReward(activity, activityLog, requestedQuantity, date = new Date()) {
-  const quantity = clampActivityQuantity(activity, requestedQuantity);
-  const rapPerUnit = Math.max(0, Number(activity.rapPerUnit) || 0);
-  const dailyQuantityBefore = getActivityQuantityForPeriod(activityLog, activity.id, "daily", date);
-  const dailySoftCap = Number(activity.softCapDailyQuantity) || Infinity;
-  const baseSoftCapRate = Number(activity.softCapBaseRate) || DEFAULT_ACTIVITY_SOFT_CAP_BASE_RATE;
-  const goalSoftCapRate = Number(activity.softCapGoalBonusRate) || DEFAULT_ACTIVITY_SOFT_CAP_GOAL_RATE;
+export function calculateDeedReward(deed, deedLog, requestedQuantity, date = new Date()) {
+  const quantity = clampDeedQuantity(deed, requestedQuantity);
+  const rapPerUnit = Math.max(0, Number(deed.rapPerUnit) || 0);
+  const dailyQuantityBefore = getDeedQuantityForPeriod(deedLog, deed.id, "daily", date);
+  const dailySoftCap = Number(deed.softCapDailyQuantity) || Infinity;
+  const baseSoftCapRate = Number(deed.softCapBaseRate) || DEFAULT_DEED_SOFT_CAP_BASE_RATE;
+  const goalSoftCapRate = Number(deed.softCapGoalBonusRate) || DEFAULT_DEED_SOFT_CAP_GOAL_RATE;
   const quantityBeforeSoftCap = Math.max(0, Math.min(quantity, dailySoftCap - dailyQuantityBefore));
   const quantityAfterSoftCap = Math.max(0, quantity - quantityBeforeSoftCap);
   const baseRap = (quantityBeforeSoftCap * rapPerUnit) + (quantityAfterSoftCap * rapPerUnit * baseSoftCapRate);
-  const goalBreakdown = (activity.goals || []).map((goal) => {
-    const progress = getActivityGoalProgress(activity, activityLog, goal.period, date);
+  const goalBreakdown = (deed.goals || []).map((goal) => {
+    const progress = getDeedGoalProgress(deed, deedLog, goal.period, date);
     const appliedQuantity = Math.max(0, Math.min(quantity, progress.remaining));
     const bonusQuantityBeforeSoftCap = Math.min(appliedQuantity, quantityBeforeSoftCap);
     const bonusQuantityAfterSoftCap = Math.max(0, appliedQuantity - bonusQuantityBeforeSoftCap);
-    const bonusRate = Number(goal.bonusRate) || DEFAULT_ACTIVITY_GOAL_BONUS_RATE;
+    const bonusRate = Number(goal.bonusRate) || DEFAULT_DEED_GOAL_BONUS_RATE;
     const bonusRap = (
       (bonusQuantityBeforeSoftCap * rapPerUnit * bonusRate) +
       (bonusQuantityAfterSoftCap * rapPerUnit * bonusRate * goalSoftCapRate)
@@ -260,24 +260,24 @@ export function calculateActivityReward(activity, activityLog, requestedQuantity
   };
 }
 
-export function getActivityDashboardSummary(activities, activityLog) {
-  const todayEntries = activityLog.filter((entry) => {
+export function getDeedDashboardSummary(deeds, deedLog) {
+  const todayEntries = deedLog.filter((entry) => {
     const timestamp = new Date(entry.timestamp);
     const { end, start } = getPeriodRange("daily");
     return timestamp >= start && timestamp < end;
   });
-  const activeDayKeys = activityLog.map((entry) => getDayKey(new Date(entry.timestamp)));
+  const activeDayKeys = deedLog.map((entry) => getDayKey(new Date(entry.timestamp)));
   const longestStreak = getLongestStreak(activeDayKeys);
 
   return {
-    activityCount: activities.length,
+    deedCount: deeds.length,
     loggedToday: todayEntries.length,
     longestStreak: longestStreak.length,
     todayRap: todayEntries.reduce((sum, entry) => sum + Number(entry.rapEarned || 0), 0),
   };
 }
 
-export function getRollingDays(dayCount = ACTIVITY_HEATMAP_DAYS) {
+export function getRollingDays(dayCount = DEED_HEATMAP_DAYS) {
   const today = startOfLocalDay(new Date());
   const firstDay = new Date(today);
   firstDay.setDate(today.getDate() - dayCount + 1);
@@ -293,10 +293,10 @@ export function getRollingDays(dayCount = ACTIVITY_HEATMAP_DAYS) {
   });
 }
 
-export function getFilteredActivityLog(activityLog, selectedActivityId) {
-  if (selectedActivityId === "all") return activityLog;
+export function getFilteredDeedLog(deedLog, selectedDeedId) {
+  if (selectedDeedId === "all") return deedLog;
 
-  return activityLog.filter((entry) => entry.activityId === selectedActivityId);
+  return deedLog.filter((entry) => entry.deedId === selectedDeedId);
 }
 
 export function getQuantitySummary(entries) {
@@ -355,8 +355,8 @@ export function getLongestStreak(dayKeys) {
   };
 }
 
-export function getActivityStats(activityLog, selectedActivityId) {
-  const filteredEntries = getFilteredActivityLog(activityLog, selectedActivityId);
+export function getDeedStats(deedLog, selectedDeedId) {
+  const filteredEntries = getFilteredDeedLog(deedLog, selectedDeedId);
   const days = getRollingDays();
   const dailyTotals = filteredEntries.reduce((totals, entry) => {
     const key = getDayKey(new Date(entry.timestamp));
@@ -393,16 +393,16 @@ export function getActivityStats(activityLog, selectedActivityId) {
   };
 }
 
-export function getGroupedActivityLog(activityLog) {
+export function getGroupedDeedLog(deedLog) {
   const grouped = new Map();
 
-  activityLog.slice(0, ACTIVITY_LOG_LIMIT).forEach((entry) => {
-    const key = `${entry.activityId}-${entry.title}-${entry.unit}`;
+  deedLog.slice(0, DEED_LOG_LIMIT).forEach((entry) => {
+    const key = `${entry.deedId}-${entry.title}-${entry.unit}`;
     const current = grouped.get(key);
 
     if (!current) {
       grouped.set(key, {
-        activityId: entry.activityId,
+        deedId: entry.deedId,
         count: 1,
         lastTimestamp: entry.timestamp,
         quantity: Number(entry.quantity),

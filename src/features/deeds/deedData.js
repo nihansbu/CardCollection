@@ -1,16 +1,18 @@
 import { localStorageKeys } from "../../storage/storageKeys.js";
 
-export const ACTIVITY_LOG_LIMIT = 50;
-export const ACTIVITY_HEATMAP_DAYS = 365;
+export const DEED_LOG_LIMIT = 50;
+export const DEED_HEATMAP_DAYS = 365;
 export const DAY_MS = 24 * 60 * 60 * 1000;
 
-export const activityStorageKeys = {
-  activities: localStorageKeys.activities,
-  activityLog: localStorageKeys.activityLog,
+export const deedStorageKeys = {
+  deeds: localStorageKeys.deeds,
+  deedLog: localStorageKeys.deedLog,
+  legacyDeeds: localStorageKeys.legacyActivities,
+  legacyDeedLog: localStorageKeys.legacyActivityLog,
   rap: localStorageKeys.rap,
 };
 
-export const defaultActivities = [
+export const defaultDeeds = [
   {
     color: "#61d6a1",
     defaultQuantity: 1000,
@@ -38,7 +40,7 @@ export const defaultActivities = [
     type: "Exercise",
     unit: "minutes",
     defaultQuantity: 10,
-    rapPerUnit: 10,
+    rapPerUnit: 167,
     color: "#61d6a1",
     goals: [
       { bonusRate: 0.3, period: "daily", targetQuantity: 30 },
@@ -55,7 +57,7 @@ export const defaultActivities = [
     type: "Exercise",
     unit: "minutes",
     defaultQuantity: 10,
-    rapPerUnit: 16,
+    rapPerUnit: 417,
     color: "#ff7a45",
     goals: [
       { bonusRate: 0.3, period: "daily", targetQuantity: 20 },
@@ -72,7 +74,7 @@ export const defaultActivities = [
     type: "Mind",
     unit: "pages",
     defaultQuantity: 10,
-    rapPerUnit: 8,
+    rapPerUnit: 250,
     color: "#f2cf5a",
     goals: [
       { bonusRate: 0.3, period: "daily", targetQuantity: 20 },
@@ -89,7 +91,7 @@ export const defaultActivities = [
     type: "Productivity",
     unit: "minutes",
     defaultQuantity: 25,
-    rapPerUnit: 6,
+    rapPerUnit: 333,
     color: "#8ab4ff",
     goals: [
       { bonusRate: 0.3, period: "daily", targetQuantity: 50 },
@@ -106,7 +108,7 @@ export const defaultActivities = [
     type: "Creative",
     unit: "minutes",
     defaultQuantity: 15,
-    rapPerUnit: 12,
+    rapPerUnit: 333,
     color: "#b68dff",
     goals: [
       { bonusRate: 0.3, period: "daily", targetQuantity: 30 },
@@ -118,9 +120,9 @@ export const defaultActivities = [
   },
 ];
 
-export const activityTypes = ["Exercise", "Mind", "Productivity", "Creative", "Social", "Home", "Recovery", "General"];
+export const deedTypes = ["Exercise", "Mind", "Productivity", "Creative", "Social", "Home", "Recovery", "General"];
 
-export const activitySortOptions = [
+export const deedSortOptions = [
   { label: "Default", value: "default" },
   { label: "Name", value: "name" },
   { label: "RAP Reward", value: "rap" },

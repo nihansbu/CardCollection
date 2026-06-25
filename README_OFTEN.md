@@ -17,7 +17,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Mobile-only Layout mit kompaktem Codex-Rahmen.
 - Desktop wird nicht mehr gezielt designed oder unterstuetzt. Grosse Screens zeigen nur die mobile App-Spalte zentriert.
 - Die App-Shell nutzt eine dauerhaft sichtbare Bottom-Navigation statt einer Topbar.
-- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Activities, Skills, Inventory, Quests, zwei Placeholder-Slots und More.
+- Die Bottom-Navigation hat aktuell 8 kompakte Slots: Character, Deeds, Skills, Inventory, Quests, zwei Placeholder-Slots und More.
 - Character ist ein Flyout-Button: Tap oeffnet ein kleines Menue nach oben mit Account, Gear und Stats als vorbereiteten Sub-Buttons.
 - More ist ein Flyout-Button: Tap oeffnet ausgelagerte Module wie Beastiary und Codex.
 - Account ist der Startpunkt fuer verpflichtende lokale Account-Erstellung und spaeter Cloud Login.
@@ -76,23 +76,24 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Codex beschreibt die neue Grundidee: Train, Collect, Upgrade, Unlock.
 - Beastiary ist als geplantes Monster-/Creature-Modul angelegt.
 - RAP, Real Life Activity Points, ist als Hauptwaehrung eingefuehrt.
-- Activities ist als erstes RAP-Earning-Modul eingefuehrt.
-- Activities nutzt die Header-Action-Zone fuer `Sorts`, `Activity Log` und `Stats`.
-- Activities folgt jetzt staerker dem Skills-/Unlocks-Blueprint: gemeinsame ContentPanel-Topbar, darunter ein scrollender Body mit Full-Width-Activity-Zeilen statt grossen Karten.
-- Activity-Zeilen zeigen links ein kompaktes Sigil/Icon, in der Mitte Name und Typ/Unit, rechts RAP-Ertrag und Standardmenge. Normaler Tap loggt die Aktivitaet, Long-Press oeffnet ein gemeinsames unteres Quicklook-Info-Panel.
-- Activity-Zeilen zeigen jetzt Activity-Mastery-Level, Logs und Daily-Fortschritt. Eine horizontale Fuellung zeigt den Fortschritt bis zum naechsten Activity-Level.
-- Activity-Long-Press oeffnet ein Amount-Panel mit Plus/Minus, Zahlenfeld, Presets und Log-Button, damit neben Quick-Tap auch flexible Mengen wie 500, 1000 oder 10000 Schritte sauber eingetragen werden koennen.
+- Deeds ist als erstes RAP-Earning-Modul eingefuehrt.
+- Der Begriff `Activities` ist ab jetzt fuer spaetere Ingame-Activities reserviert, z. B. Dungeons, Skilling-Actions, Combat-/Slayer-Actions oder andere spielinterne Aktionen. Reale Tracking-Aktionen heissen intern und in der UI `Deeds`.
+- Deeds nutzt die Header-Action-Zone fuer `Sorts`, `Deed Log` und `Stats`.
+- Deeds folgt jetzt staerker dem Skills-/Unlocks-Blueprint: gemeinsame ContentPanel-Topbar, darunter ein scrollender Body mit Full-Width-Deed-Zeilen statt grossen Karten.
+- Deed-Zeilen zeigen links ein kompaktes Sigil/Icon, in der Mitte Name und Typ/Unit, rechts RAP-Ertrag und Standardmenge. Normaler Tap loggt die Aktivitaet, Long-Press oeffnet ein gemeinsames unteres Quicklook-Info-Panel.
+- Deed-Zeilen zeigen jetzt Deed-Mastery-Level, Logs und Daily-Fortschritt. Eine horizontale Fuellung zeigt den Fortschritt bis zum naechsten Deed-Level.
+- Deed-Long-Press oeffnet ein Amount-Panel mit Plus/Minus, Zahlenfeld, Presets und Log-Button, damit neben Quick-Tap auch flexible Mengen wie 500, 1000 oder 10000 Schritte sauber eingetragen werden koennen.
 - Aktivitaeten koennen RAP vergeben und schreiben einzelne Log-Eintraege fuer spaetere Metriken/Diagramme.
-- Activities koennen optionale Daily-, Weekly- und Monthly-Goals besitzen. Diese Goals sind keine eigenen Activities, sondern Bonusziele derselben Aktivitaet.
-- Activity-Goal-Boni sind additiv: Base RAP plus Daily-Bonus plus Weekly-Bonus plus Monthly-Bonus. Standard-Bonus ist aktuell 30 Prozent pro Goal, soweit das jeweilige Goal noch offen ist.
-- Activity-Softcaps reduzieren sehr hohe Tagesmengen, statt sie hart zu verbieten. Bei Steps liegt der Tages-Softcap aktuell bei 100000 Schritten; Mengen darueber geben nur noch reduzierten Base-RAP und reduzierte Goal-Boni.
-- Steps ist als Default-Activity eingefuehrt: 1 Schritt = 1 RAP, Quick-Tap loggt 1000 Schritte, Presets sind 500, 1000, 5000 und 10000 Schritte.
-- Das Activity Log gruppiert die Darstellung nach Aktivitaet und Einheit, summiert Quantity und RAP, behaelt intern aber die einzelnen Timestamps.
-- Activities haben einen `type`, zum Beispiel Exercise, Mind, Productivity, Creative, Social, Home, Recovery oder General.
-- Activities koennen im Hauptscreen ueber ein kleines `Sorts` Popover nach Default, Name, RAP Reward, Type oder Unit sortiert werden.
-- Activity Stats ist als Subpage angelegt und zeigt All Activities oder eine einzelne Activity mit Kennzahlen, Longest Streak und rollender 365-Tage-Heatmap.
+- Deeds koennen optionale Daily-, Weekly- und Monthly-Goals besitzen. Diese Goals sind keine eigenen Deeds, sondern Bonusziele derselben Aktivitaet.
+- Deed-Goal-Boni sind additiv: Base RAP plus Daily-Bonus plus Weekly-Bonus plus Monthly-Bonus. Standard-Bonus ist aktuell 30 Prozent pro Goal, soweit das jeweilige Goal noch offen ist.
+- Deed-Softcaps reduzieren sehr hohe Tagesmengen, statt sie hart zu verbieten. Bei Steps liegt der Tages-Softcap aktuell bei 100000 Schritten; Mengen darueber geben nur noch reduzierten Base-RAP und reduzierte Goal-Boni.
+- Steps ist als Default-Deed eingefuehrt: 1 Schritt = 1 RAP, Quick-Tap loggt 1000 Schritte, Presets sind 500, 1000, 5000 und 10000 Schritte.
+- Das Deed Log gruppiert die Darstellung nach Aktivitaet und Einheit, summiert Quantity und RAP, behaelt intern aber die einzelnen Timestamps.
+- Deeds haben einen `type`, zum Beispiel Exercise, Mind, Productivity, Creative, Social, Home, Recovery oder General.
+- Deeds koennen im Hauptscreen ueber ein kleines `Sorts` Popover nach Default, Name, RAP Reward, Type oder Unit sortiert werden.
+- Deed Stats ist als Subpage angelegt und zeigt All Deeds oder eine einzelne Deed mit Kennzahlen, Longest Streak und rollender 365-Tage-Heatmap.
 - Quests ist als eigenes Bottom-Navigation-Modul eingefuehrt und ersetzt den ersten Placeholder-Slot.
-- Quests nutzt denselben `ContentPanel`-Topbar-Blueprint wie Skills und Activities.
+- Quests nutzt denselben `ContentPanel`-Topbar-Blueprint wie Skills und Deeds.
 - Die Quests-Header-Stats zeigen aktuell `RAP`, `Unlocked` als RuneScape-artige `X / Y`-Darstellung, `Available` und `Quest Points`.
 - Der Quests-Body zeigt kompakte quadratische Quest-Kacheln in einem 5-Spalten-Grid. Der Body ist intern scrollbar; die globale Bottom-Navigation bleibt sichtbar.
 - Quest-Kacheln nutzen Statusfarben: rot = Skill-Anforderungen fehlen, gelb = Anforderungen erfuellt und startbar, tuerkis = Quest laeuft/freischaltet oder abgeschlossen. Abgeschlossene Quests sollen den tuerkisen/blauen Hintergrund prominent fuellen, damit Completion im Grid schnell sichtbar ist.
@@ -103,7 +104,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Quests sind aktuell Skill- und RAP-Checks: Die Voraussetzungen pruefen aktuelle Skill-Level; startbare Quests verbrauchen RAP ueber Zeit mit derselben 5000-RAP-pro-Stunde-Rate wie Skill-Unlocks.
 - Quest-Fortschritt laeuft live und offline weiter. Teilfortschritt bleibt gespeichert, wenn RAP ausgeht.
 - Der alte Pack-Shop, Pack-Kauf, Collection-Progress und Pull-Modals existieren im Code noch, sind aber aktuell nicht der sichtbare Hauptscreen.
-- Activities nutzt ebenfalls mobile Listenkarten, damit Aktivitaeten direkt antippbar bleiben. Die Actions `Sorts`, `Activity Log` und `Stats` bleiben im gemeinsamen Header-System.
+- Deeds nutzt ebenfalls mobile Listenkarten, damit Aktivitaeten direkt antippbar bleiben. Die Actions `Sorts`, `Deed Log` und `Stats` bleiben im gemeinsamen Header-System.
 
 ## Version Control und Hosting
 
@@ -128,9 +129,9 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 
 - `src/App.jsx`: Aktive Codex-View und Routing zwischen Codex-Modulen.
 - `src/components/AppShell.jsx`: Fixierte Mobile-Bottom-Navigation mit 8 Slots und Character-Flyout.
-- `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Uebersicht/-Training/-Detail-State, RAP-Ausgabe durch Training und Activity-Subpage-State.
+- `src/views/MainMenuView.jsx`: schlanker Koordinator fuer aktive Codex-View, Skill-Uebersicht/-Training/-Detail-State, RAP-Ausgabe durch Training und Deed-Subpage-State.
 - `src/components/ContentPanel.jsx`: wiederverwendbares Content-Window-System mit optionalem Back-Button im Titelcontainer, festem Seitentitel, responsiver Action-Button-Zone und Stats-Bar als gemeinsamer Topbar-Blueprint fuer alle Module.
-- `src/components/InfoPanel.jsx`: gemeinsames unteres Quicklook-/Infopanel fuer Skills, Activities, Quests und spaetere Module.
+- `src/components/InfoPanel.jsx`: gemeinsames unteres Quicklook-/Infopanel fuer Skills, Deeds, Quests und spaetere Module.
 - `src/features/account/AccountPanel.jsx`: Account-Screen mit lokaler Account-Erstellung/Login, Cloud-Auth-Formular und lokalem Save-Status.
 - `src/features/skills/SkillsPanel.jsx`: Skills-Uebersicht, Skills-Training und Skill-Detailseiten.
 - `src/features/skills/skillData.js`: Skill-Liste, Skill-Level-Defaults, XP-Helfer, Training-Rate und Skill-Storage-Keys.
@@ -138,9 +139,9 @@ Die App ist in kleinere Views und Komponenten aufgeteilt:
 - `public/skill-icons/`: generierte transparente `128x128` Skill-Icons fuer alle 30 Skills.
 - `public/unlock-icons/woodcutting/`: generierte transparente Woodcutting-Unlock-Icons; runde Badge-Hintergruende bleiben CSS.
 - `public/quest-icons/`: transparente `128x128` Quest-Icons fuer Quest-Kacheln und Quicklooks.
-- `src/features/activities/ActivitiesView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Activity, Activity Log, Activity Stats und RAP-Verdienen.
-- `src/features/activities/activityData.js`: Activity-Defaults, Activity-Typen, Sortieroptionen und Storage-Keys.
-- `src/features/activities/activityUtils.js`: Activity-Berechnungen, Storage-Helfer, Log-Gruppierung, Stats und Heatmap-Daten.
+- `src/features/deeds/DeedsView.jsx`: Aktivitaetskarten, Sorts-Popover, Create Deed, Deed Log, Deed Stats und RAP-Verdienen.
+- `src/features/deeds/deedData.js`: Deed-Defaults, Deed-Typen, Sortieroptionen und Storage-Keys.
+- `src/features/deeds/deedUtils.js`: Deed-Berechnungen, Storage-Helfer, Log-Gruppierung, Stats und Heatmap-Daten.
 - `src/features/quests/QuestsPanel.jsx`: Quest-Uebersicht, 5-Spalten-Questgrid und Long-Press-Quicklook.
 - `src/features/quests/questData.js`: Quest-Definitionen, Skill-Anforderungen, Quest-Status, RAP-Kosten, Progress- und Offline-Tick-Helfer.
 - `src/features/codex/CodexPanels.jsx`: Codex-, Beastiary- und Placeholder-Panels.
@@ -168,7 +169,7 @@ CSS ist nach Flaechen getrennt:
 - `src/styles/codex-panels.css`
 - `src/styles/account.css`
 - `src/styles/skills.css`
-- `src/styles/activities.css`
+- `src/styles/deeds.css`
 - `src/styles/quests.css`
 - `src/styles/shop.css`
 - `src/styles/collection.css`
@@ -179,7 +180,7 @@ Das ehemalige monolithische `src/views/MainMenuView.jsx` und `src/styles/main-me
 Healthcheck 2026-06-21:
 
 - Skills ist aktuell die stilistische Referenz fuer neue Module.
-- Activities ist funktional, soll bei einer spaeteren UI-Ueberarbeitung aber staerker dem Skills-Muster folgen: Header-Stats, Action-Zone, kompakter Body, keine abweichende Seitenlogik.
+- Deeds ist funktional, soll bei einer spaeteren UI-Ueberarbeitung aber staerker dem Skills-Muster folgen: Header-Stats, Action-Zone, kompakter Body, keine abweichende Seitenlogik.
 - Legacy-Pack-/Collection-Dateien bleiben bewusst im Repo, weil Packs/Karten als spaeteres Modul nicht verworfen sind.
 - Die alte ungenutzte `src/storage.js` wurde entfernt, weil sie nur alte Pack-Shop-Keys enthielt und nicht mehr eingebunden war.
 - `scripts/verify.mjs` wurde vom alten Shop-Test auf den aktuellen mobile Skills-/Offline-Training-/Offline-Unlock-Flow umgestellt.
@@ -207,10 +208,10 @@ Healthcheck 2026-06-21:
 - Skills Training nutzt die Header-Bar mit `RAP`, `Slot 1`, `Slot 2`, `Slot 3` und dem `Skills`-Action-Button.
 - Skill-Detailseiten nutzen die gleiche Header-Bar mit Back-Button, Skill-Titel und skill-spezifischen Stats.
 - Skill-Detailseiten duerfen darunter skill-spezifische Listen wie Unlocks zeigen. Diese Listen sollen im Content-Body scrollen und keine eigene globale Seite scrollen lassen.
-- Activities nutzt die Header-Bar mit `RAP Balance`, `Activities` und `Logged`.
-- Activities hat Subscreens fuer `Create Activity`, `Activity Log` und `Activity Stats`, jeweils mit Back-Button.
-- Die Buttons `Sorts`, `Activity Log` und `Stats` leben in der Header-Action-Zone von Activities, nicht im Activity-Kartenraster.
-- `Sorts` oeffnet ein kleines Popover direkt am Button und sortiert die Activity-Karten ohne Seitenwechsel.
+- Deeds nutzt die Header-Bar mit `RAP Balance`, `Deeds` und `Logged`.
+- Deeds hat Subscreens fuer `Create Deed`, `Deed Log` und `Deed Stats`, jeweils mit Back-Button.
+- Die Buttons `Sorts`, `Deed Log` und `Stats` leben in der Header-Action-Zone von Deeds, nicht im Deed-Kartenraster.
+- `Sorts` oeffnet ein kleines Popover direkt am Button und sortiert die Deed-Karten ohne Seitenwechsel.
 - Quests nutzt die Header-Bar mit `RAP`, `Ready` und `Done` sowie einem vorbereiteten `Log`-Action-Slot.
 - Quest-Kacheln sollen moeglichst viele Eintraege auf einem Bildschirm zeigen. Aktuell sind es fuenf quadratische Kacheln pro Reihe; echte Quest-Icons koennen spaeter die aktuellen Kuerzel ersetzen.
 - Der Back-Button wird nur auf ContentPanel-Seiten mit echter Ruecknavigation genutzt und lebt links innerhalb des Titelcontainers. Hauptseiten ohne Back-Button behalten den Titel zentriert.
@@ -240,19 +241,20 @@ Pack-Karten sollen image-first bleiben:
 
 Aktuell ist die App local-first. `localStorage` bleibt als lokaler Cache und Prototyp-Persistenz erhalten, ist aber nicht mehr als langfristige Source of Truth geplant. Eine zentrale Save-Schicht unter `src/storage/` kapselt die bisherigen Keys und bereitet Cloud Save vor.
 
-### RAP und Activities
+### RAP und Deeds
 
 RAP steht fuer Real Life Activity Points und ist die Hauptwaehrung des Spiels.
 
-Activities werden aktuell ueber die zentrale lokale Save-Schicht in `localStorage` gespeichert:
+Deeds werden aktuell ueber die zentrale lokale Save-Schicht in `localStorage` gespeichert:
 
 - Key `codex-collector-v1-rap`: aktuelle RAP-Balance.
-- Key `codex-collector-v1-activities`: gespeicherte Aktivitaeten.
-- Key `codex-collector-v1-activity-log`: Aktivitaetslog.
+- Key `codex-collector-v1-deeds`: gespeicherte Aktivitaeten.
+- Key `codex-collector-v1-deed-log`: Aktivitaetslog.
+- Legacy-Keys `codex-collector-v1-activities` und `codex-collector-v1-activity-log` werden beim Laden als Fallback migriert, damit alte lokale Saves nicht verloren gehen.
 
-Eine Aktivitaet enthaelt aktuell:
+Ein Deed enthaelt aktuell:
 
-- `id`: technische Aktivitaets-ID.
+- `id`: technische Deed-ID.
 - `title`: sichtbarer Name.
 - `description`: kurze Beschreibung.
 - `type`: grobe Kategorie, aktuell u. a. Exercise, Mind, Productivity, Creative, Social, Home, Recovery oder General.
@@ -267,34 +269,43 @@ Eine Aktivitaet enthaelt aktuell:
 - optional `softCapGoalBonusRate`: Multiplikator fuer Goal-Boni oberhalb des Tages-Softcaps, aktuell typischerweise 0.33.
 - optional `goals`: Daily-/Weekly-/Monthly-Ziele mit `period`, `targetQuantity` und `bonusRate`.
 
-Beim Klick auf eine Aktivitaet:
+Aktuelle Default-RAP-Rates:
+
+- Steps: 1 RAP pro Schritt.
+- Walking: 167 RAP pro Minute.
+- Reading: 250 RAP pro Seite.
+- Working: 333 RAP pro Minute.
+- Running: 417 RAP pro Minute.
+- Instrument Practice: 333 RAP pro Minute.
+
+Beim Klick auf einen Deed:
 
 1. Beim Quick-Tap wird die `defaultQuantity` geloggt; im Long-Press-Panel kann eine flexible Menge geloggt werden.
 2. Base-RAP wird aus `quantity * rapPerUnit` berechnet.
 3. Offene Daily-/Weekly-/Monthly-Goals addieren Bonus-RAP nur fuer den Teil der Menge, der noch in das jeweilige Ziel passt.
 4. Mengen oberhalb des Tages-Softcaps werden reduziert belohnt, damit extreme Tageswerte moeglich, aber weniger effizient sind.
 5. Die RAP-Balance wird gespeichert.
-6. Ein Aktivitaetslog-Eintrag wird erstellt.
+6. Ein Deed-Log-Eintrag wird erstellt.
 
-Activity-Mastery:
+Deed-Mastery:
 
-- Activity-Level werden aktuell aus dem bisher durch diese Aktivitaet verdienten RAP abgeleitet.
+- Deed-Level werden aktuell aus dem bisher durch diese Aktivitaet verdienten RAP abgeleitet.
 - Die Levelkurve verwendet dieselbe RuneScape-artige XP-Kurve wie Skills.
-- Activity-Zeilen zeigen `Lv X` und einen Fortschrittsbalken bis zum naechsten Activity-Level.
+- Deed-Zeilen zeigen `Lv X` und einen Fortschrittsbalken bis zum naechsten Deed-Level.
 
-Activity Goals:
+Deed Goals:
 
-- Goals werden aus Activity-Events berechnet, nicht als separate Activity gespeichert.
+- Goals werden aus Deed-Events berechnet, nicht als separate Deed gespeichert.
 - Daily nutzt den lokalen Kalendertag.
 - Weekly startet Montag lokal.
 - Monthly nutzt den lokalen Kalendermonat.
 - Bonus-Berechnung ist additiv, nicht multiplikativ. Beispiel: Base 100 RAP plus Daily +30 RAP plus Weekly +30 RAP ergibt 160 RAP.
 - Bonus gilt nur fuer noch offene Goal-Menge. Wenn ein Weekly nur noch 3000 Schritte offen hat und 10000 Schritte geloggt werden, zaehlt der Weekly-Bonus nur fuer 3000 Schritte.
 
-Ein Aktivitaetslog-Eintrag enthaelt aktuell:
+Ein Deed-Log-Eintrag enthaelt aktuell:
 
 - `id`
-- `activityId`
+- `deedId`
 - `title`
 - `quantity`
 - `unit`
@@ -307,11 +318,11 @@ Ein Aktivitaetslog-Eintrag enthaelt aktuell:
 - optional `type` fuer neuere Log-Eintraege.
 - `timestamp`
 
-Die Activity-Log-UI wertet die letzten 50 Roh-Eintraege aus und gruppiert sie fuer die Anzeige nach Aktivitaet und Einheit. Dadurch erscheint z. B. Walking nur einmal, waehrend Quantity, RAP und Entry-Anzahl summiert werden. Intern werden weiterhin einzelne Eintraege mit Timestamp gespeichert und aktuell bis zu 250 Eintraege behalten, damit spaeter Metriken und Diagramme daraus entstehen koennen.
+Die Deed-Log-UI wertet die letzten 50 Roh-Eintraege aus und gruppiert sie fuer die Anzeige nach Aktivitaet und Einheit. Dadurch erscheint z. B. Walking nur einmal, waehrend Quantity, RAP und Entry-Anzahl summiert werden. Intern werden weiterhin einzelne Eintraege mit Timestamp gespeichert und aktuell bis zu 250 Eintraege behalten, damit spaeter Metriken und Diagramme daraus entstehen koennen.
 
-Activity Stats nutzt die Roh-Eintraege fuer erste Analytics:
+Deed Stats nutzt die Roh-Eintraege fuer erste Analytics:
 
-- Auswahl zwischen `All Activities` und einzelnen Activities.
+- Auswahl zwischen `All Deeds` und einzelnen Deeds.
 - Total RAP, geloggte Quantity, Active Days und Longest Streak.
 - Longest Streak speichert aktuell Laenge sowie Start- und Enddatum fuer die Anzeige.
 - Die Heatmap zeigt rollend die letzten 365 Tage, nicht nur das aktuelle Kalenderjahr, damit ein Jahreswechsel die Anzeige nicht komplett leert.
@@ -463,7 +474,7 @@ Empfohlene Richtung fuer den naechsten Architektur-Schritt: Supabase. Die erste 
 
 Begruendung:
 
-- Postgres passt gut zum Spielstand, weil Skills, Activities, Logs, Training-State, spaetere Monster/Karten und Events langfristig strukturierte Daten sind.
+- Postgres passt gut zum Spielstand, weil Skills, Deeds, Logs, Training-State, spaetere Monster/Karten und Events langfristig strukturierte Daten sind.
 - Supabase Auth deckt Account/Login ab, ohne sofort einen eigenen Auth-Server zu bauen.
 - Row Level Security muss von Anfang an verwendet werden, damit jeder User nur seine eigenen Save-Daten lesen und schreiben kann.
 - GitHub Pages kann als statisches Frontend vorerst bleiben; die App spricht direkt mit Supabase APIs.
@@ -650,12 +661,12 @@ Technischer Ablauf:
 - Skill-Detailseiten mit echten Aktionen, Kosten, Milestones, Unlocks, Rewards und Training Logs fuellen.
 - Beastiary-Modul mit Creature-Eintraegen, Drops, Kill Counts, Completion und Mastery.
 - Account-weite Punkte-/Ressourcen-Oekonomie fuer Training, Upgrades und Freischaltungen.
-- Activities-Metriken, Diagramme und Auswertungen aus dem Activity Log.
-- Bessere Activity-Erstellung mit Bearbeiten/Loeschen, Kategorien und Validierung.
+- Deeds-Metriken, Diagramme und Auswertungen aus dem Deed Log.
+- Bessere Deed-Erstellung mit Bearbeiten/Loeschen, Kategorien und Validierung.
 - Gemeinsames Modul-/ContentPanel-System weiter ausbauen, damit neue Subscreens schnell entstehen.
 - Placeholder-Slots schrittweise durch echte Module ersetzen.
 - Sammlungsscreen mit Kartenraster, Filter, Shiny-Varianten und Duplikaten.
-- Activity-Tracking zum Verdienen von RAP.
+- Deed-Tracking zum Verdienen von RAP.
 - Weitere Pack-Artworks fuer RuneScape und World of Warcraft.
 - Balancing des Pack-Openings mit mehreren Karten pro Pack.
 - Weiteres Pity-/Bad-Luck-Protection-Balancing.

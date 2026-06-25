@@ -3,7 +3,7 @@ import { ArrowUpDown } from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import { InfoPanel } from "../../components/InfoPanel.jsx";
 import { uiIcons } from "../../components/UiIcon.jsx";
-import { formatRap } from "../activities/activityUtils.js";
+import { formatRap } from "../deeds/deedUtils.js";
 import {
   formatQuestDurationFromRap,
   getQuestProgressPercent,

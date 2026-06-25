@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  ActivitiesPanel,
-  ActivityCreatePanel,
-  ActivityLogPanel,
-  ActivityStatsPanel,
-} from "../features/activities/ActivitiesView.jsx";
+  DeedsPanel,
+  DeedCreatePanel,
+  DeedLogPanel,
+  DeedStatsPanel,
+} from "../features/deeds/DeedsView.jsx";
 import { AccountPanel } from "../features/account/AccountPanel.jsx";
-import { activityStorageKeys, defaultActivities } from "../features/activities/activityData.js";
+import { deedStorageKeys, defaultDeeds } from "../features/deeds/deedData.js";
 import {
-  calculateActivityReward,
-  clampActivityQuantity,
-  getActivityType,
-  normalizeActivities,
-} from "../features/activities/activityUtils.js";
+  calculateDeedReward,
+  clampDeedQuantity,
+  getDeedType,
+  normalizeDeeds,
+} from "../features/deeds/deedUtils.js";
 import { BeastiaryPanel, CodexPanel, PlaceholderPanel } from "../features/codex/CodexPanels.jsx";
 import { QuestsPanel } from "../features/quests/QuestsPanel.jsx";
 import {
@@ -56,7 +56,7 @@ export function MainMenuView({ activeView, onAccountChange }) {
       rap: nextUnlockState.rap,
     });
 
-    writeJson(activityStorageKeys.rap, nextQuestState.rap);
+    writeJson(deedStorageKeys.rap, nextQuestState.rap);
     writeJson(skillStorageKeys.skills, nextTrainingState.skills);
     writeJson(skillStorageKeys.trainingSlots, nextTrainingState.trainingSlots);
     writeJson(skillStorageKeys.trainingLastTick, now);
@@ -80,9 +80,9 @@ export function MainMenuView({ activeView, onAccountChange }) {
   const [selectedTrainingSlot, setSelectedTrainingSlot] = useState(0);
   const [skills, setSkills] = useState(initialTrainingState.current.skills);
   const [trainingSlots, setTrainingSlots] = useState(initialTrainingState.current.trainingSlots);
-  const [activityMode, setActivityMode] = useState("list");
-  const [activities, setActivities] = useState(() => normalizeActivities(initialTrainingState.current.activities || defaultActivities));
-  const [activityLog, setActivityLog] = useState(() => initialTrainingState.current.activityLog || []);
+  const [deedMode, setDeedMode] = useState("list");
+  const [deeds, setDeeds] = useState(() => normalizeDeeds(initialTrainingState.current.deeds || defaultDeeds));
+  const [deedLog, setDeedLog] = useState(() => initialTrainingState.current.deedLog || []);
   const [quests, setQuests] = useState(initialTrainingState.current.quests);
   const [rap, setRap] = useState(initialTrainingState.current.rap);
   const [unlocks, setUnlocks] = useState(initialTrainingState.current.unlocks);
@@ -91,7 +91,7 @@ export function MainMenuView({ activeView, onAccountChange }) {
   const trainingSlotsRef = useRef(trainingSlots);
   const unlocksRef = useRef(unlocks);
   const questsRef = useRef(quests);
-  const activityLogRef = useRef(activityLog);
+  const deedLogRef = useRef(deedLog);
   const manualTrainingSlotSelectionRef = useRef(false);
 
   useEffect(() => {
@@ -115,8 +115,8 @@ export function MainMenuView({ activeView, onAccountChange }) {
   }, [quests]);
 
   useEffect(() => {
-    activityLogRef.current = activityLog;
-  }, [activityLog]);
+    deedLogRef.current = deedLog;
+  }, [deedLog]);
 
   useEffect(() => {
     if (activeView !== "skills") {
@@ -124,8 +124,8 @@ export function MainMenuView({ activeView, onAccountChange }) {
       setSkillMode("overview");
     }
 
-    if (activeView !== "activities") {
-      setActivityMode("list");
+    if (activeView !== "deeds") {
+      setDeedMode("list");
     }
   }, [activeView]);
 
@@ -174,28 +174,28 @@ export function MainMenuView({ activeView, onAccountChange }) {
         setQuests(nextQuestState.quests);
         writeJson(questStorageKeys.quests, nextQuestState.quests);
       }
-      writeJson(activityStorageKeys.rap, nextQuestState.rap);
+      writeJson(deedStorageKeys.rap, nextQuestState.rap);
     }, 1000);
 
     return () => window.clearInterval(intervalId);
   }, []);
 
-  const createActivity = (activity) => {
-    setActivities((current) => {
-      const nextActivities = [...current, activity];
-      writeJson(activityStorageKeys.activities, nextActivities);
-      return nextActivities;
+  const createDeed = (deed) => {
+    setDeeds((current) => {
+      const nextDeeds = [...current, deed];
+      writeJson(deedStorageKeys.deeds, nextDeeds);
+      return nextDeeds;
     });
-    setActivityMode("list");
+    setDeedMode("list");
   };
 
-  const completeActivity = (activity, requestedQuantity = activity.defaultQuantity) => {
+  const completeDeed = (deed, requestedQuantity = deed.defaultQuantity) => {
     const now = new Date();
-    const quantity = clampActivityQuantity(activity, requestedQuantity);
-    const reward = calculateActivityReward(activity, activityLogRef.current, quantity, now);
+    const quantity = clampDeedQuantity(deed, requestedQuantity);
+    const reward = calculateDeedReward(deed, deedLogRef.current, quantity, now);
     const rapEarned = reward.rapEarned;
     const entry = {
-      activityId: activity.id,
+      deedId: deed.id,
       id: `log-${Date.now()}`,
       baseRapEarned: Math.floor(reward.baseRap),
       goalBonusRap: Math.floor(reward.goalBonusRap),
@@ -205,23 +205,23 @@ export function MainMenuView({ activeView, onAccountChange }) {
       rapEarned,
       softCappedQuantity: reward.quantityAfterSoftCap,
       timestamp: now.toISOString(),
-      title: activity.title,
-      type: getActivityType(activity),
-      unit: activity.unit,
+      title: deed.title,
+      type: getDeedType(deed),
+      unit: deed.unit,
     };
 
     setRap((currentRap) => {
       const nextRap = currentRap + rapEarned;
       rapRef.current = nextRap;
-      writeJson(activityStorageKeys.rap, nextRap);
+      writeJson(deedStorageKeys.rap, nextRap);
       writeJson(skillStorageKeys.trainingLastTick, Date.now());
       return nextRap;
     });
 
-    setActivityLog((currentLog) => {
+    setDeedLog((currentLog) => {
       const nextLog = [entry, ...currentLog].slice(0, 250);
-      activityLogRef.current = nextLog;
-      writeJson(activityStorageKeys.activityLog, nextLog);
+      deedLogRef.current = nextLog;
+      writeJson(deedStorageKeys.deedLog, nextLog);
       return nextLog;
     });
   };
@@ -332,27 +332,27 @@ export function MainMenuView({ activeView, onAccountChange }) {
     );
   }
 
-  if (activeView === "activities") {
-    if (activityMode === "create") {
-      return <ActivityCreatePanel onBack={() => setActivityMode("list")} onCreate={createActivity} />;
+  if (activeView === "deeds") {
+    if (deedMode === "create") {
+      return <DeedCreatePanel onBack={() => setDeedMode("list")} onCreate={createDeed} />;
     }
 
-    if (activityMode === "log") {
-      return <ActivityLogPanel activityLog={activityLog} onBack={() => setActivityMode("list")} rap={rap} />;
+    if (deedMode === "log") {
+      return <DeedLogPanel deedLog={deedLog} onBack={() => setDeedMode("list")} rap={rap} />;
     }
 
-    if (activityMode === "stats") {
-      return <ActivityStatsPanel activities={activities} activityLog={activityLog} onBack={() => setActivityMode("list")} rap={rap} />;
+    if (deedMode === "stats") {
+      return <DeedStatsPanel deeds={deeds} deedLog={deedLog} onBack={() => setDeedMode("list")} rap={rap} />;
     }
 
     return (
-      <ActivitiesPanel
-        activities={activities}
-        activityLog={activityLog}
-        onCompleteActivity={completeActivity}
-        onOpenCreate={() => setActivityMode("create")}
-        onOpenLog={() => setActivityMode("log")}
-        onOpenStats={() => setActivityMode("stats")}
+      <DeedsPanel
+        deeds={deeds}
+        deedLog={deedLog}
+        onCompleteDeed={completeDeed}
+        onOpenCreate={() => setDeedMode("create")}
+        onOpenLog={() => setDeedMode("log")}
+        onOpenStats={() => setDeedMode("stats")}
         rap={rap}
       />
     );

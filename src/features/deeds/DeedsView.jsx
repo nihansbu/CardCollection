@@ -4,74 +4,74 @@ import { ContentPanel } from "../../components/ContentPanel.jsx";
 import { InfoPanel } from "../../components/InfoPanel.jsx";
 import { uiIcons } from "../../components/UiIcon.jsx";
 import {
-  ACTIVITY_HEATMAP_DAYS,
-  ACTIVITY_LOG_LIMIT,
-  activitySortOptions,
-  activityTypes,
-} from "./activityData.js";
+  DEED_HEATMAP_DAYS,
+  DEED_LOG_LIMIT,
+  deedSortOptions,
+  deedTypes,
+} from "./deedData.js";
 import {
-  calculateActivityReward,
-  clampActivityQuantity,
-  formatActivityQuantity,
+  calculateDeedReward,
+  clampDeedQuantity,
+  formatDeedQuantity,
   formatDayKey,
   formatInteger,
   formatRap,
-  getActivityDashboardSummary,
-  getActivityGoalProgress,
-  getActivityMastery,
-  getActivityPresets,
-  getActivityStats,
-  getActivityTotals,
-  getActivityType,
-  getGroupedActivityLog,
-  getSortedActivities,
-} from "./activityUtils.js";
+  getDeedDashboardSummary,
+  getDeedGoalProgress,
+  getDeedMastery,
+  getDeedPresets,
+  getDeedStats,
+  getDeedTotals,
+  getDeedType,
+  getGroupedDeedLog,
+  getSortedDeeds,
+} from "./deedUtils.js";
 
 const LONG_PRESS_MS = 520;
 
-function ActivityInfoPanel({ activity, activityLog, onClose, onLogActivity }) {
-  const [quantity, setQuantity] = useState(activity?.defaultQuantity || 1);
+function DeedInfoPanel({ deed, deedLog, onClose, onLogDeed }) {
+  const [quantity, setQuantity] = useState(deed?.defaultQuantity || 1);
 
   useEffect(() => {
-    setQuantity(activity?.defaultQuantity || 1);
-  }, [activity?.defaultQuantity, activity?.id]);
+    setQuantity(deed?.defaultQuantity || 1);
+  }, [deed?.defaultQuantity, deed?.id]);
 
-  if (!activity) return null;
+  if (!deed) return null;
 
-  const clampedQuantity = clampActivityQuantity(activity, quantity);
-  const reward = calculateActivityReward(activity, activityLog, clampedQuantity);
-  const mastery = getActivityMastery(activity, activityLog);
-  const totals = getActivityTotals(activity, activityLog);
-  const presets = getActivityPresets(activity);
+  const clampedQuantity = clampDeedQuantity(deed, quantity);
+  const reward = calculateDeedReward(deed, deedLog, clampedQuantity);
+  const mastery = getDeedMastery(deed, deedLog);
+  const totals = getDeedTotals(deed, deedLog);
+  const presets = getDeedPresets(deed);
   const goals = ["daily", "weekly", "monthly"]
-    .map((period) => getActivityGoalProgress(activity, activityLog, period))
+    .map((period) => getDeedGoalProgress(deed, deedLog, period))
     .filter((goal) => goal.target > 0);
   const updateQuantity = (nextQuantity) => {
-    setQuantity(clampActivityQuantity(activity, nextQuantity));
+    setQuantity(clampDeedQuantity(deed, nextQuantity));
   };
   const logQuantity = () => {
-    onLogActivity(activity, clampedQuantity);
+    onLogDeed(deed, clampedQuantity);
     onClose();
   };
 
   return (
     <InfoPanel
-      accent={activity.color}
-      badge={activity.title.slice(0, 2).toUpperCase()}
-      className="content-info-panel--activity"
-      description={activity.description}
+      accent={deed.color}
+      badge={deed.title.slice(0, 2).toUpperCase()}
+      className="content-info-panel--deed"
+      description={deed.description}
       metrics={[
         { label: "Level", value: mastery.level },
         { label: "Total Logs", value: totals.logs },
         { label: "Reward", value: `+${formatRap(reward.rapEarned)}` },
       ]}
       onClose={onClose}
-      subtitle={`${getActivityType(activity)} Activity`}
-      title={activity.title}
+      subtitle={`${getDeedType(deed)} Deed`}
+      title={deed.title}
     >
-      <div className="activity-info-extra">
-        <div className="activity-amount-picker" aria-label={`${activity.title} amount picker`}>
-          <button onClick={() => updateQuantity(clampedQuantity - activity.defaultQuantity)} type="button">-</button>
+      <div className="deed-info-extra">
+        <div className="deed-amount-picker" aria-label={`${deed.title} amount picker`}>
+          <button onClick={() => updateQuantity(clampedQuantity - deed.defaultQuantity)} type="button">-</button>
           <label>
             <span>Amount</span>
             <input
@@ -82,31 +82,31 @@ function ActivityInfoPanel({ activity, activityLog, onClose, onLogActivity }) {
               value={clampedQuantity}
             />
           </label>
-          <button onClick={() => updateQuantity(clampedQuantity + activity.defaultQuantity)} type="button">+</button>
+          <button onClick={() => updateQuantity(clampedQuantity + deed.defaultQuantity)} type="button">+</button>
         </div>
-        <div className="activity-preset-row">
+        <div className="deed-preset-row">
           {presets.map((preset) => (
             <button className={preset === clampedQuantity ? "is-active" : ""} key={preset} onClick={() => updateQuantity(preset)} type="button">
               {formatInteger(preset)}
             </button>
           ))}
         </div>
-        <button className="activity-info-log-button" onClick={logQuantity} type="button">
-          Log Activity
+        <button className="deed-info-log-button" onClick={logQuantity} type="button">
+          Log Deed
         </button>
-        <div className="activity-reward-preview">
-          <span>{formatActivityQuantity(clampedQuantity, activity.unit)}</span>
+        <div className="deed-reward-preview">
+          <span>{formatDeedQuantity(clampedQuantity, deed.unit)}</span>
           <strong>+{formatRap(reward.rapEarned)} RAP</strong>
           {reward.goalBonusRap > 0 ? <small>Bonus +{formatRap(reward.goalBonusRap)}</small> : null}
           {reward.isSoftCapped ? <small>Softcap active</small> : null}
         </div>
         {goals.length ? (
-          <div className="activity-goal-list">
+          <div className="deed-goal-list">
             {goals.map((goal) => (
               <div key={goal.period}>
                 <span>{goal.period}</span>
                 <strong>{formatInteger(goal.progress)} / {formatInteger(goal.target)}</strong>
-                <i style={{ "--activity-goal-progress": `${Math.min(100, (goal.progress / goal.target) * 100)}%` }} />
+                <i style={{ "--deed-goal-progress": `${Math.min(100, (goal.progress / goal.target) * 100)}%` }} />
               </div>
             ))}
           </div>
@@ -116,13 +116,13 @@ function ActivityInfoPanel({ activity, activityLog, onClose, onLogActivity }) {
   );
 }
 
-function ActivityCard({ activity, activityLog, onComplete, onPreview }) {
+function DeedCard({ deed, deedLog, onComplete, onPreview }) {
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
-  const reward = calculateActivityReward(activity, activityLog, activity.defaultQuantity);
-  const mastery = getActivityMastery(activity, activityLog);
-  const totals = getActivityTotals(activity, activityLog);
-  const dailyGoal = getActivityGoalProgress(activity, activityLog, "daily");
+  const reward = calculateDeedReward(deed, deedLog, deed.defaultQuantity);
+  const mastery = getDeedMastery(deed, deedLog);
+  const totals = getDeedTotals(deed, deedLog);
+  const dailyGoal = getDeedGoalProgress(deed, deedLog, "daily");
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -134,7 +134,7 @@ function ActivityCard({ activity, activityLog, onComplete, onPreview }) {
     suppressClick.current = false;
     longPressTimer.current = window.setTimeout(() => {
       suppressClick.current = true;
-      onPreview(activity);
+      onPreview(deed);
     }, LONG_PRESS_MS);
   };
 
@@ -144,33 +144,33 @@ function ActivityCard({ activity, activityLog, onComplete, onPreview }) {
       return;
     }
 
-    onComplete(activity, activity.defaultQuantity);
+    onComplete(deed, deed.defaultQuantity);
   };
 
   useEffect(() => () => window.clearTimeout(longPressTimer.current), []);
 
   return (
     <button
-      className="activity-card"
+      className="deed-card"
       onClick={handleClick}
       onContextMenu={(event) => event.preventDefault()}
       onPointerCancel={clearLongPress}
       onPointerDown={startLongPress}
       onPointerLeave={clearLongPress}
       onPointerUp={clearLongPress}
-      style={{ "--activity-color": activity.color }}
+      style={{ "--deed-color": deed.color }}
       type="button"
-      aria-label={`${activity.title}. ${getActivityType(activity)}. ${activity.defaultQuantity} ${activity.unit}. Rewards ${formatRap(reward.rapEarned)} RAP. Long press for details.`}
+      aria-label={`${deed.title}. ${getDeedType(deed)}. ${deed.defaultQuantity} ${deed.unit}. Rewards ${formatRap(reward.rapEarned)} RAP. Long press for details.`}
     >
-      <span className="activity-card-progress" style={{ "--activity-progress": `${mastery.progress}%` }} aria-hidden="true" />
-      <div className="activity-sigil" aria-hidden="true">
-        {activity.title.slice(0, 2).toUpperCase()}
+      <span className="deed-card-progress" style={{ "--deed-progress": `${mastery.progress}%` }} aria-hidden="true" />
+      <div className="deed-sigil" aria-hidden="true">
+        {deed.title.slice(0, 2).toUpperCase()}
       </div>
-      <div className="activity-card-copy">
-        <strong>{activity.title}</strong>
-        <span>{getActivityType(activity)} - {formatActivityQuantity(activity.defaultQuantity, activity.unit)}</span>
+      <div className="deed-card-copy">
+        <strong>{deed.title}</strong>
+        <span>{getDeedType(deed)} - {formatDeedQuantity(deed.defaultQuantity, deed.unit)}</span>
       </div>
-      <div className="activity-card-reward" aria-hidden="true">
+      <div className="deed-card-reward" aria-hidden="true">
         <strong>Lv {mastery.level}</strong>
         <small>
           +{formatRap(reward.rapEarned)} RAP
@@ -181,14 +181,14 @@ function ActivityCard({ activity, activityLog, onComplete, onPreview }) {
   );
 }
 
-export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, onOpenCreate, onOpenLog, onOpenStats, rap }) {
+export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpenLog, onOpenStats, rap }) {
   const [sortKey, setSortKey] = useState("default");
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [previewActivityId, setPreviewActivityId] = useState(null);
-  const sortedActivities = getSortedActivities(activities, sortKey);
-  const activeSortLabel = activitySortOptions.find((option) => option.value === sortKey)?.label || "Default";
-  const previewActivity = previewActivityId ? activities.find((activity) => activity.id === previewActivityId) : null;
-  const summary = getActivityDashboardSummary(activities, activityLog);
+  const [previewDeedId, setPreviewDeedId] = useState(null);
+  const sortedDeeds = getSortedDeeds(deeds, sortKey);
+  const activeSortLabel = deedSortOptions.find((option) => option.value === sortKey)?.label || "Default";
+  const previewDeed = previewDeedId ? deeds.find((deed) => deed.id === previewDeedId) : null;
+  const summary = getDeedDashboardSummary(deeds, deedLog);
 
   return (
     <ContentPanel
@@ -200,9 +200,9 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
           shortLabel: "Sort",
           onClick: () => setIsSortOpen((isOpen) => !isOpen),
           panel: isSortOpen ? (
-            <div className="activity-sort-menu" role="menu">
+            <div className="deed-sort-menu" role="menu">
               <span>Sort By - {activeSortLabel}</span>
-              {activitySortOptions.map((option) => (
+              {deedSortOptions.map((option) => (
                 <button
                   className={option.value === sortKey ? "is-active" : ""}
                   key={option.value}
@@ -218,38 +218,38 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
             </div>
           ) : null,
         },
-        { Icon: ScrollText, label: "Activity Log", shortLabel: "Log", onClick: onOpenLog },
+        { Icon: ScrollText, label: "Deed Log", shortLabel: "Log", onClick: onOpenLog },
         { Icon: BarChart3, label: "Stats", onClick: onOpenStats },
       ]}
-      className="activities-panel"
-      infoPanel={<ActivityInfoPanel activity={previewActivity} activityLog={activityLog} onClose={() => setPreviewActivityId(null)} onLogActivity={onCompleteActivity} />}
+      className="deeds-panel"
+      infoPanel={<DeedInfoPanel deed={previewDeed} deedLog={deedLog} onClose={() => setPreviewDeedId(null)} onLogDeed={onCompleteDeed} />}
       stats={[
         { Icon: uiIcons.rap, iconOnly: true, label: "RAP Balance", value: formatRap(rap) },
         { Icon: uiIcons.currentXp, iconOnly: true, label: "Today RAP", value: formatRap(summary.todayRap) },
-        { Icon: uiIcons.activities, iconOnly: true, label: "Logged Today", value: summary.loggedToday },
+        { Icon: uiIcons.deeds, iconOnly: true, label: "Logged Today", value: summary.loggedToday },
         { Icon: uiIcons.stats, iconOnly: true, label: "Longest Streak", value: summary.longestStreak },
       ]}
-      title="Activities"
+      title="Deeds"
     >
-      <div className="activity-board" onPointerDown={() => setPreviewActivityId(null)}>
-        <button className="activity-card activity-system-card" onClick={onOpenCreate} type="button">
-          <div className="activity-sigil" aria-hidden="true">+</div>
-          <div className="activity-card-copy">
-            <strong>Create Activity</strong>
+      <div className="deed-board" onPointerDown={() => setPreviewDeedId(null)}>
+        <button className="deed-card deed-system-card" onClick={onOpenCreate} type="button">
+          <div className="deed-sigil" aria-hidden="true">+</div>
+          <div className="deed-card-copy">
+            <strong>Create Deed</strong>
             <span>Custom - Setup</span>
           </div>
-          <div className="activity-card-reward" aria-hidden="true">
+          <div className="deed-card-reward" aria-hidden="true">
             <small>Define unit, quantity, and RAP</small>
           </div>
         </button>
 
-        {sortedActivities.map((activity) => (
-          <ActivityCard
-            activity={activity}
-            activityLog={activityLog}
-            key={activity.id}
-            onComplete={onCompleteActivity}
-            onPreview={(previewActivityEntry) => setPreviewActivityId(previewActivityEntry.id)}
+        {sortedDeeds.map((deed) => (
+          <DeedCard
+            deed={deed}
+            deedLog={deedLog}
+            key={deed.id}
+            onComplete={onCompleteDeed}
+            onPreview={(previewDeedEntry) => setPreviewDeedId(previewDeedEntry.id)}
           />
         ))}
       </div>
@@ -257,7 +257,7 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
   );
 }
 
-export function ActivityCreatePanel({ onBack, onCreate }) {
+export function DeedCreatePanel({ onBack, onCreate }) {
   const [form, setForm] = useState({
     defaultQuantity: "10",
     description: "",
@@ -283,7 +283,7 @@ export function ActivityCreatePanel({ onBack, onCreate }) {
     onCreate({
       color: "#24f2ff",
       defaultQuantity,
-      description: form.description.trim() || `Track ${title.toLowerCase()} as a custom real-life activity.`,
+      description: form.description.trim() || `Track ${title.toLowerCase()} as a custom real-life deed.`,
       id: `custom-${Date.now()}`,
       rapPerUnit,
       title,
@@ -294,23 +294,23 @@ export function ActivityCreatePanel({ onBack, onCreate }) {
 
   return (
     <ContentPanel
-      className="activity-create-panel"
+      className="deed-create-panel"
       onBack={onBack}
       stats={[
         { label: "Type", value: form.type },
         { label: "Reward", value: "RAP" },
         { label: "Status", value: "Draft" },
       ]}
-      title="Create Activity"
+      title="Create Deed"
     >
-      <form className="activity-form" onSubmit={submit}>
+      <form className="deed-form" onSubmit={submit}>
         <label>
           <span>Title</span>
           <input onChange={(event) => updateField("title", event.target.value)} placeholder="Reading" value={form.title} />
         </label>
         <label>
           <span>Description</span>
-          <textarea onChange={(event) => updateField("description", event.target.value)} placeholder="Short note about what counts for this activity." value={form.description} />
+          <textarea onChange={(event) => updateField("description", event.target.value)} placeholder="Short note about what counts for this deed." value={form.description} />
         </label>
         <label>
           <span>Unit</span>
@@ -319,7 +319,7 @@ export function ActivityCreatePanel({ onBack, onCreate }) {
         <label>
           <span>Type</span>
           <select onChange={(event) => updateField("type", event.target.value)} value={form.type}>
-            {activityTypes.map((type) => (
+            {deedTypes.map((type) => (
               <option key={type} value={type}>{type}</option>
             ))}
           </select>
@@ -332,36 +332,36 @@ export function ActivityCreatePanel({ onBack, onCreate }) {
           <span>RAP Per Unit</span>
           <input min="0" onChange={(event) => updateField("rapPerUnit", event.target.value)} type="number" value={form.rapPerUnit} />
         </label>
-        <button className="activity-submit-button" type="submit">Save Activity</button>
+        <button className="deed-submit-button" type="submit">Save Deed</button>
       </form>
     </ContentPanel>
   );
 }
 
-export function ActivityLogPanel({ activityLog, onBack, rap }) {
-  const groupedLog = getGroupedActivityLog(activityLog);
+export function DeedLogPanel({ deedLog, onBack, rap }) {
+  const groupedLog = getGroupedDeedLog(deedLog);
 
   return (
     <ContentPanel
-      className="activity-log-panel"
+      className="deed-log-panel"
       onBack={onBack}
       stats={[
         { label: "RAP Balance", value: formatRap(rap) },
         { label: "Showing", value: groupedLog.length },
-        { label: "Limit", value: ACTIVITY_LOG_LIMIT },
+        { label: "Limit", value: DEED_LOG_LIMIT },
       ]}
-      title="Activity Log"
+      title="Deed Log"
     >
-      <div className="activity-log-table" role="table" aria-label="Activity Log">
-        <div className="activity-log-row activity-log-head" role="row">
-          <span role="columnheader">Activity</span>
+      <div className="deed-log-table" role="table" aria-label="Deed Log">
+        <div className="deed-log-row deed-log-head" role="row">
+          <span role="columnheader">Deed</span>
           <span role="columnheader">Last Logged</span>
           <span role="columnheader">Total Quantity</span>
           <span role="columnheader">RAP</span>
           <span role="columnheader">Entries</span>
         </div>
         {groupedLog.length ? groupedLog.map((entry) => (
-          <div className="activity-log-row" key={`${entry.activityId}-${entry.unit}`} role="row">
+          <div className="deed-log-row" key={`${entry.deedId}-${entry.unit}`} role="row">
             <span role="cell">{entry.title}</span>
             <span role="cell">{new Date(entry.lastTimestamp).toLocaleString("de-DE")}</span>
             <span role="cell">{entry.quantity} {entry.unit}</span>
@@ -369,18 +369,18 @@ export function ActivityLogPanel({ activityLog, onBack, rap }) {
             <span role="cell">{entry.count}</span>
           </div>
         )) : (
-          <div className="activity-log-empty">No activities logged yet.</div>
+          <div className="deed-log-empty">No deeds logged yet.</div>
         )}
       </div>
     </ContentPanel>
   );
 }
 
-export function ActivityStatsPanel({ activities, activityLog, onBack, rap }) {
-  const [selectedActivityId, setSelectedActivityId] = useState("all");
-  const selectedActivity = activities.find((activity) => activity.id === selectedActivityId);
-  const stats = getActivityStats(activityLog, selectedActivityId);
-  const selectedLabel = selectedActivity?.title || "All Activities";
+export function DeedStatsPanel({ deeds, deedLog, onBack, rap }) {
+  const [selectedDeedId, setSelectedDeedId] = useState("all");
+  const selectedDeed = deeds.find((deed) => deed.id === selectedDeedId);
+  const stats = getDeedStats(deedLog, selectedDeedId);
+  const selectedLabel = selectedDeed?.title || "All Deeds";
   const streakText = stats.longestStreak.length
     ? `${stats.longestStreak.length} days`
     : "0 days";
@@ -390,33 +390,33 @@ export function ActivityStatsPanel({ activities, activityLog, onBack, rap }) {
 
   return (
     <ContentPanel
-      className="activity-stats-panel"
+      className="deed-stats-panel"
       onBack={onBack}
       stats={[
         { label: "RAP Balance", value: formatRap(rap) },
-        { label: "Selection", value: selectedActivity ? selectedActivity.title : "All" },
+        { label: "Selection", value: selectedDeed ? selectedDeed.title : "All" },
         { label: "Entries", value: stats.entries },
       ]}
-      title="Activity Stats"
+      title="Deed Stats"
     >
-      <div className="activity-stats-shell">
-        <div className="activity-stat-picker" aria-label="Activity stat selection">
-          <button className={selectedActivityId === "all" ? "is-active" : ""} onClick={() => setSelectedActivityId("all")} type="button">
-            All Activities
+      <div className="deed-stats-shell">
+        <div className="deed-stat-picker" aria-label="Deed stat selection">
+          <button className={selectedDeedId === "all" ? "is-active" : ""} onClick={() => setSelectedDeedId("all")} type="button">
+            All Deeds
           </button>
-          {activities.map((activity) => (
+          {deeds.map((deed) => (
             <button
-              className={selectedActivityId === activity.id ? "is-active" : ""}
-              key={activity.id}
-              onClick={() => setSelectedActivityId(activity.id)}
+              className={selectedDeedId === deed.id ? "is-active" : ""}
+              key={deed.id}
+              onClick={() => setSelectedDeedId(deed.id)}
               type="button"
             >
-              {activity.title}
+              {deed.title}
             </button>
           ))}
         </div>
 
-        <section className="activity-stat-summary" aria-label={`${selectedLabel} statistics`}>
+        <section className="deed-stat-summary" aria-label={`${selectedLabel} statistics`}>
           <div>
             <span>Total RAP</span>
             <strong>{formatRap(stats.rap)}</strong>
@@ -436,15 +436,15 @@ export function ActivityStatsPanel({ activities, activityLog, onBack, rap }) {
           </div>
         </section>
 
-        <section className="activity-heatmap-panel" aria-label={`${selectedLabel} heatmap`}>
-          <div className="activity-heatmap-head">
+        <section className="deed-heatmap-panel" aria-label={`${selectedLabel} heatmap`}>
+          <div className="deed-heatmap-head">
             <div>
               <span>Rolling Heatmap</span>
               <strong>{selectedLabel}</strong>
             </div>
-            <small>Last {ACTIVITY_HEATMAP_DAYS} days</small>
+            <small>Last {DEED_HEATMAP_DAYS} days</small>
           </div>
-          <div className="activity-heatmap-grid">
+          <div className="deed-heatmap-grid">
             {stats.heatmapDays.map((day) => (
               <span
                 aria-label={`${formatDayKey(day.key)}: ${day.entries} entries, ${formatRap(day.rap)} RAP`}
@@ -454,7 +454,7 @@ export function ActivityStatsPanel({ activities, activityLog, onBack, rap }) {
               />
             ))}
           </div>
-          <div className="activity-heatmap-legend" aria-hidden="true">
+          <div className="deed-heatmap-legend" aria-hidden="true">
             <span>Less</span>
             {[0, 1, 2, 3, 4].map((level) => (
               <i className={`heatmap-cell heatmap-level-${level}`} key={level} />

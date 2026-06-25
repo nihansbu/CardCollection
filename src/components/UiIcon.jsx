@@ -27,6 +27,7 @@ export const uiIcons = {
   character: makeUiIcon("character"),
   codex: makeUiIcon("codex"),
   currentXp: makeUiIcon("current-xp"),
+  deeds: makeUiIcon("activities"),
   explore: makeUiIcon("explore"),
   gear: makeUiIcon("gear"),
   inventory: makeUiIcon("inventory"),

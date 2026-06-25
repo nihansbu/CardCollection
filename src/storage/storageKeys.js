@@ -1,6 +1,8 @@
 export const localStorageKeys = {
-  activities: "codex-collector-v1-activities",
-  activityLog: "codex-collector-v1-activity-log",
+  deeds: "codex-collector-v1-deeds",
+  deedLog: "codex-collector-v1-deed-log",
+  legacyActivities: "codex-collector-v1-activities",
+  legacyActivityLog: "codex-collector-v1-activity-log",
   localAccountCredentials: "codex-collector-v1-local-account-credentials",
   localAccountSession: "codex-collector-v1-local-account-session",
   questLastTick: "codex-collector-v1-quest-last-tick",

@@ -22,8 +22,8 @@ function getSaveSummary() {
   const save = exportLocalGameSave();
 
   return {
-    activities: save.activities.length,
-    activityLog: save.activityLog.length,
+    deeds: save.deeds.length,
+    deedLog: save.deedLog.length,
     rap: Math.floor(save.rap),
     skills: save.skills.length,
   };
@@ -284,12 +284,12 @@ export function AccountPanel({ isGate = false, onAuthenticated }) {
               <strong>{saveSummary.rap}</strong>
             </div>
             <div>
-              <span>Activities</span>
-              <strong>{saveSummary.activities}</strong>
+              <span>Deeds</span>
+              <strong>{saveSummary.deeds}</strong>
             </div>
             <div>
               <span>Log</span>
-              <strong>{saveSummary.activityLog}</strong>
+              <strong>{saveSummary.deedLog}</strong>
             </div>
           </div>
           <button className="account-button account-button-secondary" onClick={refreshSaveSummary} type="button">

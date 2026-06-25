@@ -14,7 +14,7 @@ const moreItems = [
 
 const bottomNavItems = [
   { id: "character", label: "Character", shortLabel: "Char", Icon: uiIcons.character, tone: "cyan", type: "character-flyout" },
-  { id: "activities", label: "Activities", shortLabel: "Act", Icon: uiIcons.activities, tone: "green" },
+  { id: "deeds", label: "Deeds", shortLabel: "Deed", Icon: uiIcons.deeds, tone: "green" },
   { id: "skills", label: "Skills", Icon: uiIcons.skills, tone: "teal" },
   { id: "placeholder-4", label: "Inventory", shortLabel: "Inv", Icon: uiIcons.inventory, tone: "amber" },
   { id: "quests", label: "Quests", shortLabel: "Quest", Icon: uiIcons.codex, tone: "blue" },

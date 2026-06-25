@@ -127,26 +127,26 @@ try {
   await page.getByRole("menuitem", { name: /Account/i }).click();
   await page.getByRole("heading", { name: /^Account$/i }).waitFor({ timeout: 5000 });
   const accountStatsText = await page.locator(".content-stats").innerText();
-  await page.locator('.bottom-nav-item[aria-label="Activities"]').click();
-  await page.getByRole("heading", { name: /^Activities$/i }).waitFor({ timeout: 5000 });
-  const activityRows = await page.locator(".activity-card").count();
-  const stepsActivity = page.getByRole("button", { name: /Steps/i });
-  await stepsActivity.waitFor({ timeout: 5000 });
-  const stepsText = await stepsActivity.innerText();
-  const walkingActivity = page.getByRole("button", { name: /Walking/i });
-  await walkingActivity.dispatchEvent("pointerdown");
+  await page.locator('.bottom-nav-item[aria-label="Deeds"]').click();
+  await page.getByRole("heading", { name: /^Deeds$/i }).waitFor({ timeout: 5000 });
+  const deedRows = await page.locator(".deed-card").count();
+  const stepsDeed = page.getByRole("button", { name: /Steps/i });
+  await stepsDeed.waitFor({ timeout: 5000 });
+  const stepsText = await stepsDeed.innerText();
+  const walkingDeed = page.getByRole("button", { name: /Walking/i });
+  await walkingDeed.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
-  await walkingActivity.dispatchEvent("pointerup");
+  await walkingDeed.dispatchEvent("pointerup");
   await page.locator(".content-info-panel", { hasText: /Walking/i }).waitFor({ timeout: 5000 });
-  const activityQuicklookText = await page.locator(".content-info-panel").innerText();
-  await page.locator(".activity-preset-row button").last().click();
-  const activityRewardPreviewText = await page.locator(".activity-reward-preview").innerText();
+  const deedQuicklookText = await page.locator(".content-info-panel").innerText();
+  await page.locator(".deed-preset-row button").last().click();
+  const deedRewardPreviewText = await page.locator(".deed-reward-preview").innerText();
   await page.getByLabel("Close info panel").click();
-  const rapBeforeActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
+  const rapBeforeDeedTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
   await page.getByRole("button", { name: /Running/i }).click();
-  const rapAfterActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
-  const activityLogAfterTap = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-activity-log")));
-  const activityHeaderMetrics = await readContentHeaderMetrics(page);
+  const rapAfterDeedTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
+  const deedLogAfterTap = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-deed-log")));
+  const deedHeaderMetrics = await readContentHeaderMetrics(page);
 
   await page.locator('.bottom-nav-item[aria-label="Quests"]').click();
   await page.getByRole("heading", { name: /^Quests$/i }).waitFor({ timeout: 5000 });
@@ -298,11 +298,11 @@ try {
   result = {
     attackClass,
     accountStatsText,
-    activityLogAfterTap,
-    activityHeaderMetrics,
-    activityQuicklookText,
-    activityRewardPreviewText,
-    activityRows,
+    deedLogAfterTap,
+    deedHeaderMetrics,
+    deedQuicklookText,
+    deedRewardPreviewText,
+    deedRows,
     stepsText,
     bottomNavLabels,
     cooksAssistantClassAfter,
@@ -366,22 +366,22 @@ try {
     trainingCards === 1 &&
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
-    activityRows >= 7 &&
+    deedRows >= 7 &&
     stepsText.toUpperCase().includes("STEPS") &&
     stepsText.toUpperCase().includes("LV") &&
-    activityQuicklookText.toUpperCase().includes("WALKING") &&
-    activityQuicklookText.toUpperCase().includes("REWARD") &&
-    activityRewardPreviewText.toUpperCase().includes("RAP") &&
-    rapAfterActivityTap > rapBeforeActivityTap &&
-    Array.isArray(activityLogAfterTap) &&
-    activityLogAfterTap[0]?.title === "Running" &&
-    Number(activityLogAfterTap[0]?.goalBonusRap) > 0 &&
-    activityHeaderMetrics.header.height === skillsHeaderMetrics.header.height &&
-    activityHeaderMetrics.title.width === skillsHeaderMetrics.title.width &&
-    activityHeaderMetrics.actions.width === skillsHeaderMetrics.actions.width &&
-    activityHeaderMetrics.stats.y === skillsHeaderMetrics.stats.y &&
-    activityHeaderMetrics.stats.height === skillsHeaderMetrics.stats.height &&
-    bottomNavLabels.join("|") === "Char|Act|Skills|Inv|Quest|Slot2|Slot3|More" &&
+    deedQuicklookText.toUpperCase().includes("WALKING") &&
+    deedQuicklookText.toUpperCase().includes("REWARD") &&
+    deedRewardPreviewText.toUpperCase().includes("RAP") &&
+    rapAfterDeedTap > rapBeforeDeedTap &&
+    Array.isArray(deedLogAfterTap) &&
+    deedLogAfterTap[0]?.title === "Running" &&
+    Number(deedLogAfterTap[0]?.goalBonusRap) > 0 &&
+    deedHeaderMetrics.header.height === skillsHeaderMetrics.header.height &&
+    deedHeaderMetrics.title.width === skillsHeaderMetrics.title.width &&
+    deedHeaderMetrics.actions.width === skillsHeaderMetrics.actions.width &&
+    deedHeaderMetrics.stats.y === skillsHeaderMetrics.stats.y &&
+    deedHeaderMetrics.stats.height === skillsHeaderMetrics.stats.height &&
+    bottomNavLabels.join("|") === "Char|Deed|Skills|Inv|Quest|Slot2|Slot3|More" &&
     questRows >= 12 &&
     questBoardColumns === 5 &&
     questHeaderLabels.join("|") === "RAP|Unlocked|Available|Quest Points" &&
@@ -448,7 +448,7 @@ try {
     statQuicklookText.includes("TOTAL LEVEL") &&
     oldStatQuicklookCount === 0 &&
     sharedQuicklookCount === 1 &&
-    storedRap < 10000 &&
+    storedRap > 10000 &&
     Number(woodcutting?.currentXp) > 0 &&
     overflow.bodyScrollWidth === overflow.clientWidth &&
     overflow.bodyScrollHeight === overflow.clientHeight &&

@@ -1,4 +1,4 @@
-.activity-sort-menu {
+.deed-sort-menu {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
@@ -16,7 +16,7 @@
     0 16px 26px rgba(0, 0, 0, 0.46);
 }
 
-.activity-sort-menu span {
+.deed-sort-menu span {
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.64rem;
@@ -26,8 +26,8 @@
   text-transform: uppercase;
 }
 
-.activity-sort-menu button,
-.activity-stat-picker button {
+.deed-sort-menu button,
+.deed-stat-picker button {
   min-height: 38px;
   color: #fff2d3;
   border: 1px solid rgba(213, 184, 130, 0.2);
@@ -40,18 +40,18 @@
   text-transform: uppercase;
 }
 
-.activity-sort-menu button:hover,
-.activity-sort-menu button:focus-visible,
-.activity-sort-menu button.is-active,
-.activity-stat-picker button:hover,
-.activity-stat-picker button:focus-visible,
-.activity-stat-picker button.is-active {
+.deed-sort-menu button:hover,
+.deed-sort-menu button:focus-visible,
+.deed-sort-menu button.is-active,
+.deed-stat-picker button:hover,
+.deed-stat-picker button:focus-visible,
+.deed-stat-picker button.is-active {
   color: #090605;
   border-color: #24f2ff;
   background: #24f2ff;
 }
 
-.activity-board {
+.deed-board {
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
@@ -68,7 +68,7 @@
   box-shadow: inset 0 0 0 2px #080605;
 }
 
-.activity-card {
+.deed-card {
   position: relative;
   overflow: hidden;
   display: grid;
@@ -81,7 +81,7 @@
   color: inherit;
   border: 2px solid #332b23;
   background:
-    radial-gradient(circle at 16% 50%, color-mix(in srgb, var(--activity-color, #d4bd88), transparent 72%), transparent 36%),
+    radial-gradient(circle at 16% 50%, color-mix(in srgb, var(--deed-color, #d4bd88), transparent 72%), transparent 36%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 30%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 42%),
     #1a1713;
@@ -101,38 +101,38 @@
     box-shadow 120ms ease;
 }
 
-.activity-card-progress {
+.deed-card-progress {
   position: absolute;
   inset: 0;
-  width: var(--activity-progress, 0%);
+  width: var(--deed-progress, 0%);
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--activity-color, #24f2ff), transparent 72%), transparent),
+    linear-gradient(90deg, color-mix(in srgb, var(--deed-color, #24f2ff), transparent 72%), transparent),
     repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.035) 0 7px, transparent 7px 14px);
   pointer-events: none;
   transition: width 240ms ease;
 }
 
-.activity-card > *:not(.activity-card-progress) {
+.deed-card > *:not(.deed-card-progress) {
   position: relative;
   z-index: 1;
 }
 
-.activity-card:hover,
-.activity-card:focus-visible {
+.deed-card:hover,
+.deed-card:focus-visible {
   z-index: 2;
-  border-color: color-mix(in srgb, var(--activity-color, #d4bd88), white 14%);
+  border-color: color-mix(in srgb, var(--deed-color, #d4bd88), white 14%);
   box-shadow:
     inset 0 0 0 2px rgba(255, 255, 255, 0.045),
-    0 0 0 2px color-mix(in srgb, var(--activity-color, #d4bd88), transparent 48%),
+    0 0 0 2px color-mix(in srgb, var(--deed-color, #d4bd88), transparent 48%),
     0 14px 22px rgba(0, 0, 0, 0.28);
   transform: translateY(-1px);
 }
 
-.activity-system-card {
-  --activity-color: #24f2ff;
+.deed-system-card {
+  --deed-color: #24f2ff;
 }
 
-.activity-sigil {
+.deed-sigil {
   display: grid;
   width: 42px;
   height: 42px;
@@ -140,7 +140,7 @@
   color: #090605;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.76), transparent 30%),
-    var(--activity-color, #d4bd88);
+    var(--deed-color, #d4bd88);
   box-shadow:
     inset -7px -7px 0 rgba(0, 0, 0, 0.26),
     inset 4px 4px 0 rgba(255, 255, 255, 0.16),
@@ -151,14 +151,14 @@
   transform: rotate(-4deg);
 }
 
-.activity-card-copy {
+.deed-card-copy {
   display: grid;
   min-width: 0;
   gap: 5px;
 }
 
-.activity-card-copy span {
-  color: var(--activity-color, #d4bd88);
+.deed-card-copy span {
+  color: var(--deed-color, #d4bd88);
   font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.58rem;
   font-weight: 900;
@@ -167,7 +167,7 @@
   text-transform: uppercase;
 }
 
-.activity-card-copy strong {
+.deed-card-copy strong {
   color: #fff2d3;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: clamp(0.76rem, 3.7vw, 0.9rem);
@@ -178,14 +178,14 @@
   text-transform: uppercase;
 }
 
-.activity-card-reward {
+.deed-card-reward {
   display: grid;
   justify-items: end;
   min-width: 0;
   gap: 2px;
 }
 
-.activity-card-reward strong {
+.deed-card-reward strong {
   color: #24f2ff;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: clamp(0.72rem, 3.2vw, 0.88rem);
@@ -194,7 +194,7 @@
   text-transform: uppercase;
 }
 
-.activity-card-reward small {
+.deed-card-reward small {
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: clamp(0.54rem, 2.75vw, 0.68rem);
@@ -205,7 +205,7 @@
   text-transform: uppercase;
 }
 
-.activity-card-reward em {
+.deed-card-reward em {
   max-width: 100%;
   color: #8f8370;
   font-family: "Courier New", ui-monospace, monospace;
@@ -217,21 +217,21 @@
   text-transform: uppercase;
 }
 
-.activity-info-extra {
+.deed-info-extra {
   display: grid;
   gap: 8px;
 }
 
-.activity-amount-picker {
+.deed-amount-picker {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) 34px;
   align-items: end;
   gap: 6px;
 }
 
-.activity-amount-picker button,
-.activity-preset-row button,
-.activity-info-log-button {
+.deed-amount-picker button,
+.deed-preset-row button,
+.deed-info-log-button {
   min-height: 34px;
   color: #fff2d3;
   border: 1px solid rgba(213, 184, 130, 0.24);
@@ -243,14 +243,14 @@
   text-transform: uppercase;
 }
 
-.activity-amount-picker label {
+.deed-amount-picker label {
   display: grid;
   gap: 3px;
 }
 
-.activity-amount-picker label span,
-.activity-reward-preview span,
-.activity-goal-list span {
+.deed-amount-picker label span,
+.deed-reward-preview span,
+.deed-goal-list span {
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.54rem;
@@ -260,7 +260,7 @@
   text-transform: uppercase;
 }
 
-.activity-amount-picker input {
+.deed-amount-picker input {
   min-width: 0;
   height: 34px;
   padding: 6px 8px;
@@ -272,23 +272,23 @@
   font-weight: 900;
 }
 
-.activity-preset-row {
+.deed-preset-row {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
 }
 
-.activity-preset-row button.is-active,
-.activity-preset-row button:hover,
-.activity-preset-row button:focus-visible,
-.activity-info-log-button:hover,
-.activity-info-log-button:focus-visible {
+.deed-preset-row button.is-active,
+.deed-preset-row button:hover,
+.deed-preset-row button:focus-visible,
+.deed-info-log-button:hover,
+.deed-info-log-button:focus-visible {
   color: #090605;
   border-color: #24f2ff;
   background: #24f2ff;
 }
 
-.activity-reward-preview {
+.deed-reward-preview {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -298,7 +298,7 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
-.activity-reward-preview strong {
+.deed-reward-preview strong {
   color: #24f2ff;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.74rem;
@@ -307,7 +307,7 @@
   text-transform: uppercase;
 }
 
-.activity-reward-preview small {
+.deed-reward-preview small {
   color: #f4cf5a;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.56rem;
@@ -315,26 +315,26 @@
   text-transform: uppercase;
 }
 
-.activity-goal-list {
+.deed-goal-list {
   display: grid;
   gap: 5px;
 }
 
-.activity-goal-list div {
+.deed-goal-list div {
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr);
   align-items: center;
   gap: 7px;
 }
 
-.activity-goal-list strong {
+.deed-goal-list strong {
   color: #fff2d3;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.58rem;
   font-weight: 900;
 }
 
-.activity-goal-list i {
+.deed-goal-list i {
   position: relative;
   grid-column: 1 / -1;
   display: block;
@@ -344,19 +344,19 @@
   background: rgba(0, 0, 0, 0.24);
 }
 
-.activity-goal-list i::before {
+.deed-goal-list i::before {
   position: absolute;
   inset: 0 auto 0 0;
-  width: var(--activity-goal-progress, 0%);
+  width: var(--deed-goal-progress, 0%);
   content: "";
   background: linear-gradient(90deg, #24f2ff, #f4cf5a);
 }
 
-.activity-info-log-button {
+.deed-info-log-button {
   min-height: 40px;
 }
 
-.activity-form {
+.deed-form {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
@@ -366,12 +366,12 @@
   box-shadow: inset 0 0 0 2px #080605;
 }
 
-.activity-form label {
+.deed-form label {
   display: grid;
   gap: 8px;
 }
 
-.activity-form span {
+.deed-form span {
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
   font-size: 0.68rem;
@@ -380,9 +380,9 @@
   text-transform: uppercase;
 }
 
-.activity-form input,
-.activity-form select,
-.activity-form textarea {
+.deed-form input,
+.deed-form select,
+.deed-form textarea {
   width: 100%;
   min-height: 48px;
   padding: 10px 12px;
@@ -393,24 +393,24 @@
   outline: 0;
 }
 
-.activity-form select {
+.deed-form select {
   appearance: none;
   cursor: pointer;
 }
 
-.activity-form textarea {
+.deed-form textarea {
   min-height: 116px;
   resize: vertical;
 }
 
-.activity-form input:focus,
-.activity-form select:focus,
-.activity-form textarea:focus {
+.deed-form input:focus,
+.deed-form select:focus,
+.deed-form textarea:focus {
   border-color: #24f2ff;
   box-shadow: 0 0 0 2px rgba(36, 242, 255, 0.12);
 }
 
-.activity-submit-button {
+.deed-submit-button {
   min-height: 52px;
   color: #090605;
   border: 0;
@@ -427,7 +427,7 @@
     0 8px 0 #070504;
 }
 
-.activity-log-table {
+.deed-log-table {
   display: grid;
   gap: 8px;
   padding: 8px;
@@ -436,7 +436,7 @@
   box-shadow: inset 0 0 0 2px #080605;
 }
 
-.activity-log-row {
+.deed-log-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: 4px;
@@ -446,37 +446,37 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
-.activity-log-row span {
+.deed-log-row span {
   color: #e9e0ce;
   font-size: 0.86rem;
   line-height: 1.25;
 }
 
-.activity-log-row span:first-child,
-.activity-log-row span:nth-child(4),
-.activity-log-row span:last-child {
+.deed-log-row span:first-child,
+.deed-log-row span:nth-child(4),
+.deed-log-row span:last-child {
   color: #24f2ff;
   font-family: "Courier New", ui-monospace, monospace;
   font-weight: 900;
 }
 
-.activity-log-head {
+.deed-log-head {
   display: none;
 }
 
-.activity-log-empty {
+.deed-log-empty {
   min-height: 120px;
   display: grid;
   place-items: center;
   color: #cfc2ae;
 }
 
-.activity-stats-shell {
+.deed-stats-shell {
   display: grid;
   gap: 10px;
 }
 
-.activity-stat-picker {
+.deed-stat-picker {
   display: flex;
   gap: 8px;
   overflow-x: auto;
@@ -486,18 +486,18 @@
   box-shadow: inset 0 0 0 2px #080605;
 }
 
-.activity-stat-picker button {
+.deed-stat-picker button {
   flex: 0 0 auto;
   padding: 0 12px;
 }
 
-.activity-stat-summary {
+.deed-stat-summary {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
 }
 
-.activity-stat-summary div {
+.deed-stat-summary div {
   min-height: 94px;
   padding: 12px;
   border: 2px solid #4f4438;
@@ -507,8 +507,8 @@
   box-shadow: inset 0 0 0 2px #080605;
 }
 
-.activity-stat-summary span,
-.activity-heatmap-head span {
+.deed-stat-summary span,
+.deed-heatmap-head span {
   display: block;
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
@@ -518,8 +518,8 @@
   text-transform: uppercase;
 }
 
-.activity-stat-summary strong,
-.activity-heatmap-head strong {
+.deed-stat-summary strong,
+.deed-heatmap-head strong {
   display: block;
   margin-top: 7px;
   color: #fff8e8;
@@ -532,8 +532,8 @@
   text-transform: uppercase;
 }
 
-.activity-stat-summary small,
-.activity-heatmap-head small {
+.deed-stat-summary small,
+.deed-heatmap-head small {
   display: block;
   margin-top: 7px;
   color: #24f2ff;
@@ -544,7 +544,7 @@
   text-transform: uppercase;
 }
 
-.activity-heatmap-panel {
+.deed-heatmap-panel {
   display: grid;
   gap: 12px;
   padding: 12px;
@@ -557,12 +557,12 @@
   box-shadow: inset 0 0 0 2px #080605;
 }
 
-.activity-heatmap-head {
+.deed-heatmap-head {
   display: grid;
   gap: 6px;
 }
 
-.activity-heatmap-grid {
+.deed-heatmap-grid {
   display: grid;
   grid-auto-flow: column;
   grid-template-rows: repeat(7, 12px);
@@ -598,7 +598,7 @@
   background: #24f2ff;
 }
 
-.activity-heatmap-legend {
+.deed-heatmap-legend {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -611,7 +611,7 @@
   text-transform: uppercase;
 }
 
-.activity-heatmap-legend .heatmap-cell {
+.deed-heatmap-legend .heatmap-cell {
   width: 10px;
   height: 10px;
 }
