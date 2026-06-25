@@ -79,9 +79,9 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Deeds ist als erstes RAP-Earning-Modul eingefuehrt.
 - Der Begriff `Activities` ist ab jetzt fuer spaetere Ingame-Activities reserviert, z. B. Dungeons, Skilling-Actions, Combat-/Slayer-Actions oder andere spielinterne Aktionen. Reale Tracking-Aktionen heissen intern und in der UI `Deeds`.
 - Deeds nutzt die Header-Action-Zone fuer `Sorts`, `Deed Log` und `Stats`.
-- Deeds folgt jetzt staerker dem Skills-/Unlocks-Blueprint: gemeinsame ContentPanel-Topbar, darunter ein scrollender Body mit Full-Width-Deed-Zeilen statt grossen Karten.
-- Deed-Zeilen zeigen links ein kompaktes Sigil/Icon, in der Mitte Name und Typ/Unit, rechts RAP-Ertrag und Standardmenge. Normaler Tap loggt die Aktivitaet, Long-Press oeffnet ein gemeinsames unteres Quicklook-Info-Panel.
-- Deed-Zeilen zeigen jetzt Deed-Mastery-Level, Logs und Daily-Fortschritt. Eine horizontale Fuellung zeigt den Fortschritt bis zum naechsten Deed-Level.
+- Deeds folgt jetzt staerker dem Skills-/Unlocks-Blueprint: gemeinsame ContentPanel-Topbar, darunter ein scrollender Body mit drei Goal-Strips fuer Dailies, Weeklies und Monthlies sowie einem kompakten 4-Spalten-Deed-Grid.
+- Deed-Kacheln zeigen Sigil/Icon, Name, Typ, Deed-Mastery-Level und eine kleine Fortschrittsleiste. Wenn ein Daily Goal existiert, zeigt diese Leiste den Daily-Fortschritt; bei 100 Prozent bekommt die Kachel einen goldenen Abschluss-Akzent. Ohne Daily Goal zeigt die Leiste den Deed-Level-Fortschritt.
+- Tap auf `Dailies`, `Weeklies` oder `Monthlies` filtert das Deed-Grid auf Deeds mit dem jeweiligen Goal. Die Strips zeigen Gesamtfortschritt und erledigte Goals als `X/Y`.
 - Deed-Long-Press oeffnet ein Amount-Panel mit Plus/Minus, Zahlenfeld, Presets und Log-Button, damit neben Quick-Tap auch flexible Mengen wie 500, 1000 oder 10000 Schritte sauber eingetragen werden koennen.
 - Aktivitaeten koennen RAP vergeben und schreiben einzelne Log-Eintraege fuer spaetere Metriken/Diagramme.
 - Deeds koennen optionale Daily-, Weekly- und Monthly-Goals besitzen. Diese Goals sind keine eigenen Deeds, sondern Bonusziele derselben Aktivitaet.
@@ -104,7 +104,7 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Quests sind aktuell Skill- und RAP-Checks: Die Voraussetzungen pruefen aktuelle Skill-Level; startbare Quests verbrauchen RAP ueber Zeit mit derselben 5000-RAP-pro-Stunde-Rate wie Skill-Unlocks.
 - Quest-Fortschritt laeuft live und offline weiter. Teilfortschritt bleibt gespeichert, wenn RAP ausgeht.
 - Der alte Pack-Shop, Pack-Kauf, Collection-Progress und Pull-Modals existieren im Code noch, sind aber aktuell nicht der sichtbare Hauptscreen.
-- Deeds nutzt ebenfalls mobile Listenkarten, damit Aktivitaeten direkt antippbar bleiben. Die Actions `Sorts`, `Deed Log` und `Stats` bleiben im gemeinsamen Header-System.
+- Deeds nutzt ein mobiles Kachelgrid, damit viele reale Tracking-Deeds schnell antippbar bleiben. Die Actions `Sorts`, `Deed Log` und `Stats` bleiben im gemeinsamen Header-System.
 
 ## Version Control und Hosting
 
@@ -291,7 +291,7 @@ Deed-Mastery:
 
 - Deed-Level werden aktuell aus dem bisher durch diese Aktivitaet verdienten RAP abgeleitet.
 - Die Levelkurve verwendet dieselbe RuneScape-artige XP-Kurve wie Skills.
-- Deed-Zeilen zeigen `Lv X` und einen Fortschrittsbalken bis zum naechsten Deed-Level.
+- Deed-Kacheln zeigen `Lv X`; die kleine Fortschrittsleiste zeigt primaer Daily-Progress, falls ein Daily Goal existiert, sonst Deed-Level-Fortschritt.
 
 Deed Goals:
 

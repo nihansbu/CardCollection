@@ -54,8 +54,8 @@
 .deed-board {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 5px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
   padding: 5px;
   border: 2px solid #4f4438;
   background:
@@ -68,20 +68,122 @@
   box-shadow: inset 0 0 0 2px #080605;
 }
 
+.deed-goal-strip-list {
+  display: grid;
+  gap: 4px;
+}
+
+.deed-goal-strip {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) 42px;
+  align-items: center;
+  min-height: 31px;
+  gap: 7px;
+  padding: 5px 7px;
+  color: #fff2d3;
+  border: 2px solid #332b23;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.035), transparent 34%),
+    #17130f;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.34),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-family: "Courier New", ui-monospace, monospace;
+  touch-action: manipulation;
+}
+
+.deed-goal-strip-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--deed-goal-strip-progress, 0%);
+  background:
+    linear-gradient(90deg, rgba(36, 242, 255, 0.18), rgba(244, 207, 90, 0.1)),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.04) 0 6px, transparent 6px 12px);
+  pointer-events: none;
+  transition: width 220ms ease;
+}
+
+.deed-goal-strip > *:not(.deed-goal-strip-fill) {
+  position: relative;
+  z-index: 1;
+}
+
+.deed-goal-strip-label {
+  color: #d4bd88;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.deed-goal-strip strong {
+  color: #24f2ff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  text-align: right;
+}
+
+.deed-goal-strip-segments {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(8px, 1fr);
+  gap: 3px;
+  min-width: 0;
+}
+
+.deed-goal-strip-segments i {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  height: 9px;
+  border: 1px solid rgba(213, 184, 130, 0.18);
+  background: rgba(0, 0, 0, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.22);
+}
+
+.deed-goal-strip-segments i::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--deed-segment-progress, 0%);
+  content: "";
+  background: var(--deed-color, #24f2ff);
+}
+
+.deed-goal-strip:hover,
+.deed-goal-strip:focus-visible,
+.deed-goal-strip.is-active {
+  border-color: #24f2ff;
+  box-shadow:
+    inset 0 0 0 2px rgba(36, 242, 255, 0.12),
+    0 0 0 1px rgba(36, 242, 255, 0.36);
+}
+
+.deed-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+
 .deed-card {
   position: relative;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr) minmax(92px, 0.88fr);
-  align-items: center;
+  grid-template-rows: 31px minmax(0, 1fr) 21px;
+  align-items: stretch;
   width: 100%;
-  min-height: 61px;
-  gap: 8px;
-  padding: 6px 8px;
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  gap: 2px;
+  padding: 5px;
   color: inherit;
   border: 2px solid #332b23;
   background:
-    radial-gradient(circle at 16% 50%, color-mix(in srgb, var(--deed-color, #d4bd88), transparent 72%), transparent 36%),
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--deed-color, #d4bd88), transparent 68%), transparent 54%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 30%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 42%),
     #1a1713;
@@ -103,11 +205,13 @@
 
 .deed-card-progress {
   position: absolute;
-  inset: 0;
+  inset: auto 4px 4px 4px;
   width: var(--deed-progress, 0%);
+  height: 5px;
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--deed-color, #24f2ff), transparent 72%), transparent),
-    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.035) 0 7px, transparent 7px 14px);
+    linear-gradient(90deg, #24f2ff, color-mix(in srgb, var(--deed-color, #24f2ff), white 12%)),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.2) 0 4px, transparent 4px 8px);
+  box-shadow: 0 0 7px rgba(36, 242, 255, 0.22);
   pointer-events: none;
   transition: width 240ms ease;
 }
@@ -132,10 +236,25 @@
   --deed-color: #24f2ff;
 }
 
+.deed-card.is-daily-complete {
+  border-color: #f4cf5a;
+  box-shadow:
+    inset 0 0 0 2px rgba(244, 207, 90, 0.16),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(244, 207, 90, 0.42);
+}
+
+.deed-card.is-daily-complete .deed-card-progress {
+  width: calc(100% - 8px);
+  background: linear-gradient(90deg, #f4cf5a, #fff2a8);
+  box-shadow: 0 0 10px rgba(244, 207, 90, 0.34);
+}
+
 .deed-sigil {
   display: grid;
-  width: 42px;
-  height: 42px;
+  justify-self: center;
+  width: 30px;
+  height: 30px;
   place-items: center;
   color: #090605;
   background:
@@ -146,58 +265,69 @@
     inset 4px 4px 0 rgba(255, 255, 255, 0.16),
     0 5px 0 #070504;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.76rem;
+  font-size: 0.58rem;
   font-weight: 900;
   transform: rotate(-4deg);
 }
 
 .deed-card-copy {
   display: grid;
+  align-content: center;
+  justify-items: center;
   min-width: 0;
-  gap: 5px;
+  gap: 2px;
+  text-align: center;
 }
 
 .deed-card-copy span {
   color: var(--deed-color, #d4bd88);
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 0.58rem;
+  font-size: 0.45rem;
   font-weight: 900;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.04em;
   line-height: 1.1;
   text-transform: uppercase;
 }
 
 .deed-card-copy strong {
+  overflow: hidden;
+  display: -webkit-box;
+  max-width: 100%;
   color: #fff2d3;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(0.76rem, 3.7vw, 0.9rem);
+  font-size: 0.52rem;
   font-weight: 900;
   letter-spacing: 0.02em;
-  line-height: 1.05;
+  line-height: 1;
   text-shadow: 2px 2px 0 #090605;
   text-transform: uppercase;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .deed-card-reward {
   display: grid;
-  justify-items: end;
+  grid-template-columns: 1fr;
+  align-content: end;
+  justify-items: center;
   min-width: 0;
-  gap: 2px;
+  gap: 1px;
 }
 
 .deed-card-reward strong {
   color: #24f2ff;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(0.72rem, 3.2vw, 0.88rem);
+  font-size: 0.56rem;
   font-weight: 900;
   line-height: 1;
   text-transform: uppercase;
 }
 
 .deed-card-reward small {
+  display: none;
   color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(0.54rem, 2.75vw, 0.68rem);
+  font-size: 0.48rem;
   font-weight: 900;
   letter-spacing: 0.03em;
   line-height: 1.15;
@@ -207,13 +337,13 @@
 
 .deed-card-reward em {
   max-width: 100%;
-  color: #8f8370;
+  color: #d4bd88;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: clamp(0.48rem, 2.2vw, 0.56rem);
+  font-size: 0.43rem;
   font-style: normal;
   font-weight: 900;
   line-height: 1.05;
-  text-align: right;
+  text-align: center;
   text-transform: uppercase;
 }
 

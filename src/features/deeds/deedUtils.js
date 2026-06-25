@@ -186,6 +186,33 @@ export function getDeedGoalProgress(deed, deedLog, period, date = new Date()) {
   };
 }
 
+export function getDeedGoalPercent(deed, deedLog, period, date = new Date()) {
+  const goal = getDeedGoalProgress(deed, deedLog, period, date);
+
+  if (!goal.target) return null;
+
+  return Math.max(0, Math.min(100, (goal.progress / goal.target) * 100));
+}
+
+export function getDeedGoalSummary(deeds, deedLog, period, date = new Date()) {
+  const goals = deeds
+    .map((deed) => ({
+      deed,
+      goal: getDeedGoalProgress(deed, deedLog, period, date),
+    }))
+    .filter((entry) => entry.goal.target > 0);
+  const completed = goals.filter((entry) => entry.goal.progress >= entry.goal.target).length;
+  const totalProgress = goals.reduce((sum, entry) => sum + Math.min(1, entry.goal.progress / Math.max(1, entry.goal.target)), 0);
+
+  return {
+    completed,
+    goals,
+    period,
+    progress: goals.length ? (totalProgress / goals.length) * 100 : 0,
+    total: goals.length,
+  };
+}
+
 export function getDeedTotals(deed, deedLog) {
   const entries = getDeedEntries(deedLog, deed.id);
 

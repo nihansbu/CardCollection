@@ -130,6 +130,8 @@ try {
   await page.locator('.bottom-nav-item[aria-label="Deeds"]').click();
   await page.getByRole("heading", { name: /^Deeds$/i }).waitFor({ timeout: 5000 });
   const deedRows = await page.locator(".deed-card").count();
+  const deedGoalStripCount = await page.locator(".deed-goal-strip").count();
+  const deedGridColumns = await page.locator(".deed-grid").evaluate((node) => window.getComputedStyle(node).gridTemplateColumns.split(" ").length);
   const stepsDeed = page.getByRole("button", { name: /Steps/i });
   await stepsDeed.waitFor({ timeout: 5000 });
   const stepsText = await stepsDeed.innerText();
@@ -300,6 +302,8 @@ try {
     accountStatsText,
     deedLogAfterTap,
     deedHeaderMetrics,
+    deedGoalStripCount,
+    deedGridColumns,
     deedQuicklookText,
     deedRewardPreviewText,
     deedRows,
@@ -367,6 +371,8 @@ try {
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
     deedRows >= 7 &&
+    deedGoalStripCount === 3 &&
+    deedGridColumns === 4 &&
     stepsText.toUpperCase().includes("STEPS") &&
     stepsText.toUpperCase().includes("LV") &&
     deedQuicklookText.toUpperCase().includes("WALKING") &&

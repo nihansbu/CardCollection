@@ -17,7 +17,9 @@ import {
   formatInteger,
   formatRap,
   getDeedDashboardSummary,
+  getDeedGoalPercent,
   getDeedGoalProgress,
+  getDeedGoalSummary,
   getDeedMastery,
   getDeedPresets,
   getDeedStats,
@@ -28,6 +30,11 @@ import {
 } from "./deedUtils.js";
 
 const LONG_PRESS_MS = 520;
+const GOAL_PERIODS = [
+  { label: "Dailies", period: "daily" },
+  { label: "Weeklies", period: "weekly" },
+  { label: "Monthlies", period: "monthly" },
+];
 
 function DeedInfoPanel({ deed, deedLog, onClose, onLogDeed }) {
   const [quantity, setQuantity] = useState(deed?.defaultQuantity || 1);
@@ -116,6 +123,32 @@ function DeedInfoPanel({ deed, deedLog, onClose, onLogDeed }) {
   );
 }
 
+function DeedGoalStrip({ isActive, label, onClick, summary }) {
+  return (
+    <button
+      aria-pressed={isActive}
+      className={isActive ? "deed-goal-strip is-active" : "deed-goal-strip"}
+      onClick={onClick}
+      type="button"
+    >
+      <span className="deed-goal-strip-fill" style={{ "--deed-goal-strip-progress": `${summary.progress}%` }} aria-hidden="true" />
+      <span className="deed-goal-strip-label">{label}</span>
+      <span className="deed-goal-strip-segments" aria-hidden="true">
+        {summary.goals.map(({ deed, goal }) => (
+          <i
+            key={deed.id}
+            style={{
+              "--deed-color": deed.color,
+              "--deed-segment-progress": `${Math.min(100, (goal.progress / Math.max(1, goal.target)) * 100)}%`,
+            }}
+          />
+        ))}
+      </span>
+      <strong>{summary.completed}/{summary.total}</strong>
+    </button>
+  );
+}
+
 function DeedCard({ deed, deedLog, onComplete, onPreview }) {
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
@@ -123,6 +156,14 @@ function DeedCard({ deed, deedLog, onComplete, onPreview }) {
   const mastery = getDeedMastery(deed, deedLog);
   const totals = getDeedTotals(deed, deedLog);
   const dailyGoal = getDeedGoalProgress(deed, deedLog, "daily");
+  const dailyPercent = getDeedGoalPercent(deed, deedLog, "daily");
+  const cardProgress = dailyPercent ?? mastery.progress;
+  const isDailyDone = dailyGoal.target > 0 && dailyGoal.progress >= dailyGoal.target;
+  const cardClassName = [
+    "deed-card",
+    isDailyDone ? "is-daily-complete" : "",
+    dailyGoal.target > 0 ? "has-daily-goal" : "has-mastery-progress",
+  ].filter(Boolean).join(" ");
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -151,7 +192,7 @@ function DeedCard({ deed, deedLog, onComplete, onPreview }) {
 
   return (
     <button
-      className="deed-card"
+      className={cardClassName}
       onClick={handleClick}
       onContextMenu={(event) => event.preventDefault()}
       onPointerCancel={clearLongPress}
@@ -162,20 +203,20 @@ function DeedCard({ deed, deedLog, onComplete, onPreview }) {
       type="button"
       aria-label={`${deed.title}. ${getDeedType(deed)}. ${deed.defaultQuantity} ${deed.unit}. Rewards ${formatRap(reward.rapEarned)} RAP. Long press for details.`}
     >
-      <span className="deed-card-progress" style={{ "--deed-progress": `${mastery.progress}%` }} aria-hidden="true" />
+      <span className="deed-card-progress" style={{ "--deed-progress": `${cardProgress}%` }} aria-hidden="true" />
       <div className="deed-sigil" aria-hidden="true">
         {deed.title.slice(0, 2).toUpperCase()}
       </div>
       <div className="deed-card-copy">
         <strong>{deed.title}</strong>
-        <span>{getDeedType(deed)} - {formatDeedQuantity(deed.defaultQuantity, deed.unit)}</span>
+        <span>{getDeedType(deed)}</span>
       </div>
       <div className="deed-card-reward" aria-hidden="true">
         <strong>Lv {mastery.level}</strong>
         <small>
           +{formatRap(reward.rapEarned)} RAP
         </small>
-        <em>{totals.logs} logs{dailyGoal.target > 0 ? ` - ${Math.floor((dailyGoal.progress / dailyGoal.target) * 100)}% daily` : ""}</em>
+        <em>{dailyGoal.target > 0 ? `${Math.floor((dailyGoal.progress / dailyGoal.target) * 100)}% daily` : `${totals.logs} logs`}</em>
       </div>
     </button>
   );
@@ -185,10 +226,18 @@ export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpe
   const [sortKey, setSortKey] = useState("default");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [previewDeedId, setPreviewDeedId] = useState(null);
+  const [goalFilter, setGoalFilter] = useState(null);
   const sortedDeeds = getSortedDeeds(deeds, sortKey);
   const activeSortLabel = deedSortOptions.find((option) => option.value === sortKey)?.label || "Default";
   const previewDeed = previewDeedId ? deeds.find((deed) => deed.id === previewDeedId) : null;
   const summary = getDeedDashboardSummary(deeds, deedLog);
+  const goalSummaries = GOAL_PERIODS.map((entry) => ({
+    ...entry,
+    summary: getDeedGoalSummary(deeds, deedLog, entry.period),
+  }));
+  const visibleDeeds = goalFilter
+    ? sortedDeeds.filter((deed) => getDeedGoalProgress(deed, deedLog, goalFilter).target > 0)
+    : sortedDeeds;
 
   return (
     <ContentPanel
@@ -232,26 +281,45 @@ export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpe
       title="Deeds"
     >
       <div className="deed-board" onPointerDown={() => setPreviewDeedId(null)}>
-        <button className="deed-card deed-system-card" onClick={onOpenCreate} type="button">
-          <div className="deed-sigil" aria-hidden="true">+</div>
-          <div className="deed-card-copy">
-            <strong>Create Deed</strong>
-            <span>Custom - Setup</span>
-          </div>
-          <div className="deed-card-reward" aria-hidden="true">
-            <small>Define unit, quantity, and RAP</small>
-          </div>
-        </button>
+        <div className="deed-goal-strip-list" aria-label="Deed goal progress">
+          {goalSummaries.map(({ label, period, summary: goalSummary }) => (
+            <DeedGoalStrip
+              isActive={goalFilter === period}
+              key={period}
+              label={label}
+              onClick={(event) => {
+                event.stopPropagation();
+                setGoalFilter((current) => current === period ? null : period);
+              }}
+              summary={goalSummary}
+            />
+          ))}
+        </div>
 
-        {sortedDeeds.map((deed) => (
-          <DeedCard
-            deed={deed}
-            deedLog={deedLog}
-            key={deed.id}
-            onComplete={onCompleteDeed}
-            onPreview={(previewDeedEntry) => setPreviewDeedId(previewDeedEntry.id)}
-          />
-        ))}
+        <div className="deed-grid">
+          {!goalFilter ? (
+            <button className="deed-card deed-system-card" onClick={onOpenCreate} type="button">
+              <div className="deed-sigil" aria-hidden="true">+</div>
+              <div className="deed-card-copy">
+                <strong>Create</strong>
+                <span>Custom</span>
+              </div>
+              <div className="deed-card-reward" aria-hidden="true">
+                <small>New</small>
+              </div>
+            </button>
+          ) : null}
+
+          {visibleDeeds.map((deed) => (
+            <DeedCard
+              deed={deed}
+              deedLog={deedLog}
+              key={deed.id}
+              onComplete={onCompleteDeed}
+              onPreview={(previewDeedEntry) => setPreviewDeedId(previewDeedEntry.id)}
+            />
+          ))}
+        </div>
       </div>
     </ContentPanel>
   );
