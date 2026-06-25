@@ -81,7 +81,8 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Deeds nutzt die Header-Action-Zone fuer `Sorts`, `Deed Log` und `Stats`.
 - Deeds folgt jetzt staerker dem Skills-/Unlocks-Blueprint: gemeinsame ContentPanel-Topbar, darunter ein scrollender Body mit drei einfachen Goal-Strips fuer Dailies, Weeklies und Monthlies sowie einem kompakten 4-Spalten-Deed-Grid.
 - `Dailies` ist die Standardansicht. Tap auf `Dailies`, `Weeklies` oder `Monthlies` setzt genau diese aktive Goal-Ansicht; erneutes Antippen derselben Ansicht toggelt sie nicht aus.
-- Deed-Kacheln zeigen Sigil/Icon, Name, Typ, Deed-Mastery-Level und eine kleine Fortschrittsleiste. Diese Leiste zeigt immer den Fortschritt der aktuell aktiven Goal-Ansicht, also Daily, Weekly oder Monthly. Bei 100 Prozent bekommt die Kachel einen goldenen Abschluss-Akzent.
+- Deed-Kacheln zeigen Sigil/Icon, Name, Typ, Deed-Mastery-Level und eine kleine Fortschrittsleiste. Diese Leiste zeigt immer den Fortschritt der aktuell aktiven Goal-Ansicht, also Daily, Weekly oder Monthly. Auf der Leiste steht nur die zentrierte Prozentzahl, z. B. `100%`, ohne Perioden-Text. Bei 100 Prozent bekommt die Kachel einen goldenen Abschluss-Akzent.
+- Der linierte Deeds-Board-Hintergrund soll die komplette scrollbare Content-Body-Flaeche fuellen, auch wenn nur wenige Deeds sichtbar sind. Die Deed-Kacheln bleiben dabei topbuendig.
 - Die Goal-Strips zeigen nur Gesamtfortschritt und erledigte Goals als `X/Y`. Einzelne kleine Segment-Bars pro Deed werden bewusst nicht verwendet, weil sie bei vielen Deeds unlesbar werden.
 - Deed-Long-Press oeffnet ein Amount-Panel mit Plus/Minus, Zahlenfeld, Presets und Log-Button, damit neben Quick-Tap auch flexible Mengen wie 500, 1000 oder 10000 Schritte sauber eingetragen werden koennen.
 - Aktivitaeten koennen RAP vergeben und schreiben einzelne Log-Eintraege fuer spaetere Metriken/Diagramme.

@@ -146,10 +146,12 @@ function DeedCard({ activeGoalPeriod, deed, deedLog, onComplete, onPreview }) {
   const suppressClick = useRef(false);
   const reward = calculateDeedReward(deed, deedLog, deed.defaultQuantity);
   const mastery = getDeedMastery(deed, deedLog);
-  const totals = getDeedTotals(deed, deedLog);
   const activeGoal = getDeedGoalProgress(deed, deedLog, activeGoalPeriod);
   const activeGoalPercent = getDeedGoalPercent(deed, deedLog, activeGoalPeriod);
   const cardProgress = activeGoalPercent ?? mastery.progress;
+  const cardProgressLabel = activeGoal.target > 0
+    ? `${Math.floor((activeGoal.progress / activeGoal.target) * 100)}%`
+    : `${Math.floor(mastery.progress)}%`;
   const isGoalDone = activeGoal.target > 0 && activeGoal.progress >= activeGoal.target;
   const cardClassName = [
     "deed-card",
@@ -208,7 +210,7 @@ function DeedCard({ activeGoalPeriod, deed, deedLog, onComplete, onPreview }) {
         <small>
           +{formatRap(reward.rapEarned)} RAP
         </small>
-        <em>{activeGoal.target > 0 ? `${Math.floor((activeGoal.progress / activeGoal.target) * 100)}% ${activeGoalPeriod}` : `${totals.logs} logs`}</em>
+        <em>{cardProgressLabel}</em>
       </div>
     </button>
   );

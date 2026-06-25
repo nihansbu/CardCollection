@@ -385,6 +385,10 @@ try {
     activeDeedGoalAfterRepeatTap.toUpperCase().includes("DAILIES") &&
     stepsText.toUpperCase().includes("STEPS") &&
     stepsText.toUpperCase().includes("LV") &&
+    stepsText.includes("%") &&
+    !stepsText.toUpperCase().includes("DAILY") &&
+    !stepsText.toUpperCase().includes("WEEKLY") &&
+    !stepsText.toUpperCase().includes("MONTHLY") &&
     deedQuicklookText.toUpperCase().includes("WALKING") &&
     deedQuicklookText.toUpperCase().includes("REWARD") &&
     deedRewardPreviewText.toUpperCase().includes("RAP") &&
