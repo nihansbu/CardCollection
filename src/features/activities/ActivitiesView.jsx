@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { ArrowUpDown, BarChart3, ScrollText } from "lucide-react";
 import { ContentPanel } from "../../components/ContentPanel.jsx";
 import { InfoPanel } from "../../components/InfoPanel.jsx";
+import { uiIcons } from "../../components/UiIcon.jsx";
 import {
   ACTIVITY_HEATMAP_DAYS,
   ACTIVITY_LOG_LIMIT,
@@ -8,10 +10,18 @@ import {
   activityTypes,
 } from "./activityData.js";
 import {
+  calculateActivityReward,
+  clampActivityQuantity,
+  formatActivityQuantity,
   formatDayKey,
+  formatInteger,
   formatRap,
-  getActivityReward,
+  getActivityDashboardSummary,
+  getActivityGoalProgress,
+  getActivityMastery,
+  getActivityPresets,
   getActivityStats,
+  getActivityTotals,
   getActivityType,
   getGroupedActivityLog,
   getSortedActivities,
@@ -19,10 +29,30 @@ import {
 
 const LONG_PRESS_MS = 520;
 
-function ActivityInfoPanel({ activity, onClose }) {
+function ActivityInfoPanel({ activity, activityLog, onClose, onLogActivity }) {
+  const [quantity, setQuantity] = useState(activity?.defaultQuantity || 1);
+
+  useEffect(() => {
+    setQuantity(activity?.defaultQuantity || 1);
+  }, [activity?.defaultQuantity, activity?.id]);
+
   if (!activity) return null;
 
-  const reward = getActivityReward(activity);
+  const clampedQuantity = clampActivityQuantity(activity, quantity);
+  const reward = calculateActivityReward(activity, activityLog, clampedQuantity);
+  const mastery = getActivityMastery(activity, activityLog);
+  const totals = getActivityTotals(activity, activityLog);
+  const presets = getActivityPresets(activity);
+  const goals = ["daily", "weekly", "monthly"]
+    .map((period) => getActivityGoalProgress(activity, activityLog, period))
+    .filter((goal) => goal.target > 0);
+  const updateQuantity = (nextQuantity) => {
+    setQuantity(clampActivityQuantity(activity, nextQuantity));
+  };
+  const logQuantity = () => {
+    onLogActivity(activity, clampedQuantity);
+    onClose();
+  };
 
   return (
     <InfoPanel
@@ -31,21 +61,68 @@ function ActivityInfoPanel({ activity, onClose }) {
       className="content-info-panel--activity"
       description={activity.description}
       metrics={[
-        { label: "Unit", value: activity.unit },
-        { label: "Quantity", value: activity.defaultQuantity },
-        { label: "Reward", value: `+${formatRap(reward)} RAP` },
+        { label: "Level", value: mastery.level },
+        { label: "Total Logs", value: totals.logs },
+        { label: "Reward", value: `+${formatRap(reward.rapEarned)}` },
       ]}
       onClose={onClose}
       subtitle={`${getActivityType(activity)} Activity`}
       title={activity.title}
-    />
+    >
+      <div className="activity-info-extra">
+        <div className="activity-amount-picker" aria-label={`${activity.title} amount picker`}>
+          <button onClick={() => updateQuantity(clampedQuantity - activity.defaultQuantity)} type="button">-</button>
+          <label>
+            <span>Amount</span>
+            <input
+              inputMode="numeric"
+              min="1"
+              onChange={(event) => updateQuantity(event.target.value)}
+              type="number"
+              value={clampedQuantity}
+            />
+          </label>
+          <button onClick={() => updateQuantity(clampedQuantity + activity.defaultQuantity)} type="button">+</button>
+        </div>
+        <div className="activity-preset-row">
+          {presets.map((preset) => (
+            <button className={preset === clampedQuantity ? "is-active" : ""} key={preset} onClick={() => updateQuantity(preset)} type="button">
+              {formatInteger(preset)}
+            </button>
+          ))}
+        </div>
+        <button className="activity-info-log-button" onClick={logQuantity} type="button">
+          Log Activity
+        </button>
+        <div className="activity-reward-preview">
+          <span>{formatActivityQuantity(clampedQuantity, activity.unit)}</span>
+          <strong>+{formatRap(reward.rapEarned)} RAP</strong>
+          {reward.goalBonusRap > 0 ? <small>Bonus +{formatRap(reward.goalBonusRap)}</small> : null}
+          {reward.isSoftCapped ? <small>Softcap active</small> : null}
+        </div>
+        {goals.length ? (
+          <div className="activity-goal-list">
+            {goals.map((goal) => (
+              <div key={goal.period}>
+                <span>{goal.period}</span>
+                <strong>{formatInteger(goal.progress)} / {formatInteger(goal.target)}</strong>
+                <i style={{ "--activity-goal-progress": `${Math.min(100, (goal.progress / goal.target) * 100)}%` }} />
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </InfoPanel>
   );
 }
 
-function ActivityCard({ activity, onComplete, onPreview }) {
+function ActivityCard({ activity, activityLog, onComplete, onPreview }) {
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
-  const reward = getActivityReward(activity);
+  const reward = calculateActivityReward(activity, activityLog, activity.defaultQuantity);
+  const mastery = getActivityMastery(activity, activityLog);
+  const totals = getActivityTotals(activity, activityLog);
+  const dailyGoal = getActivityGoalProgress(activity, activityLog, "daily");
 
   const clearLongPress = () => {
     window.clearTimeout(longPressTimer.current);
@@ -67,7 +144,7 @@ function ActivityCard({ activity, onComplete, onPreview }) {
       return;
     }
 
-    onComplete(activity);
+    onComplete(activity, activity.defaultQuantity);
   };
 
   useEffect(() => () => window.clearTimeout(longPressTimer.current), []);
@@ -83,19 +160,22 @@ function ActivityCard({ activity, onComplete, onPreview }) {
       onPointerUp={clearLongPress}
       style={{ "--activity-color": activity.color }}
       type="button"
-      aria-label={`${activity.title}. ${getActivityType(activity)}. ${activity.defaultQuantity} ${activity.unit}. Rewards ${formatRap(reward)} RAP. Long press for details.`}
+      aria-label={`${activity.title}. ${getActivityType(activity)}. ${activity.defaultQuantity} ${activity.unit}. Rewards ${formatRap(reward.rapEarned)} RAP. Long press for details.`}
     >
+      <span className="activity-card-progress" style={{ "--activity-progress": `${mastery.progress}%` }} aria-hidden="true" />
       <div className="activity-sigil" aria-hidden="true">
         {activity.title.slice(0, 2).toUpperCase()}
       </div>
       <div className="activity-card-copy">
         <strong>{activity.title}</strong>
-        <span>{getActivityType(activity)} - {activity.unit}</span>
+        <span>{getActivityType(activity)} - {formatActivityQuantity(activity.defaultQuantity, activity.unit)}</span>
       </div>
       <div className="activity-card-reward" aria-hidden="true">
+        <strong>Lv {mastery.level}</strong>
         <small>
-          +{formatRap(reward)} RAP / {activity.defaultQuantity} {activity.unit}
+          +{formatRap(reward.rapEarned)} RAP
         </small>
+        <em>{totals.logs} logs{dailyGoal.target > 0 ? ` - ${Math.floor((dailyGoal.progress / dailyGoal.target) * 100)}% daily` : ""}</em>
       </div>
     </button>
   );
@@ -108,13 +188,16 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
   const sortedActivities = getSortedActivities(activities, sortKey);
   const activeSortLabel = activitySortOptions.find((option) => option.value === sortKey)?.label || "Default";
   const previewActivity = previewActivityId ? activities.find((activity) => activity.id === previewActivityId) : null;
+  const summary = getActivityDashboardSummary(activities, activityLog);
 
   return (
     <ContentPanel
       actions={[
         {
+          Icon: ArrowUpDown,
           expanded: isSortOpen,
           label: "Sorts",
+          shortLabel: "Sort",
           onClick: () => setIsSortOpen((isOpen) => !isOpen),
           panel: isSortOpen ? (
             <div className="activity-sort-menu" role="menu">
@@ -135,15 +218,16 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
             </div>
           ) : null,
         },
-        { label: "Activity Log", shortLabel: "Log", onClick: onOpenLog },
-        { label: "Stats", onClick: onOpenStats },
+        { Icon: ScrollText, label: "Activity Log", shortLabel: "Log", onClick: onOpenLog },
+        { Icon: BarChart3, label: "Stats", onClick: onOpenStats },
       ]}
       className="activities-panel"
-      infoPanel={<ActivityInfoPanel activity={previewActivity} onClose={() => setPreviewActivityId(null)} />}
+      infoPanel={<ActivityInfoPanel activity={previewActivity} activityLog={activityLog} onClose={() => setPreviewActivityId(null)} onLogActivity={onCompleteActivity} />}
       stats={[
-        { label: "RAP Balance", value: formatRap(rap) },
-        { label: "Activities", value: activities.length },
-        { label: "Logged", value: activityLog.length },
+        { Icon: uiIcons.rap, iconOnly: true, label: "RAP Balance", value: formatRap(rap) },
+        { Icon: uiIcons.currentXp, iconOnly: true, label: "Today RAP", value: formatRap(summary.todayRap) },
+        { Icon: uiIcons.activities, iconOnly: true, label: "Logged Today", value: summary.loggedToday },
+        { Icon: uiIcons.stats, iconOnly: true, label: "Longest Streak", value: summary.longestStreak },
       ]}
       title="Activities"
     >
@@ -162,6 +246,7 @@ export function ActivitiesPanel({ activities, activityLog, onCompleteActivity, o
         {sortedActivities.map((activity) => (
           <ActivityCard
             activity={activity}
+            activityLog={activityLog}
             key={activity.id}
             onComplete={onCompleteActivity}
             onPreview={(previewActivityEntry) => setPreviewActivityId(previewActivityEntry.id)}

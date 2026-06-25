@@ -130,13 +130,18 @@ try {
   await page.locator('.bottom-nav-item[aria-label="Activities"]').click();
   await page.getByRole("heading", { name: /^Activities$/i }).waitFor({ timeout: 5000 });
   const activityRows = await page.locator(".activity-card").count();
+  const stepsActivity = page.getByRole("button", { name: /Steps/i });
+  await stepsActivity.waitFor({ timeout: 5000 });
+  const stepsText = await stepsActivity.innerText();
   const walkingActivity = page.getByRole("button", { name: /Walking/i });
   await walkingActivity.dispatchEvent("pointerdown");
   await page.waitForTimeout(620);
   await walkingActivity.dispatchEvent("pointerup");
   await page.locator(".content-info-panel", { hasText: /Walking/i }).waitFor({ timeout: 5000 });
   const activityQuicklookText = await page.locator(".content-info-panel").innerText();
-  await page.locator(".content-info-panel button").click();
+  await page.locator(".activity-preset-row button").last().click();
+  const activityRewardPreviewText = await page.locator(".activity-reward-preview").innerText();
+  await page.getByLabel("Close info panel").click();
   const rapBeforeActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
   await page.getByRole("button", { name: /Running/i }).click();
   const rapAfterActivityTap = Number(await page.evaluate(() => localStorage.getItem("codex-collector-v1-rap")));
@@ -166,7 +171,7 @@ try {
   await firstStepsQuest.dispatchEvent("pointerup");
   await page.locator(".content-info-panel", { hasText: /First Steps/i }).waitFor({ timeout: 5000 });
   const questQuicklookText = await page.locator(".content-info-panel").innerText();
-  await page.locator(".content-info-panel button").click();
+  await page.getByLabel("Close info panel").click();
   await page.locator(".content-action-button", { hasText: "Sort" }).click();
   await page.locator(".quest-sort-menu").waitFor({ timeout: 5000 });
   const questSortOptions = await page.locator(".quest-sort-menu button").allTextContents();
@@ -296,7 +301,9 @@ try {
     activityLogAfterTap,
     activityHeaderMetrics,
     activityQuicklookText,
+    activityRewardPreviewText,
     activityRows,
+    stepsText,
     bottomNavLabels,
     cooksAssistantClassAfter,
     cooksAssistantClassBefore,
@@ -359,12 +366,16 @@ try {
     trainingCards === 1 &&
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
-    activityRows >= 6 &&
+    activityRows >= 7 &&
+    stepsText.toUpperCase().includes("STEPS") &&
+    stepsText.toUpperCase().includes("LV") &&
     activityQuicklookText.toUpperCase().includes("WALKING") &&
     activityQuicklookText.toUpperCase().includes("REWARD") &&
+    activityRewardPreviewText.toUpperCase().includes("RAP") &&
     rapAfterActivityTap > rapBeforeActivityTap &&
     Array.isArray(activityLogAfterTap) &&
     activityLogAfterTap[0]?.title === "Running" &&
+    Number(activityLogAfterTap[0]?.goalBonusRap) > 0 &&
     activityHeaderMetrics.header.height === skillsHeaderMetrics.header.height &&
     activityHeaderMetrics.title.width === skillsHeaderMetrics.title.width &&
     activityHeaderMetrics.actions.width === skillsHeaderMetrics.actions.width &&

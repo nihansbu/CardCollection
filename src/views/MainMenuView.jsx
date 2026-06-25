@@ -8,7 +8,8 @@ import {
 import { AccountPanel } from "../features/account/AccountPanel.jsx";
 import { activityStorageKeys, defaultActivities } from "../features/activities/activityData.js";
 import {
-  getActivityReward,
+  calculateActivityReward,
+  clampActivityQuantity,
   getActivityType,
   normalizeActivities,
 } from "../features/activities/activityUtils.js";
@@ -90,6 +91,7 @@ export function MainMenuView({ activeView, onAccountChange }) {
   const trainingSlotsRef = useRef(trainingSlots);
   const unlocksRef = useRef(unlocks);
   const questsRef = useRef(quests);
+  const activityLogRef = useRef(activityLog);
   const manualTrainingSlotSelectionRef = useRef(false);
 
   useEffect(() => {
@@ -111,6 +113,10 @@ export function MainMenuView({ activeView, onAccountChange }) {
   useEffect(() => {
     questsRef.current = quests;
   }, [quests]);
+
+  useEffect(() => {
+    activityLogRef.current = activityLog;
+  }, [activityLog]);
 
   useEffect(() => {
     if (activeView !== "skills") {
@@ -183,14 +189,22 @@ export function MainMenuView({ activeView, onAccountChange }) {
     setActivityMode("list");
   };
 
-  const completeActivity = (activity) => {
-    const rapEarned = getActivityReward(activity);
+  const completeActivity = (activity, requestedQuantity = activity.defaultQuantity) => {
+    const now = new Date();
+    const quantity = clampActivityQuantity(activity, requestedQuantity);
+    const reward = calculateActivityReward(activity, activityLogRef.current, quantity, now);
+    const rapEarned = reward.rapEarned;
     const entry = {
       activityId: activity.id,
       id: `log-${Date.now()}`,
-      quantity: activity.defaultQuantity,
+      baseRapEarned: Math.floor(reward.baseRap),
+      goalBonusRap: Math.floor(reward.goalBonusRap),
+      goalBreakdown: reward.goalBreakdown,
+      isSoftCapped: reward.isSoftCapped,
+      quantity,
       rapEarned,
-      timestamp: new Date().toISOString(),
+      softCappedQuantity: reward.quantityAfterSoftCap,
+      timestamp: now.toISOString(),
       title: activity.title,
       type: getActivityType(activity),
       unit: activity.unit,
@@ -206,6 +220,7 @@ export function MainMenuView({ activeView, onAccountChange }) {
 
     setActivityLog((currentLog) => {
       const nextLog = [entry, ...currentLog].slice(0, 250);
+      activityLogRef.current = nextLog;
       writeJson(activityStorageKeys.activityLog, nextLog);
       return nextLog;
     });

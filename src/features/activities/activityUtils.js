@@ -4,7 +4,13 @@ import {
   DAY_MS,
   defaultActivities,
 } from "./activityData.js";
+import { getSkillLevelForXp, getSkillXpForLevel } from "../skills/skillData.js";
 export { readJson, writeJson } from "../../storage/jsonStorage.js";
+
+const DEFAULT_ACTIVITY_GOAL_BONUS_RATE = 0.3;
+const DEFAULT_ACTIVITY_SOFT_CAP_BASE_RATE = 0.5;
+const DEFAULT_ACTIVITY_SOFT_CAP_GOAL_RATE = 0.33;
+const DEFAULT_MAX_QUANTITY_PER_LOG = 10000;
 
 export function formatRap(value) {
   const number = Math.floor(Number(value) || 0);
@@ -32,17 +38,35 @@ export function getActivityReward(activity) {
   return Number(activity.defaultQuantity) * Number(activity.rapPerUnit);
 }
 
+export function formatActivityQuantity(value, unit) {
+  return `${formatInteger(value)} ${unit || "units"}`;
+}
+
 export function normalizeActivity(activity) {
   const defaultMatch = defaultActivities.find((defaultActivity) => defaultActivity.id === activity.id);
 
   return {
     ...activity,
+    goals: Array.isArray(activity.goals) ? activity.goals : defaultMatch?.goals || [],
+    maxQuantityPerLog: Number(activity.maxQuantityPerLog) || defaultMatch?.maxQuantityPerLog || DEFAULT_MAX_QUANTITY_PER_LOG,
+    presetQuantities: Array.isArray(activity.presetQuantities) && activity.presetQuantities.length
+      ? activity.presetQuantities
+      : defaultMatch?.presetQuantities || [activity.defaultQuantity || 1],
+    softCapBaseRate: Number(activity.softCapBaseRate) || defaultMatch?.softCapBaseRate || DEFAULT_ACTIVITY_SOFT_CAP_BASE_RATE,
+    softCapDailyQuantity: Number(activity.softCapDailyQuantity) || defaultMatch?.softCapDailyQuantity || null,
+    softCapGoalBonusRate: Number(activity.softCapGoalBonusRate) || defaultMatch?.softCapGoalBonusRate || DEFAULT_ACTIVITY_SOFT_CAP_GOAL_RATE,
     type: activity.type || defaultMatch?.type || "General",
   };
 }
 
 export function normalizeActivities(activities) {
-  return activities.map(normalizeActivity);
+  const normalizedActivities = activities.map(normalizeActivity);
+  const existingIds = new Set(normalizedActivities.map((activity) => activity.id));
+  const missingDefaults = defaultActivities
+    .filter((activity) => !existingIds.has(activity.id))
+    .map(normalizeActivity);
+
+  return [...normalizedActivities, ...missingDefaults];
 }
 
 export function getActivityType(activity) {
@@ -86,6 +110,171 @@ export function getDayKey(date) {
 
 export function formatDayKey(dayKey) {
   return new Date(`${dayKey}T12:00:00`).toLocaleDateString("de-DE");
+}
+
+export function getPeriodRange(period, date = new Date()) {
+  const start = startOfLocalDay(date);
+  const end = new Date(start);
+
+  if (period === "weekly") {
+    const dayOffset = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - dayOffset);
+    end.setDate(start.getDate() + 7);
+    return { end, start };
+  }
+
+  if (period === "monthly") {
+    start.setDate(1);
+    end.setMonth(start.getMonth() + 1, 1);
+    return { end, start };
+  }
+
+  end.setDate(start.getDate() + 1);
+  return { end, start };
+}
+
+export function getActivityEntries(activityLog, activityId) {
+  return activityLog.filter((entry) => entry.activityId === activityId);
+}
+
+export function getActivityEntriesForPeriod(activityLog, activityId, period, date = new Date()) {
+  const { end, start } = getPeriodRange(period, date);
+
+  return getActivityEntries(activityLog, activityId).filter((entry) => {
+    const timestamp = new Date(entry.timestamp);
+    return timestamp >= start && timestamp < end;
+  });
+}
+
+export function getActivityQuantityForPeriod(activityLog, activityId, period, date = new Date()) {
+  return getActivityEntriesForPeriod(activityLog, activityId, period, date)
+    .reduce((sum, entry) => sum + Number(entry.quantity || 0), 0);
+}
+
+export function getActivityPresets(activity) {
+  const presets = Array.isArray(activity.presetQuantities) ? activity.presetQuantities : [];
+  return [...new Set([activity.defaultQuantity, ...presets].map((value) => Math.max(1, Math.round(Number(value) || 1))))].sort((a, b) => a - b);
+}
+
+export function clampActivityQuantity(activity, quantity) {
+  const maxQuantity = Math.max(1, Number(activity.maxQuantityPerLog) || DEFAULT_MAX_QUANTITY_PER_LOG);
+  return Math.max(1, Math.min(maxQuantity, Math.round(Number(quantity) || Number(activity.defaultQuantity) || 1)));
+}
+
+export function getActivityGoalProgress(activity, activityLog, period, date = new Date()) {
+  const goal = (activity.goals || []).find((entry) => entry.period === period);
+  const quantity = getActivityQuantityForPeriod(activityLog, activity.id, period, date);
+
+  if (!goal) {
+    return {
+      bonusRate: 0,
+      period,
+      progress: 0,
+      remaining: 0,
+      target: 0,
+    };
+  }
+
+  const target = Math.max(0, Number(goal.targetQuantity) || 0);
+
+  return {
+    bonusRate: Number(goal.bonusRate) || DEFAULT_ACTIVITY_GOAL_BONUS_RATE,
+    period,
+    progress: Math.min(target, quantity),
+    remaining: Math.max(0, target - quantity),
+    target,
+  };
+}
+
+export function getActivityTotals(activity, activityLog) {
+  const entries = getActivityEntries(activityLog, activity.id);
+
+  return entries.reduce((totals, entry) => {
+    totals.logs += 1;
+    totals.quantity += Number(entry.quantity || 0);
+    totals.rap += Number(entry.rapEarned || 0);
+    totals.bonusRap += Number(entry.goalBonusRap || 0);
+    return totals;
+  }, { bonusRap: 0, logs: 0, quantity: 0, rap: 0 });
+}
+
+export function getActivityMastery(activity, activityLog) {
+  const totals = getActivityTotals(activity, activityLog);
+  const currentXp = Math.floor(totals.rap);
+  const level = getSkillLevelForXp(currentXp);
+  const nextLevel = Math.min(99, level + 1);
+  const currentLevelXp = getSkillXpForLevel(level);
+  const nextLevelXp = getSkillXpForLevel(nextLevel);
+  const progress = level >= 99 ? 100 : Math.max(0, Math.min(100, ((currentXp - currentLevelXp) / Math.max(1, nextLevelXp - currentLevelXp)) * 100));
+
+  return {
+    currentXp,
+    level,
+    nextLevel,
+    progress,
+    xpToNext: level >= 99 ? 0 : Math.max(0, nextLevelXp - currentXp),
+  };
+}
+
+export function calculateActivityReward(activity, activityLog, requestedQuantity, date = new Date()) {
+  const quantity = clampActivityQuantity(activity, requestedQuantity);
+  const rapPerUnit = Math.max(0, Number(activity.rapPerUnit) || 0);
+  const dailyQuantityBefore = getActivityQuantityForPeriod(activityLog, activity.id, "daily", date);
+  const dailySoftCap = Number(activity.softCapDailyQuantity) || Infinity;
+  const baseSoftCapRate = Number(activity.softCapBaseRate) || DEFAULT_ACTIVITY_SOFT_CAP_BASE_RATE;
+  const goalSoftCapRate = Number(activity.softCapGoalBonusRate) || DEFAULT_ACTIVITY_SOFT_CAP_GOAL_RATE;
+  const quantityBeforeSoftCap = Math.max(0, Math.min(quantity, dailySoftCap - dailyQuantityBefore));
+  const quantityAfterSoftCap = Math.max(0, quantity - quantityBeforeSoftCap);
+  const baseRap = (quantityBeforeSoftCap * rapPerUnit) + (quantityAfterSoftCap * rapPerUnit * baseSoftCapRate);
+  const goalBreakdown = (activity.goals || []).map((goal) => {
+    const progress = getActivityGoalProgress(activity, activityLog, goal.period, date);
+    const appliedQuantity = Math.max(0, Math.min(quantity, progress.remaining));
+    const bonusQuantityBeforeSoftCap = Math.min(appliedQuantity, quantityBeforeSoftCap);
+    const bonusQuantityAfterSoftCap = Math.max(0, appliedQuantity - bonusQuantityBeforeSoftCap);
+    const bonusRate = Number(goal.bonusRate) || DEFAULT_ACTIVITY_GOAL_BONUS_RATE;
+    const bonusRap = (
+      (bonusQuantityBeforeSoftCap * rapPerUnit * bonusRate) +
+      (bonusQuantityAfterSoftCap * rapPerUnit * bonusRate * goalSoftCapRate)
+    );
+
+    return {
+      bonusRap,
+      bonusRate,
+      period: goal.period,
+      quantity: appliedQuantity,
+      remainingAfter: Math.max(0, progress.remaining - appliedQuantity),
+      target: progress.target,
+    };
+  }).filter((goal) => goal.quantity > 0 && goal.bonusRap > 0);
+  const goalBonusRap = goalBreakdown.reduce((sum, goal) => sum + goal.bonusRap, 0);
+
+  return {
+    baseRap,
+    goalBonusRap,
+    goalBreakdown,
+    isSoftCapped: quantityAfterSoftCap > 0,
+    quantity,
+    quantityAfterSoftCap,
+    quantityBeforeSoftCap,
+    rapEarned: Math.floor(baseRap + goalBonusRap),
+  };
+}
+
+export function getActivityDashboardSummary(activities, activityLog) {
+  const todayEntries = activityLog.filter((entry) => {
+    const timestamp = new Date(entry.timestamp);
+    const { end, start } = getPeriodRange("daily");
+    return timestamp >= start && timestamp < end;
+  });
+  const activeDayKeys = activityLog.map((entry) => getDayKey(new Date(entry.timestamp)));
+  const longestStreak = getLongestStreak(activeDayKeys);
+
+  return {
+    activityCount: activities.length,
+    loggedToday: todayEntries.length,
+    longestStreak: longestStreak.length,
+    todayRap: todayEntries.reduce((sum, entry) => sum + Number(entry.rapEarned || 0), 0),
+  };
 }
 
 export function getRollingDays(dayCount = ACTIVITY_HEATMAP_DAYS) {

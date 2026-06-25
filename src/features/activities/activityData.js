@@ -12,6 +12,26 @@ export const activityStorageKeys = {
 
 export const defaultActivities = [
   {
+    color: "#61d6a1",
+    defaultQuantity: 1000,
+    description: "Track daily step counts from walks, errands, commuting, or movement.",
+    goals: [
+      { bonusRate: 0.3, period: "daily", targetQuantity: 10000 },
+      { bonusRate: 0.3, period: "weekly", targetQuantity: 100000 },
+      { bonusRate: 0.2, period: "monthly", targetQuantity: 400000 },
+    ],
+    id: "steps",
+    maxQuantityPerLog: 50000,
+    presetQuantities: [500, 1000, 5000, 10000],
+    rapPerUnit: 1,
+    softCapBaseRate: 0.5,
+    softCapDailyQuantity: 100000,
+    softCapGoalBonusRate: 0.33,
+    title: "Steps",
+    type: "Exercise",
+    unit: "steps",
+  },
+  {
     id: "walking",
     title: "Walking",
     description: "Track intentional walks, errands, and outdoor movement.",
@@ -20,6 +40,13 @@ export const defaultActivities = [
     defaultQuantity: 10,
     rapPerUnit: 10,
     color: "#61d6a1",
+    goals: [
+      { bonusRate: 0.3, period: "daily", targetQuantity: 30 },
+      { bonusRate: 0.3, period: "weekly", targetQuantity: 240 },
+    ],
+    maxQuantityPerLog: 300,
+    presetQuantities: [10, 30, 60, 120],
+    softCapDailyQuantity: 360,
   },
   {
     id: "running",
@@ -30,6 +57,13 @@ export const defaultActivities = [
     defaultQuantity: 10,
     rapPerUnit: 16,
     color: "#ff7a45",
+    goals: [
+      { bonusRate: 0.3, period: "daily", targetQuantity: 20 },
+      { bonusRate: 0.3, period: "weekly", targetQuantity: 180 },
+    ],
+    maxQuantityPerLog: 240,
+    presetQuantities: [10, 20, 45, 90],
+    softCapDailyQuantity: 240,
   },
   {
     id: "reading",
@@ -40,6 +74,13 @@ export const defaultActivities = [
     defaultQuantity: 10,
     rapPerUnit: 8,
     color: "#f2cf5a",
+    goals: [
+      { bonusRate: 0.3, period: "daily", targetQuantity: 20 },
+      { bonusRate: 0.3, period: "weekly", targetQuantity: 180 },
+    ],
+    maxQuantityPerLog: 500,
+    presetQuantities: [10, 20, 50, 100],
+    softCapDailyQuantity: 300,
   },
   {
     id: "working",
@@ -50,6 +91,13 @@ export const defaultActivities = [
     defaultQuantity: 25,
     rapPerUnit: 6,
     color: "#8ab4ff",
+    goals: [
+      { bonusRate: 0.3, period: "daily", targetQuantity: 50 },
+      { bonusRate: 0.3, period: "weekly", targetQuantity: 400 },
+    ],
+    maxQuantityPerLog: 360,
+    presetQuantities: [25, 50, 90, 180],
+    softCapDailyQuantity: 600,
   },
   {
     id: "instrument",
@@ -60,6 +108,13 @@ export const defaultActivities = [
     defaultQuantity: 15,
     rapPerUnit: 12,
     color: "#b68dff",
+    goals: [
+      { bonusRate: 0.3, period: "daily", targetQuantity: 30 },
+      { bonusRate: 0.3, period: "weekly", targetQuantity: 240 },
+    ],
+    maxQuantityPerLog: 240,
+    presetQuantities: [15, 30, 60, 120],
+    softCapDailyQuantity: 300,
   },
 ];
 

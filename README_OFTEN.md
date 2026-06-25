@@ -80,7 +80,13 @@ Der aktuelle Hauptscreen ist ein Codex-artiges Hauptmenue im dunklen Pixel-/Fant
 - Activities nutzt die Header-Action-Zone fuer `Sorts`, `Activity Log` und `Stats`.
 - Activities folgt jetzt staerker dem Skills-/Unlocks-Blueprint: gemeinsame ContentPanel-Topbar, darunter ein scrollender Body mit Full-Width-Activity-Zeilen statt grossen Karten.
 - Activity-Zeilen zeigen links ein kompaktes Sigil/Icon, in der Mitte Name und Typ/Unit, rechts RAP-Ertrag und Standardmenge. Normaler Tap loggt die Aktivitaet, Long-Press oeffnet ein gemeinsames unteres Quicklook-Info-Panel.
+- Activity-Zeilen zeigen jetzt Activity-Mastery-Level, Logs und Daily-Fortschritt. Eine horizontale Fuellung zeigt den Fortschritt bis zum naechsten Activity-Level.
+- Activity-Long-Press oeffnet ein Amount-Panel mit Plus/Minus, Zahlenfeld, Presets und Log-Button, damit neben Quick-Tap auch flexible Mengen wie 500, 1000 oder 10000 Schritte sauber eingetragen werden koennen.
 - Aktivitaeten koennen RAP vergeben und schreiben einzelne Log-Eintraege fuer spaetere Metriken/Diagramme.
+- Activities koennen optionale Daily-, Weekly- und Monthly-Goals besitzen. Diese Goals sind keine eigenen Activities, sondern Bonusziele derselben Aktivitaet.
+- Activity-Goal-Boni sind additiv: Base RAP plus Daily-Bonus plus Weekly-Bonus plus Monthly-Bonus. Standard-Bonus ist aktuell 30 Prozent pro Goal, soweit das jeweilige Goal noch offen ist.
+- Activity-Softcaps reduzieren sehr hohe Tagesmengen, statt sie hart zu verbieten. Bei Steps liegt der Tages-Softcap aktuell bei 100000 Schritten; Mengen darueber geben nur noch reduzierten Base-RAP und reduzierte Goal-Boni.
+- Steps ist als Default-Activity eingefuehrt: 1 Schritt = 1 RAP, Quick-Tap loggt 1000 Schritte, Presets sind 500, 1000, 5000 und 10000 Schritte.
 - Das Activity Log gruppiert die Darstellung nach Aktivitaet und Einheit, summiert Quantity und RAP, behaelt intern aber die einzelnen Timestamps.
 - Activities haben einen `type`, zum Beispiel Exercise, Mind, Productivity, Creative, Social, Home, Recovery oder General.
 - Activities koennen im Hauptscreen ueber ein kleines `Sorts` Popover nach Default, Name, RAP Reward, Type oder Unit sortiert werden.
@@ -254,12 +260,36 @@ Eine Aktivitaet enthaelt aktuell:
 - `defaultQuantity`: Standardmenge, die beim Klick geloggt wird.
 - `rapPerUnit`: RAP-Belohnung pro Einheit.
 - `color`: UI-Akzentfarbe.
+- optional `presetQuantities`: Mengen-Presets fuer das Long-Press-Amount-Panel.
+- optional `maxQuantityPerLog`: Soft-Limit fuer einzelne Log-Eingaben.
+- optional `softCapDailyQuantity`: Tagesmenge, ab der weitere Quantity reduziert belohnt wird.
+- optional `softCapBaseRate`: Multiplikator fuer Base-RAP oberhalb des Tages-Softcaps, aktuell typischerweise 0.5.
+- optional `softCapGoalBonusRate`: Multiplikator fuer Goal-Boni oberhalb des Tages-Softcaps, aktuell typischerweise 0.33.
+- optional `goals`: Daily-/Weekly-/Monthly-Ziele mit `period`, `targetQuantity` und `bonusRate`.
 
 Beim Klick auf eine Aktivitaet:
 
-1. `defaultQuantity * rapPerUnit` wird als RAP verdient.
-2. Die RAP-Balance wird gespeichert.
-3. Ein Aktivitaetslog-Eintrag wird erstellt.
+1. Beim Quick-Tap wird die `defaultQuantity` geloggt; im Long-Press-Panel kann eine flexible Menge geloggt werden.
+2. Base-RAP wird aus `quantity * rapPerUnit` berechnet.
+3. Offene Daily-/Weekly-/Monthly-Goals addieren Bonus-RAP nur fuer den Teil der Menge, der noch in das jeweilige Ziel passt.
+4. Mengen oberhalb des Tages-Softcaps werden reduziert belohnt, damit extreme Tageswerte moeglich, aber weniger effizient sind.
+5. Die RAP-Balance wird gespeichert.
+6. Ein Aktivitaetslog-Eintrag wird erstellt.
+
+Activity-Mastery:
+
+- Activity-Level werden aktuell aus dem bisher durch diese Aktivitaet verdienten RAP abgeleitet.
+- Die Levelkurve verwendet dieselbe RuneScape-artige XP-Kurve wie Skills.
+- Activity-Zeilen zeigen `Lv X` und einen Fortschrittsbalken bis zum naechsten Activity-Level.
+
+Activity Goals:
+
+- Goals werden aus Activity-Events berechnet, nicht als separate Activity gespeichert.
+- Daily nutzt den lokalen Kalendertag.
+- Weekly startet Montag lokal.
+- Monthly nutzt den lokalen Kalendermonat.
+- Bonus-Berechnung ist additiv, nicht multiplikativ. Beispiel: Base 100 RAP plus Daily +30 RAP plus Weekly +30 RAP ergibt 160 RAP.
+- Bonus gilt nur fuer noch offene Goal-Menge. Wenn ein Weekly nur noch 3000 Schritte offen hat und 10000 Schritte geloggt werden, zaehlt der Weekly-Bonus nur fuer 3000 Schritte.
 
 Ein Aktivitaetslog-Eintrag enthaelt aktuell:
 
@@ -268,7 +298,12 @@ Ein Aktivitaetslog-Eintrag enthaelt aktuell:
 - `title`
 - `quantity`
 - `unit`
-- `rapEarned`
+- `rapEarned`: gesamter verdienter RAP inklusive Goal-Boni.
+- `baseRapEarned`: Base-RAP vor Goal-Boni.
+- `goalBonusRap`: Summe der Goal-Boni.
+- `goalBreakdown`: angewendete Bonusziele mit Perioden, Bonus-RAP und angerechneter Menge.
+- `isSoftCapped`: ob ein Teil der Menge ueber dem Tages-Softcap lag.
+- `softCappedQuantity`: Menge oberhalb des Tages-Softcaps.
 - optional `type` fuer neuere Log-Eintraege.
 - `timestamp`
 
