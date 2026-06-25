@@ -131,6 +131,10 @@ try {
   await page.getByRole("heading", { name: /^Deeds$/i }).waitFor({ timeout: 5000 });
   const deedRows = await page.locator(".deed-card").count();
   const deedGoalStripCount = await page.locator(".deed-goal-strip").count();
+  const deedGoalSegmentCount = await page.locator(".deed-goal-strip-segments i").count();
+  const activeDeedGoalBefore = await page.locator('.deed-goal-strip[aria-pressed="true"]').innerText();
+  await page.getByRole("button", { name: /Dailies/i }).click();
+  const activeDeedGoalAfterRepeatTap = await page.locator('.deed-goal-strip[aria-pressed="true"]').innerText();
   const deedGridColumns = await page.locator(".deed-grid").evaluate((node) => window.getComputedStyle(node).gridTemplateColumns.split(" ").length);
   const stepsDeed = page.getByRole("button", { name: /Steps/i });
   await stepsDeed.waitFor({ timeout: 5000 });
@@ -302,6 +306,9 @@ try {
     accountStatsText,
     deedLogAfterTap,
     deedHeaderMetrics,
+    activeDeedGoalAfterRepeatTap,
+    activeDeedGoalBefore,
+    deedGoalSegmentCount,
     deedGoalStripCount,
     deedGridColumns,
     deedQuicklookText,
@@ -372,7 +379,10 @@ try {
     accountStatsText.includes("Account") &&
     deedRows >= 7 &&
     deedGoalStripCount === 3 &&
+    deedGoalSegmentCount === 0 &&
     deedGridColumns === 4 &&
+    activeDeedGoalBefore.toUpperCase().includes("DAILIES") &&
+    activeDeedGoalAfterRepeatTap.toUpperCase().includes("DAILIES") &&
     stepsText.toUpperCase().includes("STEPS") &&
     stepsText.toUpperCase().includes("LV") &&
     deedQuicklookText.toUpperCase().includes("WALKING") &&

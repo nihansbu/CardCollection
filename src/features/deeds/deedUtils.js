@@ -12,6 +12,32 @@ const DEFAULT_DEED_SOFT_CAP_BASE_RATE = 0.5;
 const DEFAULT_DEED_SOFT_CAP_GOAL_RATE = 0.33;
 const DEFAULT_MAX_QUANTITY_PER_LOG = 10000;
 
+function getDefaultGoals(deed, defaultMatch) {
+  if (Array.isArray(deed.goals) && deed.goals.some((goal) => goal.period === "daily")) {
+    return deed.goals;
+  }
+
+  if (defaultMatch?.goals?.length) {
+    return defaultMatch.goals;
+  }
+
+  const dailyGoal = {
+    bonusRate: DEFAULT_DEED_GOAL_BONUS_RATE,
+    period: "daily",
+    targetQuantity: Math.max(1, Number(deed.defaultQuantity) || 1),
+  };
+
+  if (Array.isArray(deed.goals) && deed.goals.length) {
+    return [...deed.goals, dailyGoal];
+  }
+
+  return [
+    {
+      ...dailyGoal,
+    },
+  ];
+}
+
 export function formatRap(value) {
   const number = Math.floor(Number(value) || 0);
 
@@ -47,7 +73,7 @@ export function normalizeDeed(deed) {
 
   return {
     ...deed,
-    goals: Array.isArray(deed.goals) ? deed.goals : defaultMatch?.goals || [],
+    goals: getDefaultGoals(deed, defaultMatch),
     maxQuantityPerLog: Number(deed.maxQuantityPerLog) || defaultMatch?.maxQuantityPerLog || DEFAULT_MAX_QUANTITY_PER_LOG,
     presetQuantities: Array.isArray(deed.presetQuantities) && deed.presetQuantities.length
       ? deed.presetQuantities

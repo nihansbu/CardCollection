@@ -133,36 +133,28 @@ function DeedGoalStrip({ isActive, label, onClick, summary }) {
     >
       <span className="deed-goal-strip-fill" style={{ "--deed-goal-strip-progress": `${summary.progress}%` }} aria-hidden="true" />
       <span className="deed-goal-strip-label">{label}</span>
-      <span className="deed-goal-strip-segments" aria-hidden="true">
-        {summary.goals.map(({ deed, goal }) => (
-          <i
-            key={deed.id}
-            style={{
-              "--deed-color": deed.color,
-              "--deed-segment-progress": `${Math.min(100, (goal.progress / Math.max(1, goal.target)) * 100)}%`,
-            }}
-          />
-        ))}
+      <span className="deed-goal-strip-summary">
+        {Math.round(summary.progress)}%
       </span>
       <strong>{summary.completed}/{summary.total}</strong>
     </button>
   );
 }
 
-function DeedCard({ deed, deedLog, onComplete, onPreview }) {
+function DeedCard({ activeGoalPeriod, deed, deedLog, onComplete, onPreview }) {
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
   const reward = calculateDeedReward(deed, deedLog, deed.defaultQuantity);
   const mastery = getDeedMastery(deed, deedLog);
   const totals = getDeedTotals(deed, deedLog);
-  const dailyGoal = getDeedGoalProgress(deed, deedLog, "daily");
-  const dailyPercent = getDeedGoalPercent(deed, deedLog, "daily");
-  const cardProgress = dailyPercent ?? mastery.progress;
-  const isDailyDone = dailyGoal.target > 0 && dailyGoal.progress >= dailyGoal.target;
+  const activeGoal = getDeedGoalProgress(deed, deedLog, activeGoalPeriod);
+  const activeGoalPercent = getDeedGoalPercent(deed, deedLog, activeGoalPeriod);
+  const cardProgress = activeGoalPercent ?? mastery.progress;
+  const isGoalDone = activeGoal.target > 0 && activeGoal.progress >= activeGoal.target;
   const cardClassName = [
     "deed-card",
-    isDailyDone ? "is-daily-complete" : "",
-    dailyGoal.target > 0 ? "has-daily-goal" : "has-mastery-progress",
+    isGoalDone ? "is-goal-complete" : "",
+    activeGoal.target > 0 ? "has-goal-progress" : "has-mastery-progress",
   ].filter(Boolean).join(" ");
 
   const clearLongPress = () => {
@@ -216,7 +208,7 @@ function DeedCard({ deed, deedLog, onComplete, onPreview }) {
         <small>
           +{formatRap(reward.rapEarned)} RAP
         </small>
-        <em>{dailyGoal.target > 0 ? `${Math.floor((dailyGoal.progress / dailyGoal.target) * 100)}% daily` : `${totals.logs} logs`}</em>
+        <em>{activeGoal.target > 0 ? `${Math.floor((activeGoal.progress / activeGoal.target) * 100)}% ${activeGoalPeriod}` : `${totals.logs} logs`}</em>
       </div>
     </button>
   );
@@ -226,7 +218,7 @@ export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpe
   const [sortKey, setSortKey] = useState("default");
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [previewDeedId, setPreviewDeedId] = useState(null);
-  const [goalFilter, setGoalFilter] = useState(null);
+  const [activeGoalPeriod, setActiveGoalPeriod] = useState("daily");
   const sortedDeeds = getSortedDeeds(deeds, sortKey);
   const activeSortLabel = deedSortOptions.find((option) => option.value === sortKey)?.label || "Default";
   const previewDeed = previewDeedId ? deeds.find((deed) => deed.id === previewDeedId) : null;
@@ -235,9 +227,7 @@ export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpe
     ...entry,
     summary: getDeedGoalSummary(deeds, deedLog, entry.period),
   }));
-  const visibleDeeds = goalFilter
-    ? sortedDeeds.filter((deed) => getDeedGoalProgress(deed, deedLog, goalFilter).target > 0)
-    : sortedDeeds;
+  const visibleDeeds = sortedDeeds.filter((deed) => getDeedGoalProgress(deed, deedLog, activeGoalPeriod).target > 0);
 
   return (
     <ContentPanel
@@ -284,12 +274,12 @@ export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpe
         <div className="deed-goal-strip-list" aria-label="Deed goal progress">
           {goalSummaries.map(({ label, period, summary: goalSummary }) => (
             <DeedGoalStrip
-              isActive={goalFilter === period}
+              isActive={activeGoalPeriod === period}
               key={period}
               label={label}
               onClick={(event) => {
                 event.stopPropagation();
-                setGoalFilter((current) => current === period ? null : period);
+                setActiveGoalPeriod(period);
               }}
               summary={goalSummary}
             />
@@ -297,7 +287,7 @@ export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpe
         </div>
 
         <div className="deed-grid">
-          {!goalFilter ? (
+          {activeGoalPeriod === "daily" ? (
             <button className="deed-card deed-system-card" onClick={onOpenCreate} type="button">
               <div className="deed-sigil" aria-hidden="true">+</div>
               <div className="deed-card-copy">
@@ -312,6 +302,7 @@ export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpe
 
           {visibleDeeds.map((deed) => (
             <DeedCard
+              activeGoalPeriod={activeGoalPeriod}
               deed={deed}
               deedLog={deedLog}
               key={deed.id}
