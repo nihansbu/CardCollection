@@ -2,6 +2,51 @@
 
 Projekt-Memory fuer RAP Card Collection. Diese Datei soll regelmaessig aktualisiert werden, wenn Features, Ziele, Regeln, Datenmodelle oder wichtige Designentscheidungen geaendert werden.
 
+## WICHTIG: Agent Workflow Regeln
+
+Diese Regeln stehen bewusst ganz oben. Sie sollen verhindern, dass zukuenftige Arbeit wieder Zeit durch bekannte Tool-/Sandbox-Probleme verliert.
+
+### Dev-Server, Verify, Commit und Push
+
+- Nicht bei jedem Prompt automatisch Server/Playwright starten. Bei reinen Doku-, Daten- oder kleinen CSS-/Code-Aenderungen zuerst entscheiden, ob `npm run build` reicht.
+- `npm run build` ist der Standardcheck fuer normale Codeaenderungen. Er laeuft lokal zuverlaessig und braucht keinen Browser.
+- Playwright/Edge-Verification (`node scripts/verify.mjs`) nur einsetzen, wenn UI-Flows, Layout, Navigation, LocalStorage-Progression oder Browserverhalten betroffen sind.
+- Wenn Playwright im Sandbox-Kontext mit `spawn EPERM` scheitert, nicht mehrfach im Sandbox-Modus wiederholen. Direkt eskaliert ausfuehren:
+  - PowerShell: `$env:RAP_APP_URL='http://127.0.0.1:5174/'; node scripts/verify.mjs; Remove-Item Env:RAP_APP_URL`
+- Wenn fuer Verify ein lokaler Vite-Server gebraucht wird, direkt den funktionierenden Hintergrundstart verwenden:
+  - PowerShell: `Start-Process -FilePath 'C:\Program Files\nodejs\npm.cmd' -ArgumentList @('run','dev','--','--port','5174') -WorkingDirectory 'C:\Users\nikla\Documents\CardCollection' -WindowStyle Hidden -PassThru`
+  - Danach mit `Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5174/` pruefen, ob HTTP `200` kommt.
+- Nicht Zeit mit alternativen Serverstarts verlieren, wenn bekannte Fehler auftreten:
+  - `Start-Process` mit Redirects kann in dieser Umgebung durch ein `Path/PATH`-Duplikatproblem scheitern.
+  - `Start-Job`/sandboxed Vite kann durch `esbuild spawn EPERM` scheitern.
+  - Vordergrund-`npm run dev` mit kurzem Timeout beendet den Server wieder.
+- Beim Stoppen von Testservern keine breite Prozesssuche verwenden, die die eigene PowerShell-CommandLine matchen kann. Wenn Cleanup nicht eindeutig ist, lieber nur HTTP-Erreichbarkeit pruefen und keine riskante Stop-Logik erzwingen.
+- Commit/Push direkt und gezielt:
+  - `git add <konkrete Dateien>`
+  - `git commit -m "<kurze sachliche Message>"`
+  - `git push origin main`
+- `.codex-remote-attachments/` niemals adden oder committen.
+- Nach Push immer einen Cache-Buster-Link mit Commit-Hash nennen: `https://nihansbu.github.io/CardCollection/?v=<commit>`.
+
+### Image-Generation Pipeline
+
+- Vor jedem Asset klaeren: Wird wirklich ein neues Rasterbild gebraucht? Fuer einfache UI-Pfeile, Rahmen, Shapes oder deterministische Symbole zuerst CSS/SVG/Code pruefen. Bildgenerierung nur nutzen, wenn der Stil/Look vom generativen Asset profitiert.
+- Fuer wiederkehrende Spielassets gilt der Standard: Das PNG enthaelt nur das eigentliche Icon/Item/Symbol mit transparentem Hintergrund. Badge, Kreis, Rahmen, Schatten, Statusfarbe und Modulfarbe kommen aus CSS/UI.
+- Fuer Skill-, Unlock-, Quest- und UI-Icons einheitlich auf `128x128` oder maximal `256x256` finalisieren. Groessere Source-Bilder nur temporaer behalten und nicht committen.
+- Built-in Imagegen erzeugt standardmaessig keine echte Transparenz. Wenn ein transparentes PNG gebraucht wird:
+  - Prompt immer mit flachem Chroma-Key-Hintergrund, normalerweise `#00ff00`.
+  - Keine Schatten, keine Bodenkontakte, keine Reflexionen, keine gruenen Teile im Motiv.
+  - Danach lokal freistellen und nur das finale transparente PNG ins Projekt legen.
+- Wenn Pillow fehlt, nicht blockieren. Fuer einfache Icons kann die vorhandene Windows/.NET-`System.Drawing`-Pipeline genutzt werden: Chroma-Key-Farbe entfernen, Motiv trimmen, auf Zielgroesse skalieren, transparente Pixel auf RGB 0 setzen.
+- Pro Icon nur kurze technische Validierung:
+  - Datei existiert im richtigen `public/...` Ordner.
+  - Ecken haben Alpha 0.
+  - Bild visuell einmal anschauen.
+  - App-Build/Verify nur ausfuehren, wenn das Icon bereits in Code/UI verwendet wird.
+- Nicht mehrere lange Pixeltests oder wiederholte Server-/Browserlaeufe fuer ein einzelnes Icon machen, wenn keine konkrete visuelle Regression sichtbar ist.
+- Source-Dateien wie `*-source.png` nach erfolgreicher Freistellung entfernen. Committen nur: finale Assets und Code/Docs, die sie referenzieren.
+- Bei groesseren Icon-Serien zuerst eine Ziel-Silhouette und Prompt-Regel definieren, dann Varianten als Reskins erzeugen. Beispiel: Logs und Aexte behalten die gleiche Grundform und unterscheiden sich primaer durch Material/Farbe.
+
 ## Projektidee
 
 Das Projekt entwickelt sich von einer reinen RAP Card Collection zu einer Mobile-only Codex-Tracking-App. Der Spieler soll unterwegs schnell reale Aktivitaeten tracken, Punkte verdienen und ausgeben koennen, um Dinge zu leveln, zu trainieren, zu sammeln, upzugraden, freizuschalten und langfristig Account-Fortschritt aufzubauen.
