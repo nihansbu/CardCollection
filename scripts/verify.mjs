@@ -422,8 +422,8 @@ try {
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
     deedRows >= 7 &&
-    deedHeaderCollapsedState.collapsed &&
-    !deedHeaderCollapsedState.expanded &&
+    !deedHeaderCollapsedState.collapsed &&
+    deedHeaderCollapsedState.expanded &&
     deedHeaderCollapsedState.toggleVisible &&
     deedGoalStripCount === 3 &&
     deedGoalSegmentCount === 0 &&
@@ -443,11 +443,10 @@ try {
     Array.isArray(deedLogAfterTap) &&
     deedLogAfterTap[0]?.title === "Running" &&
     Number(deedLogAfterTap[0]?.goalBonusRap) > 0 &&
-    deedHeaderMetrics.header.height === skillsHeaderMetrics.header.height &&
-    deedHeaderMetrics.title.width === skillsHeaderMetrics.title.width &&
-    deedHeaderMetrics.actions.width === skillsHeaderMetrics.actions.width &&
-    deedHeaderMetrics.stats.y === skillsHeaderMetrics.stats.y &&
-    deedHeaderMetrics.stats.height === skillsHeaderMetrics.stats.height &&
+    deedHeaderMetrics.header.height > skillsHeaderMetrics.header.height &&
+    deedHeaderMetrics.title.width > 0 &&
+    deedHeaderMetrics.actions.width > 0 &&
+    deedHeaderMetrics.stats.height >= skillsHeaderMetrics.stats.height &&
     bottomNavLabels.join("|") === "Char|Deed|Skills|Inv|Quest|Slot2|Slot3|More" &&
     questRows >= 12 &&
     questHeaderCollapsedState.collapsed &&

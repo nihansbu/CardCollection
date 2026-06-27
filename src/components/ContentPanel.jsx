@@ -37,6 +37,7 @@ export function ContentPanel({
   actions = [],
   children,
   className = "",
+  defaultHeaderCollapsed = true,
   infoPanel,
   onActionPreview,
   onBack,
@@ -44,7 +45,7 @@ export function ContentPanel({
   stats,
   title,
 }) {
-  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(true);
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(defaultHeaderCollapsed);
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
   const headingId = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`;
@@ -93,7 +94,7 @@ export function ContentPanel({
   };
 
   useEffect(() => () => window.clearTimeout(longPressTimer.current), []);
-  useEffect(() => setIsHeaderCollapsed(true), [title]);
+  useEffect(() => setIsHeaderCollapsed(defaultHeaderCollapsed), [defaultHeaderCollapsed, title]);
 
   return (
     <section

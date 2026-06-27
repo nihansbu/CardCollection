@@ -124,10 +124,12 @@ function DeedInfoPanel({ deed, deedLog, onClose, onLogDeed }) {
 }
 
 function DeedGoalStrip({ isActive, label, onClick, summary }) {
+  const periodClass = label.toLowerCase();
+
   return (
     <button
       aria-pressed={isActive}
-      className={isActive ? "deed-goal-strip is-active" : "deed-goal-strip"}
+      className={`${isActive ? "deed-goal-strip is-active" : "deed-goal-strip"} is-${periodClass}`}
       onClick={onClick}
       type="button"
     >
@@ -263,6 +265,7 @@ export function DeedsPanel({ deeds, deedLog, onCompleteDeed, onOpenCreate, onOpe
         { Icon: BarChart3, label: "Stats", onClick: onOpenStats },
       ]}
       className="deeds-panel"
+      defaultHeaderCollapsed={false}
       infoPanel={<DeedInfoPanel deed={previewDeed} deedLog={deedLog} onClose={() => setPreviewDeedId(null)} onLogDeed={onCompleteDeed} />}
       stats={[
         { Icon: uiIcons.rap, iconOnly: true, label: "RAP Balance", value: formatRap(rap) },
