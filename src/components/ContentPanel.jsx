@@ -108,7 +108,7 @@ export function ContentPanel({
         onClick={() => setIsHeaderCollapsed((current) => !current)}
         type="button"
       >
-        <img src="./ui/header-toggle-knob.png" alt="" aria-hidden="true" />
+        <span aria-hidden="true" />
       </button>
       <div className={headerClassName} id={`${headingId}-header`}>
         <div

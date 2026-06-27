@@ -75,12 +75,12 @@ async function readContentHeaderCollapsed(nextPage) {
   return nextPage.evaluate(() => {
     const panel = document.querySelector(".codex-content-panel");
     const toggle = document.querySelector(".content-header-toggle");
-    const image = document.querySelector(".content-header-toggle img");
+    const toggleRect = toggle?.getBoundingClientRect();
 
     return {
       collapsed: panel?.classList.contains("is-header-collapsed") ?? false,
       expanded: toggle?.getAttribute("aria-expanded") === "true",
-      imageLoaded: Boolean(image?.complete && image?.naturalWidth > 0),
+      toggleVisible: Boolean(toggleRect && toggleRect.width >= 50 && toggleRect.height <= 20),
     };
   });
 }
@@ -424,7 +424,7 @@ try {
     deedRows >= 7 &&
     deedHeaderCollapsedState.collapsed &&
     !deedHeaderCollapsedState.expanded &&
-    deedHeaderCollapsedState.imageLoaded &&
+    deedHeaderCollapsedState.toggleVisible &&
     deedGoalStripCount === 3 &&
     deedGoalSegmentCount === 0 &&
     deedGridColumns === 4 &&
@@ -452,7 +452,7 @@ try {
     questRows >= 12 &&
     questHeaderCollapsedState.collapsed &&
     !questHeaderCollapsedState.expanded &&
-    questHeaderCollapsedState.imageLoaded &&
+    questHeaderCollapsedState.toggleVisible &&
     questBoardColumns === 5 &&
     questHeaderLabels.join("|") === "RAP|Unlocked|Available|Quest Points" &&
     questHeaderText.includes("/") &&
@@ -475,11 +475,11 @@ try {
     moreFlyoutLabels.join("|") === "Beast|Codex" &&
     skillsHeaderCollapsedState.collapsed &&
     !skillsHeaderCollapsedState.expanded &&
-    skillsHeaderCollapsedState.imageLoaded &&
+    skillsHeaderCollapsedState.toggleVisible &&
     skillDetailActionText.includes("SKILLS") &&
     skillDetailHeaderCollapsedState.collapsed &&
     !skillDetailHeaderCollapsedState.expanded &&
-    skillDetailHeaderCollapsedState.imageLoaded &&
+    skillDetailHeaderCollapsedState.toggleVisible &&
     skillDetailStatsText.includes("RAP") &&
     skillDetailStatLabels.join("|") === "RAP|Level|Current XP|XP to Next Level" &&
     skillDetailHeroCount === 0 &&
