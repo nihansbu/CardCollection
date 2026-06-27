@@ -8,10 +8,15 @@ Diese Regeln stehen bewusst ganz oben. Sie sollen verhindern, dass zukuenftige A
 
 ### Dev-Server, Verify, Commit und Push
 
-- Nicht bei jedem Prompt automatisch Server/Playwright starten. Bei reinen Doku-, Daten- oder kleinen CSS-/Code-Aenderungen zuerst entscheiden, ob `npm run build` reicht.
+- Qualitaet wird nicht reduziert. Diese Regeln sollen Wiederholungsfehler vermeiden, nicht Checks sparen. Fuer jede Code-/UI-Aenderung muss ein angemessener Check laufen.
+- Nicht bei jedem Prompt automatisch Server/Playwright starten. Bei reinen Doku-Aenderungen ist kein Build noetig. Bei Code/CSS/UI-Aenderungen mindestens `npm run build`; bei sichtbarer UI, Navigation, Interaktion, LocalStorage, Progression oder Browser-Verhalten zusaetzlich Browser-/Playwright-Verify.
 - `npm run build` ist der Standardcheck fuer normale Codeaenderungen. Er laeuft lokal zuverlaessig und braucht keinen Browser.
 - Playwright/Edge-Verification (`node scripts/verify.mjs`) nur einsetzen, wenn UI-Flows, Layout, Navigation, LocalStorage-Progression oder Browserverhalten betroffen sind.
-- Wenn Playwright im Sandbox-Kontext mit `spawn EPERM` scheitert, nicht mehrfach im Sandbox-Modus wiederholen. Direkt eskaliert ausfuehren:
+- Vor jedem lokalen Verify zuerst pruefen, ob Port `5174` bereits antwortet:
+  - PowerShell: `try { (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5174/ -TimeoutSec 2).StatusCode } catch { $_.Exception.Message }`
+  - Wenn HTTP `200` kommt, keinen neuen Server starten.
+  - Wenn `Connection refused`, Timeout oder kein Server kommt, genau einen Serverstart mit dem unten stehenden funktionierenden Befehl machen.
+- Wenn Playwright/Edge im Sandbox-Kontext mit `spawn EPERM` scheitert, nicht mehrfach im Sandbox-Modus wiederholen. Direkt eskaliert ausfuehren:
   - PowerShell: `$env:RAP_APP_URL='http://127.0.0.1:5174/'; node scripts/verify.mjs; Remove-Item Env:RAP_APP_URL`
 - Wenn fuer Verify ein lokaler Vite-Server gebraucht wird, direkt den funktionierenden Hintergrundstart verwenden:
   - PowerShell: `Start-Process -FilePath 'C:\Program Files\nodejs\npm.cmd' -ArgumentList @('run','dev','--','--port','5174') -WorkingDirectory 'C:\Users\nikla\Documents\CardCollection' -WindowStyle Hidden -PassThru`
@@ -30,7 +35,8 @@ Diese Regeln stehen bewusst ganz oben. Sie sollen verhindern, dass zukuenftige A
 
 ### Image-Generation Pipeline
 
-- Vor jedem Asset klaeren: Wird wirklich ein neues Rasterbild gebraucht? Fuer einfache UI-Pfeile, Rahmen, Shapes oder deterministische Symbole zuerst CSS/SVG/Code pruefen. Bildgenerierung nur nutzen, wenn der Stil/Look vom generativen Asset profitiert.
+- Wenn der User ein Bild, Icon, Sprite, Item, Boss, Skill-/Quest-/Unlock-Icon oder visuelles Game-Asset verlangt, immer das Image-Generation-Tool verwenden. Nicht auf CSS/SVG ausweichen, ausser der User verlangt explizit CSS/SVG oder es geht eindeutig um rein strukturelle UI-Formen ohne Bild-/Asset-Charakter.
+- CSS ist fuer Badge, Kreis, Rahmen, Schatten, Statusfarbe, Modulfarbe, Layout und responsive Groessen da. Das eigentliche Motiv/Icon/Item kommt als generiertes PNG.
 - Fuer wiederkehrende Spielassets gilt der Standard: Das PNG enthaelt nur das eigentliche Icon/Item/Symbol mit transparentem Hintergrund. Badge, Kreis, Rahmen, Schatten, Statusfarbe und Modulfarbe kommen aus CSS/UI.
 - Fuer Skill-, Unlock-, Quest- und UI-Icons einheitlich auf `128x128` oder maximal `256x256` finalisieren. Groessere Source-Bilder nur temporaer behalten und nicht committen.
 - Built-in Imagegen erzeugt standardmaessig keine echte Transparenz. Wenn ein transparentes PNG gebraucht wird:
@@ -38,12 +44,13 @@ Diese Regeln stehen bewusst ganz oben. Sie sollen verhindern, dass zukuenftige A
   - Keine Schatten, keine Bodenkontakte, keine Reflexionen, keine gruenen Teile im Motiv.
   - Danach lokal freistellen und nur das finale transparente PNG ins Projekt legen.
 - Wenn Pillow fehlt, nicht blockieren. Fuer einfache Icons kann die vorhandene Windows/.NET-`System.Drawing`-Pipeline genutzt werden: Chroma-Key-Farbe entfernen, Motiv trimmen, auf Zielgroesse skalieren, transparente Pixel auf RGB 0 setzen.
-- Pro Icon nur kurze technische Validierung:
+- Pro Icon immer eine kurze, feste technische Validierung:
   - Datei existiert im richtigen `public/...` Ordner.
   - Ecken haben Alpha 0.
   - Bild visuell einmal anschauen.
-  - App-Build/Verify nur ausfuehren, wenn das Icon bereits in Code/UI verwendet wird.
-- Nicht mehrere lange Pixeltests oder wiederholte Server-/Browserlaeufe fuer ein einzelnes Icon machen, wenn keine konkrete visuelle Regression sichtbar ist.
+  - Wenn das Icon in Code/UI verwendet wird: `npm run build`.
+  - Wenn die Aenderung Layout/Interaktion beeinflusst oder der Screen visuell relevant ist: Browser-/Playwright-Verify nach der Dev-Server-Regel oben.
+- Nicht mehrere lange Pixeltests oder wiederholte Server-/Browserlaeufe fuer ein einzelnes Icon machen, wenn die feste Validierung bestanden ist und keine konkrete visuelle Regression sichtbar ist.
 - Source-Dateien wie `*-source.png` nach erfolgreicher Freistellung entfernen. Committen nur: finale Assets und Code/Docs, die sie referenzieren.
 - Bei groesseren Icon-Serien zuerst eine Ziel-Silhouette und Prompt-Regel definieren, dann Varianten als Reskins erzeugen. Beispiel: Logs und Aexte behalten die gleiche Grundform und unterscheiden sich primaer durch Material/Farbe.
 
