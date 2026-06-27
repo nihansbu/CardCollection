@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 
 const LONG_PRESS_MS = 520;
@@ -44,12 +44,14 @@ export function ContentPanel({
   stats,
   title,
 }) {
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(true);
   const longPressTimer = useRef(null);
   const suppressClick = useRef(false);
   const headingId = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`;
   const actionCount = actions.length;
   const headerClassName = [
     "content-header",
+    isHeaderCollapsed ? "is-collapsed" : "is-expanded",
     onBack ? "content-header-with-back" : "content-header-no-back",
     actionCount ? "content-header-has-actions" : "content-header-no-actions",
     actionCount > 1 ? "content-header-many-actions" : "",
@@ -91,10 +93,24 @@ export function ContentPanel({
   };
 
   useEffect(() => () => window.clearTimeout(longPressTimer.current), []);
+  useEffect(() => setIsHeaderCollapsed(true), [title]);
 
   return (
-    <section className={`codex-content-panel ${className}`} aria-labelledby={headingId}>
-      <div className={headerClassName}>
+    <section
+      className={`codex-content-panel ${isHeaderCollapsed ? "is-header-collapsed" : "is-header-expanded"} ${className}`.trim()}
+      aria-labelledby={headingId}
+    >
+      <button
+        aria-controls={`${headingId}-header`}
+        aria-expanded={!isHeaderCollapsed}
+        aria-label={isHeaderCollapsed ? "Show page header" : "Hide page header"}
+        className="content-header-toggle"
+        onClick={() => setIsHeaderCollapsed((current) => !current)}
+        type="button"
+      >
+        <img src="./ui/header-toggle-knob.png" alt="" aria-hidden="true" />
+      </button>
+      <div className={headerClassName} id={`${headingId}-header`}>
         <div
           className={`content-title-box ${onBack ? "has-back" : ""}`.trim()}
           style={{ "--title-size": getTitleSize(title, { actionCount, hasBack: Boolean(onBack) }) }}

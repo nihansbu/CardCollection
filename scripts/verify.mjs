@@ -31,6 +31,8 @@ function watchPage(nextPage) {
 }
 
 async function readContentHeaderMetrics(nextPage) {
+  await expandContentHeader(nextPage);
+
   return nextPage.evaluate(() => {
     const readRect = (selector) => {
       const node = document.querySelector(selector);
@@ -49,6 +51,36 @@ async function readContentHeaderMetrics(nextPage) {
       header: readRect(".content-header"),
       stats: readRect(".content-stats"),
       title: readRect(".content-title-box"),
+    };
+  });
+}
+
+async function expandContentHeader(nextPage) {
+  const toggle = nextPage.locator(".content-header-toggle").first();
+  await toggle.waitFor({ timeout: 5000 });
+
+  if ((await toggle.getAttribute("aria-expanded")) === "false") {
+    await toggle.click();
+  }
+
+  await nextPage.locator(".content-header.is-expanded").waitFor({ timeout: 5000 });
+  await nextPage.waitForFunction(() => {
+    const header = document.querySelector(".content-header.is-expanded");
+    return header && header.getBoundingClientRect().height >= 120;
+  }, { timeout: 5000 });
+  await nextPage.waitForTimeout(240);
+}
+
+async function readContentHeaderCollapsed(nextPage) {
+  return nextPage.evaluate(() => {
+    const panel = document.querySelector(".codex-content-panel");
+    const toggle = document.querySelector(".content-header-toggle");
+    const image = document.querySelector(".content-header-toggle img");
+
+    return {
+      collapsed: panel?.classList.contains("is-header-collapsed") ?? false,
+      expanded: toggle?.getAttribute("aria-expanded") === "true",
+      imageLoaded: Boolean(image?.complete && image?.naturalWidth > 0),
     };
   });
 }
@@ -129,6 +161,7 @@ try {
   const accountStatsText = await page.locator(".content-stats").innerText();
   await page.locator('.bottom-nav-item[aria-label="Deeds"]').click();
   await page.getByRole("heading", { name: /^Deeds$/i }).waitFor({ timeout: 5000 });
+  const deedHeaderCollapsedState = await readContentHeaderCollapsed(page);
   const deedRows = await page.locator(".deed-card").count();
   const deedGoalStripCount = await page.locator(".deed-goal-strip").count();
   const deedGoalSegmentCount = await page.locator(".deed-goal-strip-segments i").count();
@@ -156,6 +189,7 @@ try {
 
   await page.locator('.bottom-nav-item[aria-label="Quests"]').click();
   await page.getByRole("heading", { name: /^Quests$/i }).waitFor({ timeout: 5000 });
+  const questHeaderCollapsedState = await readContentHeaderCollapsed(page);
   const questRows = await page.locator(".quest-tile").count();
   const firstStepsQuest = page.getByRole("button", { name: /First Steps/i });
   const firstQuestTilePseudoContent = await page.locator(".quest-tile").first().evaluate((node) => window.getComputedStyle(node, "::after").content);
@@ -178,6 +212,7 @@ try {
   await page.locator(".content-info-panel", { hasText: /First Steps/i }).waitFor({ timeout: 5000 });
   const questQuicklookText = await page.locator(".content-info-panel").innerText();
   await page.getByLabel("Close info panel").click();
+  await expandContentHeader(page);
   await page.locator(".content-action-button", { hasText: "Sort" }).click();
   await page.locator(".quest-sort-menu").waitFor({ timeout: 5000 });
   const questSortOptions = await page.locator(".quest-sort-menu button").allTextContents();
@@ -194,6 +229,7 @@ try {
 
   await page.locator('.bottom-nav-item[aria-label="Skills"]').click();
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
+  const skillsHeaderCollapsedState = await readContentHeaderCollapsed(page);
   const skillsHeaderMetrics = await readContentHeaderMetrics(page);
 
   const trainingCards = await page.locator(".skill-card.is-training-skill").count();
@@ -214,6 +250,8 @@ try {
 
   await woodcuttingButton.click();
   await page.getByRole("heading", { name: /^Woodcutting$/i }).waitFor({ timeout: 5000 });
+  const skillDetailHeaderCollapsedState = await readContentHeaderCollapsed(page);
+  await expandContentHeader(page);
   const skillDetailActionText = await page.locator(".content-actions").innerText();
   const skillDetailStatsText = await page.locator(".content-stats").innerText();
   const skillDetailStatLabels = await page.locator(".skill-detail-panel .content-stats dt").allTextContents();
@@ -253,6 +291,7 @@ try {
   const oakLogsClassAfterOffline = await page.getByRole("button", { name: /Oak Logs/i }).getAttribute("class");
   const storedUnlocksAfterOffline = JSON.parse(await page.evaluate(() => localStorage.getItem("codex-collector-v1-skill-unlocks")));
   const oakUnlockAfterOffline = storedUnlocksAfterOffline.find((unlock) => unlock.id === "woodcutting-oak-logs");
+  await expandContentHeader(page);
   const skillDetailTopbar = await page.locator(".content-title-box").evaluate((node) => {
     const box = node.getBoundingClientRect();
     const titleNode = node.querySelector("h1");
@@ -272,6 +311,7 @@ try {
   });
   await page.locator(".content-action-button", { hasText: "Skills" }).click();
   await page.getByRole("heading", { name: /^Skills$/i }).waitFor({ timeout: 5000 });
+  await expandContentHeader(page);
   woodcuttingButton = page.getByRole("button", { name: /Woodcutting/i });
 
   await woodcuttingButton.dispatchEvent("pointerdown");
@@ -306,6 +346,7 @@ try {
     accountStatsText,
     deedLogAfterTap,
     deedHeaderMetrics,
+    deedHeaderCollapsedState,
     activeDeedGoalAfterRepeatTap,
     activeDeedGoalBefore,
     deedGoalSegmentCount,
@@ -328,6 +369,7 @@ try {
     firstQuestTileBackground,
     firstQuestTilePseudoContent,
     questHeaderLabels,
+    questHeaderCollapsedState,
     questHeaderText,
     questImageMetrics,
     questBoardColumns,
@@ -337,7 +379,9 @@ try {
     questSortOptions,
     oldStatQuicklookCount,
     sharedQuicklookCount,
+    skillsHeaderCollapsedState,
     skillsHeaderMetrics,
+    skillDetailHeaderCollapsedState,
     skillDetailActionText,
     skillDetailHeroCount,
     skillDetailStatLabels,
@@ -378,6 +422,9 @@ try {
     accountStatsText.includes("Niklas") &&
     accountStatsText.includes("Account") &&
     deedRows >= 7 &&
+    deedHeaderCollapsedState.collapsed &&
+    !deedHeaderCollapsedState.expanded &&
+    deedHeaderCollapsedState.imageLoaded &&
     deedGoalStripCount === 3 &&
     deedGoalSegmentCount === 0 &&
     deedGridColumns === 4 &&
@@ -403,6 +450,9 @@ try {
     deedHeaderMetrics.stats.height === skillsHeaderMetrics.stats.height &&
     bottomNavLabels.join("|") === "Char|Deed|Skills|Inv|Quest|Slot2|Slot3|More" &&
     questRows >= 12 &&
+    questHeaderCollapsedState.collapsed &&
+    !questHeaderCollapsedState.expanded &&
+    questHeaderCollapsedState.imageLoaded &&
     questBoardColumns === 5 &&
     questHeaderLabels.join("|") === "RAP|Unlocked|Available|Quest Points" &&
     questHeaderText.includes("/") &&
@@ -423,7 +473,13 @@ try {
     questHeaderMetrics.title.width === skillsHeaderMetrics.title.width &&
     questHeaderMetrics.actions.width === skillsHeaderMetrics.actions.width &&
     moreFlyoutLabels.join("|") === "Beast|Codex" &&
+    skillsHeaderCollapsedState.collapsed &&
+    !skillsHeaderCollapsedState.expanded &&
+    skillsHeaderCollapsedState.imageLoaded &&
     skillDetailActionText.includes("SKILLS") &&
+    skillDetailHeaderCollapsedState.collapsed &&
+    !skillDetailHeaderCollapsedState.expanded &&
+    skillDetailHeaderCollapsedState.imageLoaded &&
     skillDetailStatsText.includes("RAP") &&
     skillDetailStatLabels.join("|") === "RAP|Level|Current XP|XP to Next Level" &&
     skillDetailHeroCount === 0 &&
